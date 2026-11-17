@@ -1,0 +1,103 @@
+{
+  "historical_logistic_training@1": {
+    "contract_sha256": "97b8c61152f919f11a34ff80899cba00fbaf7d3c75575b30f00c69d93d383882",
+    "capability": {
+      "operations": [
+        "train"
+      ],
+      "state_output": "trained_model",
+      "inference": {
+        "code": "historical_logistic_predict",
+        "revision": 1
+      },
+      "input_uses": {
+        "x_code": {
+          "role": "driver",
+          "phases": [
+            "training",
+            "application"
+          ]
+        },
+        "target_code": {
+          "role": "label",
+          "phases": [
+            "training"
+          ]
+        }
+      }
+    }
+  },
+  "multivariate_linear_training@1": {
+    "contract_sha256": "1f9b0d9d4396d5ca2817df712a8dbb1f57efc31f73d9277b2a18914c1fe4c4d8",
+    "capability": {
+      "operations": [
+        "train"
+      ],
+      "state_output": "trained_model",
+      "inference": {
+        "code": "multivariate_linear_predict",
+        "revision": 1
+      },
+      "input_uses": {
+        "features": {
+          "role": "feature",
+          "phases": [
+            "training",
+            "application"
+          ]
+        },
+        "targets": {
+          "role": "label",
+          "phases": [
+            "training",
+            "evaluation"
+          ]
+        }
+      }
+    }
+  },
+  "historical_logistic_predict@1": {
+    "contract_sha256": "8454e0260ffc1a90f22b31f4db80aedf3a6e7ff26aacf1a082470c70cb6b6fef",
+    "capability": {
+      "operations": [
+        "predict"
+      ]
+    }
+  },
+  "multivariate_linear_predict@1": {
+    "contract_sha256": "646c598198b34053c42d10773a1ae54ab823e0694de5f59476cc3d0775c798c3",
+    "capability": {
+      "operations": [
+        "predict"
+      ]
+    }
+  },
+  "research_forecast_feature_join@1": {
+    "contract_sha256": "9fa07a371fc10e2ceaee345cdb200dd76fc06466d8076a286bdf7cb6c40726ab",
+    "capability": {
+      "operations": [
+        "train",
+        "predict",
+        "analyze",
+        "simulate",
+        "calibrate"
+      ],
+      "input_uses": {
+        "feature_code": {
+          "role": "feature",
+          "phases": [
+            "training",
+            "application"
+          ]
+        },
+        "output_code": {
+          "role": "derived",
+          "phases": [
+            "training",
+            "application"
+          ]
+        }
+      }
+    }
+  }
+}

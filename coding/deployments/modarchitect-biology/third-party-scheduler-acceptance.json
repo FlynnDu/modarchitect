@@ -1,0 +1,94 @@
+{
+  "verified_utc": "2026-11-16T11:03:45.996192+00:00",
+  "project_code": "189844146633280",
+  "project_name": "modarchitect",
+  "environment_name": "sumfen-mlgrowth",
+  "original_environment_modified": false,
+  "instances": [
+    {
+      "instance_id": 730,
+      "state": "SUCCESS",
+      "workflow_code": "189844147094080",
+      "tenant_code": "system",
+      "start_time": "2026-11-16 18:36:54",
+      "end_time": "2026-11-16 18:36:57",
+      "identities": {
+        "acquisition_id": "01a1e3ee-63d1-741f-905a-4fc221810c5e"
+      },
+      "tasks": [
+        {
+          "id": 1755,
+          "name": "modarchitect-source",
+          "state": "SUCCESS",
+          "host": "172.16.1.133:1234",
+          "startTime": "2026-11-16 18:36:55",
+          "endTime": "2026-11-16 18:36:57"
+        }
+      ]
+    },
+    {
+      "instance_id": 731,
+      "state": "SUCCESS",
+      "workflow_code": "189844146864704",
+      "tenant_code": "system",
+      "start_time": "2026-11-16 18:37:52",
+      "end_time": "2026-11-16 18:37:54",
+      "identities": {
+        "run_id": "01a1e3ef-4309-725e-80e9-20bda7fe4133"
+      },
+      "tasks": [
+        {
+          "id": 1756,
+          "name": "modarchitect-research",
+          "state": "SUCCESS",
+          "host": "172.16.1.133:1234",
+          "startTime": "2026-11-16 18:37:53",
+          "endTime": "2026-11-16 18:37:54"
+        }
+      ]
+    },
+    {
+      "instance_id": 736,
+      "state": "SUCCESS",
+      "workflow_code": "189844147094080",
+      "tenant_code": "system",
+      "start_time": "2026-11-16 18:59:42",
+      "end_time": "2026-11-16 18:59:44",
+      "identities": {
+        "acquisition_id": "01a1e403-40a8-7f87-a768-58956d5076c2"
+      },
+      "tasks": [
+        {
+          "id": 1761,
+          "name": "modarchitect-source",
+          "state": "SUCCESS",
+          "host": "172.16.1.133:1234",
+          "startTime": "2026-11-16 18:59:43",
+          "endTime": "2026-11-16 18:59:44"
+        }
+      ]
+    },
+    {
+      "instance_id": 737,
+      "state": "SUCCESS",
+      "workflow_code": "189844146864704",
+      "tenant_code": "system",
+      "start_time": "2026-11-16 18:59:48",
+      "end_time": "2026-11-16 18:59:49",
+      "identities": {
+        "run_id": "01a1e403-5679-7b91-99e5-7058018e2fed"
+      },
+      "tasks": [
+        {
+          "id": 1762,
+          "name": "modarchitect-research",
+          "state": "SUCCESS",
+          "host": "172.16.1.133:1234",
+          "startTime": "2026-11-16 18:59:48",
+          "endTime": "2026-11-16 18:59:49"
+        }
+      ]
+    }
+  ],
+  "ui_source_and_run_mapping_verified": true
+}

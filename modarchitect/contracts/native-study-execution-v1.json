@@ -1,0 +1,74 @@
+{
+  "convlstm@1": {
+    "contract_sha256": "2264c166e0560d56ae1eb0111177c23985e4ae27fb98a7e6d8b8dc6cc48a3e52",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  },
+  "gaussian_process@1": {
+    "contract_sha256": "d3cb67e14bf20fedaf2c67133605ef574fb091c865474694796406a710b8884a",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  },
+  "greenhouse_crop_et_daily_comparison@2": {
+    "contract_sha256": "668619c640d52819e293fecb22c09b8e45c2644ba89874793f84cb38ee0a4aad",
+    "capability": {
+      "operations": [
+        "simulate"
+      ]
+    }
+  },
+  "greenhouse_reference_et_daily@3": {
+    "contract_sha256": "fdbab9a61aff6a9768a090c62b75039eaca57cce01d89ddb64cc1ccdcec45db5",
+    "capability": {
+      "operations": [
+        "simulate"
+      ]
+    }
+  },
+  "greenhouse_weighing_water_balance@2": {
+    "contract_sha256": "e4aeff500176666b5cbc369c92a4b829da3ea7726777bec85d1fa8d214f06342",
+    "capability": {
+      "operations": [
+        "simulate"
+      ]
+    }
+  },
+  "lstm@1": {
+    "contract_sha256": "84b920b48ffdf5ffbcb25fe80c2b0daba3a67e8cb320389a59f451e383e21437",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  },
+  "random_forest@1": {
+    "contract_sha256": "a0a900b157fc905f31b75518c458e054f62f1812fd58f1d14b2ad8c17d411242",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  },
+  "survey_assessment@4": {
+    "contract_sha256": "b9af410d0456b3677ec5e7fa01b207a47df87ff7656049c78a3ed2cd11e92c68",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  },
+  "xgboost@1": {
+    "contract_sha256": "c4f519bd491347754c5fe1ea29bb813d22fd8bf497d576924ecdd4109399be16",
+    "capability": {
+      "operations": [
+        "analyze"
+      ]
+    }
+  }
+}

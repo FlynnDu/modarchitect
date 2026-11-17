@@ -1,0 +1,35 @@
+{
+  "manifest_version": "1.0",
+  "component": {
+    "code": "research_table_quality_check",
+    "revision": 1,
+    "name": "研究表最低记录数检查",
+    "category": "assessment"
+  },
+  "contract": {
+    "summary": "检查输入表的最低记录数并返回同一张表",
+    "method": "对记录计数并保留原数据",
+    "requirements": ["已授权并冻结的研究观测表"],
+    "limitations": ["只核对数量与基本形状"],
+    "inputs": [{
+      "code": "table",
+      "name": "研究观测表",
+      "description": "已冻结的输入表",
+      "data_type": {"semantic": "research_observation_table", "version": 1, "shape": "table", "unit": "column_definitions", "alignment": "business_date"}
+    }],
+    "outputs": [{
+      "code": "checked_table",
+      "name": "已检查观测表",
+      "description": "保留输入表的数据与来源",
+      "data_type": {"semantic": "research_observation_table", "version": 1, "shape": "table", "unit": "column_definitions", "alignment": "business_date"}
+    }],
+    "request_schema": {
+      "type": "object",
+      "properties": {"minimum_valid_rows": {"type": "integer", "minimum": 1}},
+      "required": ["minimum_valid_rows"],
+      "additionalProperties": false
+    }
+  },
+  "artifact": {"kind": "oci_image", "manifest_digest": "REPLACE_WITH_BUILT_OCI_MANIFEST_DIGEST"},
+  "runtime": {"protocol_version": "1.0", "profile_code": "offline_cpu"}
+}

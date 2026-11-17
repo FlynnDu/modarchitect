@@ -1,0 +1,74 @@
+{
+  "manifest_version": "1.0",
+  "component": {
+    "code": "historical_logistic_predict",
+    "revision": 1,
+    "name": "历史曲线预测",
+    "category": "learning"
+  },
+  "contract": {
+    "summary": "用较早观测拟合，向后续日期提供独立预测因子。",
+    "method": "只读已训练模型状态生成预测",
+    "requirements": [
+      "使用有准确来源和摘要的按对象日期对齐输入。"
+    ],
+    "limitations": [
+      "每个对象须有覆盖有效生长阶段的历史观测。",
+      "预测为外推估计，保留预测值标记。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "实测观测表",
+        "description": "以地块、作物、种植季和业务日期对齐。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "model",
+        "name": "准确训练模型",
+        "description": "获准模型制品的状态及列定义",
+        "data_type": {
+          "semantic": "historical_logistic_model",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "forecast",
+        "name": "历史预测特征表",
+        "description": "上游只使用截止日期及之前的实测值训练，成果逐对象日期生成。",
+        "data_type": {
+          "semantic": "research_historical_feature_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:818b86d1ce65ba07c359516950fccac7dd62acd2e16c1c95990a6d5c136f454d"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

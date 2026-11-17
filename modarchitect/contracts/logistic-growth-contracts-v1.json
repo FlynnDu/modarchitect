@@ -1,0 +1,978 @@
+[
+  {
+    "code": "logistic_growth_curve",
+    "revision": 1,
+    "name": "逻辑斯蒂生长曲线模型",
+    "summary": "以时间或积温拟合株高、生物量等指标的递增饱和曲线；按地块作物种植季分别估计参数并显式控制外推。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.logistic_growth",
+      "symbol": "logistic_growth",
+      "source_sha256": "0216649aa98a534ed6fcae2b50d2eb8512b51ce36a7cf64910a0a7c54388f2cc"
+    },
+    "algorithm": "三参数Logistic生长曲线 / 非线性最小二乘",
+    "mechanism": "y = K / (1 + exp(-r * (x - x0)))；K为饱和值，r为增长率，x0为拐点。采用归一化、解析Jacobian及固定多起点求解。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "对象与观测/求值序列",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对象与观测/求值序列；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "request",
+        "name": "驱动轴、目标与拟合/求值设置",
+        "data_type": {
+          "semantic": "logistic_growth_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "驱动轴、目标与拟合/求值设置；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "求值使用的冻结参数成果",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": false,
+        "description": "求值使用的冻结参数成果；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      }
+    ],
+    "outputs": [
+      {
+        "code": "curve",
+        "name": "逻辑斯蒂曲线与外推标记",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "逻辑斯蒂曲线与外推标记；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_0",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "参数、拟合诊断与运行证据",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": true,
+        "description": "参数、拟合诊断与运行证据；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_1",
+        "allow_none": false
+      }
+    ],
+    "requirements": [
+      "拟合须提供真实观测来源及至少8个不同驱动值；工程数据必须显式simulation_only=true。",
+      "时间轴单位为day，积温轴为deg_c_day并声明基温等定义；按完整地块、作物、种植季区分序列。",
+      "独立数值环境必须匹配冻结wheel、源码、Python及NumPy/SciPy依赖指纹；API不运行科学计算。"
+    ],
+    "limitations": [
+      "这是单驱动经验生长模型，不直接实现多因素因果分析，也不自动适配下降或双峰曲线。",
+      "自由饱和值拟合要求覆盖0.2至0.8饱和比例；样本、饱和或参数辨识不足时受控失败。",
+      "R²和RMSE为样本内诊断，不是独立农业效果；外推须显式允许并标记，研究参数不自动获得生产资格。",
+      "网页在线提交仍待真实研究实例、业务授权与调度接入。"
+    ],
+    "configuration": {
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "description": "同一模型的拟合与求值；只消费所选单驱动轴和目标，不默默使用额外因素。",
+          "properties": {
+            "operation": {
+              "enum": [
+                "fit",
+                "evaluate"
+              ],
+              "title": "Operation",
+              "type": "string"
+            },
+            "x_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "X Code",
+              "type": "string"
+            },
+            "target_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "Target Code",
+              "type": "string"
+            },
+            "axis_kind": {
+              "enum": [
+                "elapsed_days",
+                "growing_degree_days"
+              ],
+              "title": "Axis Kind",
+              "type": "string"
+            },
+            "degree_day_definition": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Degree Day Definition"
+            },
+            "cutoff": {
+              "format": "date",
+              "title": "Cutoff",
+              "type": "string"
+            },
+            "allow_extrapolation": {
+              "default": false,
+              "title": "Allow Extrapolation",
+              "type": "boolean"
+            },
+            "simulation_only": {
+              "default": false,
+              "title": "Simulation Only",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "operation",
+            "x_code",
+            "target_code",
+            "axis_kind",
+            "cutoff"
+          ],
+          "title": "LogisticGrowthRequest",
+          "type": "object"
+        },
+        "target_description": "按对象估计K、r、x0；返回曲线、样本内诊断和可复用的冻结拟合成果",
+        "research_use": "研究时间或积温与某一生长指标的饱和变化；支持同一模型先拟合再求值，并将曲线连接到关系研究。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "output_products": {
+        "fitted": {
+          "code": "logistic_growth_fit",
+          "definition_version": "1.0.0"
+        }
+      },
+      "numeric_runtime": {
+        "module": "mlgrowth_logistic_growth",
+        "identity": {
+          "protocol": "numeric_component_v1",
+          "distribution": "mlgrowth-logistic-growth",
+          "version": "1.0.0",
+          "code_sha256": "11161c06b9d4ba06fc67e8829e3d2be57281ff77a21ed27674b929ee0fb24c35",
+          "artifact_sha256": "95bfa6671163804a392d7e6856c9e6baa0066cd5876a46529c62b1772fd716e9",
+          "python": "3.12.14",
+          "dependencies": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1"
+          },
+          "dependency_records_sha256": {
+            "numpy": "e98e772f4c278c712415218620d7bb902887ceed23e77a972aeda9c64e04cb8d",
+            "scipy": "d6b3eaac3b4dd2e8015eabd3f360d7dcdd1de46b8168e51ea55607fbe82dd9e5"
+          }
+        }
+      }
+    },
+    "related_capabilities": [],
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true,
+        "annotation": "ResearchTable",
+        "default": ""
+      },
+      {
+        "code": "request",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      },
+      {
+        "code": "fitted",
+        "required": false,
+        "annotation": "StandardResearchOutput",
+        "default": "None"
+      }
+    ],
+    "runtime_parameters": [],
+    "requires_instance": false
+  },
+  {
+    "code": "logistic_growth_curve",
+    "revision": 2,
+    "name": "逻辑斯蒂生长曲线模型",
+    "summary": "以时间或积温拟合株高、生物量等指标的递增饱和曲线；按地块作物种植季分别估计参数并显式控制外推。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.logistic_growth_v2",
+      "symbol": "logistic_growth",
+      "source_sha256": "a869a1a36666c5dcce2a5eca3c73c09a958a9fb948a258c25f5177cea6a90a08"
+    },
+    "algorithm": "三参数Logistic生长曲线 / 非线性最小二乘",
+    "mechanism": "y = K / (1 + exp(-r * (x - x0)))；K为饱和值，r为增长率，x0为拐点。采用归一化、解析Jacobian及固定多起点求解。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "对象与观测/求值序列",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对象与观测/求值序列；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "request",
+        "name": "驱动轴、目标与拟合/求值设置",
+        "data_type": {
+          "semantic": "logistic_growth_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "驱动轴、目标与拟合/求值设置；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "求值使用的冻结参数成果",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": false,
+        "description": "求值使用的冻结参数成果；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      }
+    ],
+    "outputs": [
+      {
+        "code": "curve",
+        "name": "逻辑斯蒂曲线与外推标记",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "逻辑斯蒂曲线与外推标记；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_0",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "参数、拟合诊断与运行证据",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": true,
+        "description": "参数、拟合诊断与运行证据；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_1",
+        "allow_none": false
+      }
+    ],
+    "requirements": [
+      "拟合须提供真实观测来源及至少8个不同驱动值；工程数据必须显式simulation_only=true。",
+      "时间轴单位为day，积温轴为deg_c_day并声明基温等定义；按完整地块、作物、种植季区分序列。",
+      "独立数值环境必须匹配冻结wheel、源码、Python及NumPy/SciPy依赖指纹；API不运行科学计算。",
+      "求值必须沿用拟合对象的日期锚点：经过天数保持同一原点，积温不与冻结拟合末点矛盾。"
+    ],
+    "limitations": [
+      "这是单驱动经验生长模型，不直接实现多因素因果分析，也不自动适配下降或双峰曲线。",
+      "自由饱和值拟合要求覆盖0.2至0.8饱和比例；样本、饱和或参数辨识不足时受控失败。",
+      "R²和RMSE为样本内诊断，不是独立农业效果；外推须显式允许并标记，研究参数不自动获得生产资格。",
+      "网页在线提交仍待真实研究实例、业务授权与调度接入。"
+    ],
+    "configuration": {
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "description": "同一模型的拟合与求值；只消费所选单驱动轴和目标，不默默使用额外因素。",
+          "properties": {
+            "operation": {
+              "enum": [
+                "fit",
+                "evaluate"
+              ],
+              "title": "Operation",
+              "type": "string"
+            },
+            "x_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "X Code",
+              "type": "string"
+            },
+            "target_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "Target Code",
+              "type": "string"
+            },
+            "axis_kind": {
+              "enum": [
+                "elapsed_days",
+                "growing_degree_days"
+              ],
+              "title": "Axis Kind",
+              "type": "string"
+            },
+            "degree_day_definition": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Degree Day Definition"
+            },
+            "cutoff": {
+              "format": "date",
+              "title": "Cutoff",
+              "type": "string"
+            },
+            "allow_extrapolation": {
+              "default": false,
+              "title": "Allow Extrapolation",
+              "type": "boolean"
+            },
+            "simulation_only": {
+              "default": false,
+              "title": "Simulation Only",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "operation",
+            "x_code",
+            "target_code",
+            "axis_kind",
+            "cutoff"
+          ],
+          "title": "LogisticGrowthRequest",
+          "type": "object"
+        },
+        "target_description": "按对象估计K、r、x0；返回曲线、样本内诊断和可复用的冻结拟合成果",
+        "research_use": "研究时间或积温与某一生长指标的饱和变化；支持同一模型先拟合再求值，并将曲线连接到关系研究。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "output_products": {
+        "fitted": {
+          "code": "logistic_growth_fit",
+          "definition_version": "1.0.0"
+        }
+      },
+      "numeric_runtime": {
+        "module": "mlgrowth_logistic_growth",
+        "identity": {
+          "protocol": "numeric_component_v1",
+          "distribution": "mlgrowth-logistic-growth",
+          "version": "1.0.0",
+          "code_sha256": "11161c06b9d4ba06fc67e8829e3d2be57281ff77a21ed27674b929ee0fb24c35",
+          "artifact_sha256": "95bfa6671163804a392d7e6856c9e6baa0066cd5876a46529c62b1772fd716e9",
+          "python": "3.12.14",
+          "dependencies": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1"
+          },
+          "dependency_records_sha256": {
+            "numpy": "e98e772f4c278c712415218620d7bb902887ceed23e77a972aeda9c64e04cb8d",
+            "scipy": "d6b3eaac3b4dd2e8015eabd3f360d7dcdd1de46b8168e51ea55607fbe82dd9e5"
+          }
+        }
+      },
+      "implementation_dependencies": [
+        {
+          "code": "logistic_growth_curve",
+          "revision": 1
+        }
+      ]
+    },
+    "related_capabilities": [],
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true,
+        "annotation": "ResearchTable",
+        "default": ""
+      },
+      {
+        "code": "request",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      },
+      {
+        "code": "fitted",
+        "required": false,
+        "annotation": "StandardResearchOutput",
+        "default": "None"
+      }
+    ],
+    "runtime_parameters": [],
+    "requires_instance": false
+  },
+  {
+    "code": "logistic_growth_curve",
+    "revision": 3,
+    "name": "逻辑斯蒂生长曲线模型",
+    "summary": "以时间或积温拟合株高、生物量等指标的递增饱和曲线；按地块作物种植季分别估计参数并显式控制外推。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.logistic_growth_v2",
+      "symbol": "logistic_growth",
+      "source_sha256": "a869a1a36666c5dcce2a5eca3c73c09a958a9fb948a258c25f5177cea6a90a08"
+    },
+    "algorithm": "三参数Logistic生长曲线 / 非线性最小二乘",
+    "mechanism": "y = K / (1 + exp(-r * (x - x0)))；K为饱和值，r为增长率，x0为拐点。采用归一化、解析Jacobian及固定多起点求解。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "对象与观测/求值序列",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对象与观测/求值序列；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "request",
+        "name": "驱动轴、目标与拟合/求值设置",
+        "data_type": {
+          "semantic": "logistic_growth_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "驱动轴、目标与拟合/求值设置；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "求值使用的冻结参数成果",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": false,
+        "description": "求值使用的冻结参数成果；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      }
+    ],
+    "outputs": [
+      {
+        "code": "curve",
+        "name": "逻辑斯蒂曲线与外推标记",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "逻辑斯蒂曲线与外推标记；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_0",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "参数、拟合诊断与运行证据",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": true,
+        "description": "参数、拟合诊断与运行证据；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_1",
+        "allow_none": false
+      }
+    ],
+    "requirements": [
+      "拟合须提供真实观测来源及至少8个不同驱动值；工程数据必须显式simulation_only=true。",
+      "时间轴单位为day，积温轴为deg_c_day并声明基温等定义；按完整地块、作物、种植季区分序列。",
+      "独立数值环境必须匹配冻结wheel、源码、Python及NumPy/SciPy依赖指纹；API不运行科学计算。",
+      "求值必须沿用拟合对象的日期锚点：经过天数保持同一原点，积温不与冻结拟合末点矛盾。"
+    ],
+    "limitations": [
+      "这是单驱动经验生长模型，不直接实现多因素因果分析，也不自动适配下降或双峰曲线。",
+      "自由饱和值拟合要求覆盖0.2至0.8饱和比例；样本、饱和或参数辨识不足时受控失败。",
+      "R²和RMSE为样本内诊断，不是独立农业效果；外推须显式允许并标记，研究参数不自动获得生产资格。",
+      "网页在线提交仍待真实研究实例、业务授权与调度接入。"
+    ],
+    "configuration": {
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "description": "同一模型的拟合与求值；只消费所选单驱动轴和目标，不默默使用额外因素。",
+          "properties": {
+            "operation": {
+              "enum": [
+                "fit",
+                "evaluate"
+              ],
+              "title": "Operation",
+              "type": "string"
+            },
+            "x_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "X Code",
+              "type": "string"
+            },
+            "target_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "Target Code",
+              "type": "string"
+            },
+            "axis_kind": {
+              "enum": [
+                "elapsed_days",
+                "growing_degree_days"
+              ],
+              "title": "Axis Kind",
+              "type": "string"
+            },
+            "degree_day_definition": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Degree Day Definition"
+            },
+            "cutoff": {
+              "format": "date",
+              "title": "Cutoff",
+              "type": "string"
+            },
+            "allow_extrapolation": {
+              "default": false,
+              "title": "Allow Extrapolation",
+              "type": "boolean"
+            },
+            "simulation_only": {
+              "default": false,
+              "title": "Simulation Only",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "operation",
+            "x_code",
+            "target_code",
+            "axis_kind",
+            "cutoff"
+          ],
+          "title": "LogisticGrowthRequest",
+          "type": "object"
+        },
+        "target_description": "按对象估计K、r、x0；返回曲线、样本内诊断和可复用的冻结拟合成果",
+        "research_use": "研究时间或积温与某一生长指标的饱和变化；支持同一模型先拟合再求值，并将曲线连接到关系研究。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "output_products": {
+        "fitted": {
+          "code": "logistic_growth_fit",
+          "definition_version": "1.0.0"
+        }
+      },
+      "numeric_runtime": {
+        "module": "mlgrowth_logistic_growth",
+        "identity": {
+          "protocol": "numeric_component_v1",
+          "distribution": "mlgrowth-logistic-growth",
+          "version": "1.0.0",
+          "code_sha256": "11161c06b9d4ba06fc67e8829e3d2be57281ff77a21ed27674b929ee0fb24c35",
+          "artifact_sha256": "95bfa6671163804a392d7e6856c9e6baa0066cd5876a46529c62b1772fd716e9",
+          "python": "3.12.14",
+          "dependencies": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1"
+          },
+          "dependency_records_sha256": {
+            "numpy": "e98e772f4c278c712415218620d7bb902887ceed23e77a972aeda9c64e04cb8d",
+            "scipy": "d6b3eaac3b4dd2e8015eabd3f360d7dcdd1de46b8168e51ea55607fbe82dd9e5"
+          }
+        }
+      },
+      "implementation_dependencies": [
+        {
+          "code": "logistic_growth_curve",
+          "revision": 1
+        }
+      ],
+      "designer": {
+        "group": "model",
+        "tier": "standard",
+        "availability": "research_adapter",
+        "reason": "已有独立科研适配及前批工程运行证据；仍需属性表单、授权输入/制品选择和在线实例运行条件。",
+        "method": "三参数Logistic生长曲线 / 非线性最小二乘",
+        "family": null,
+        "family_name": null
+      }
+    },
+    "related_capabilities": [],
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true,
+        "annotation": "ResearchTable",
+        "default": ""
+      },
+      {
+        "code": "request",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      },
+      {
+        "code": "fitted",
+        "required": false,
+        "annotation": "StandardResearchOutput",
+        "default": "None"
+      }
+    ],
+    "runtime_parameters": [],
+    "requires_instance": false
+  },
+  {
+    "code": "logistic_growth_curve",
+    "revision": 4,
+    "name": "逻辑斯蒂生长曲线模型",
+    "summary": "以时间或积温拟合株高、生物量等指标的递增饱和曲线；按地块作物种植季分别估计参数并显式控制外推。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.logistic_growth_v2",
+      "symbol": "logistic_growth",
+      "source_sha256": "a869a1a36666c5dcce2a5eca3c73c09a958a9fb948a258c25f5177cea6a90a08"
+    },
+    "algorithm": "三参数Logistic生长曲线 / 非线性最小二乘",
+    "mechanism": "y = K / (1 + exp(-r * (x - x0)))；K为饱和值，r为增长率，x0为拐点。采用归一化、解析Jacobian及固定多起点求解。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "对象与观测/求值序列",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对象与观测/求值序列；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "request",
+        "name": "驱动轴、目标与拟合/求值设置",
+        "data_type": {
+          "semantic": "logistic_growth_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "驱动轴、目标与拟合/求值设置；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      },
+      {
+        "code": "fitted",
+        "name": "求值使用的冻结参数成果",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": false,
+        "description": "求值使用的冻结参数成果；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "identity",
+        "allow_none": false
+      }
+    ],
+    "outputs": [
+      {
+        "code": "curve",
+        "name": "逻辑斯蒂曲线与外推标记",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "逻辑斯蒂曲线与外推标记；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_0",
+        "allow_none": false,
+        "output_view": "daily_series_v1"
+      },
+      {
+        "code": "fitted",
+        "name": "参数、拟合诊断与运行证据",
+        "data_type": {
+          "semantic": "logistic_growth_fit",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "required": true,
+        "description": "参数、拟合诊断与运行证据；按冻结合同核对对象、日期、单位、来源和完整摘要。",
+        "projection": "tuple_item_1",
+        "allow_none": false
+      }
+    ],
+    "requirements": [
+      "拟合须提供真实观测来源及至少8个不同驱动值；工程数据必须显式simulation_only=true。",
+      "时间轴单位为day，积温轴为deg_c_day并声明基温等定义；按完整地块、作物、种植季区分序列。",
+      "独立数值环境必须匹配冻结wheel、源码、Python及NumPy/SciPy依赖指纹；API不运行科学计算。",
+      "求值必须沿用拟合对象的日期锚点：经过天数保持同一原点，积温不与冻结拟合末点矛盾。"
+    ],
+    "limitations": [
+      "这是单驱动经验生长模型，不直接实现多因素因果分析，也不自动适配下降或双峰曲线。",
+      "自由饱和值拟合要求覆盖0.2至0.8饱和比例；样本、饱和或参数辨识不足时受控失败。",
+      "R²和RMSE为样本内诊断，不是独立农业效果；外推须显式允许并标记，研究参数不自动获得生产资格。",
+      "网页在线提交仍待真实研究实例、业务授权与调度接入。"
+    ],
+    "configuration": {
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "description": "同一模型的拟合与求值；只消费所选单驱动轴和目标，不默默使用额外因素。",
+          "properties": {
+            "operation": {
+              "enum": [
+                "fit",
+                "evaluate"
+              ],
+              "title": "Operation",
+              "type": "string"
+            },
+            "x_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "X Code",
+              "type": "string"
+            },
+            "target_code": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "Target Code",
+              "type": "string"
+            },
+            "axis_kind": {
+              "enum": [
+                "elapsed_days",
+                "growing_degree_days"
+              ],
+              "title": "Axis Kind",
+              "type": "string"
+            },
+            "degree_day_definition": {
+              "anyOf": [
+                {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Degree Day Definition"
+            },
+            "cutoff": {
+              "format": "date",
+              "title": "Cutoff",
+              "type": "string"
+            },
+            "allow_extrapolation": {
+              "default": false,
+              "title": "Allow Extrapolation",
+              "type": "boolean"
+            },
+            "simulation_only": {
+              "default": false,
+              "title": "Simulation Only",
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "operation",
+            "x_code",
+            "target_code",
+            "axis_kind",
+            "cutoff"
+          ],
+          "title": "LogisticGrowthRequest",
+          "type": "object"
+        },
+        "target_description": "按对象估计K、r、x0；返回曲线、样本内诊断和可复用的冻结拟合成果",
+        "research_use": "研究时间或积温与某一生长指标的饱和变化；支持同一模型先拟合再求值，并将曲线连接到关系研究。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "output_products": {
+        "fitted": {
+          "code": "logistic_growth_fit",
+          "definition_version": "1.0.0"
+        }
+      },
+      "numeric_runtime": {
+        "module": "mlgrowth_logistic_growth",
+        "identity": {
+          "protocol": "numeric_component_v1",
+          "distribution": "mlgrowth-logistic-growth",
+          "version": "1.0.0",
+          "code_sha256": "11161c06b9d4ba06fc67e8829e3d2be57281ff77a21ed27674b929ee0fb24c35",
+          "artifact_sha256": "95bfa6671163804a392d7e6856c9e6baa0066cd5876a46529c62b1772fd716e9",
+          "python": "3.12.14",
+          "dependencies": {
+            "numpy": "2.5.3",
+            "scipy": "1.18.1"
+          },
+          "dependency_records_sha256": {
+            "numpy": "e98e772f4c278c712415218620d7bb902887ceed23e77a972aeda9c64e04cb8d",
+            "scipy": "d6b3eaac3b4dd2e8015eabd3f360d7dcdd1de46b8168e51ea55607fbe82dd9e5"
+          }
+        }
+      },
+      "implementation_dependencies": [
+        {
+          "code": "logistic_growth_curve",
+          "revision": 1
+        }
+      ],
+      "designer": {
+        "group": "model",
+        "tier": "standard",
+        "availability": "research_adapter",
+        "reason": "已有独立科研适配及前批工程运行证据；仍需属性表单、授权输入/制品选择和在线实例运行条件。",
+        "method": "三参数Logistic生长曲线 / 非线性最小二乘",
+        "family": null,
+        "family_name": null
+      }
+    },
+    "related_capabilities": [],
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true,
+        "annotation": "ResearchTable",
+        "default": ""
+      },
+      {
+        "code": "request",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      },
+      {
+        "code": "fitted",
+        "required": false,
+        "annotation": "StandardResearchOutput",
+        "default": "None"
+      }
+    ],
+    "runtime_parameters": [],
+    "requires_instance": false
+  }
+]

@@ -1,0 +1,468 @@
+[
+  {
+    "code": "catalog_weather_conditions",
+    "revision": 1,
+    "name": "标准日值气象暴露分析",
+    "category": "assessment",
+    "summary": "按准确系统指标、日界和窗口分析高温、低温与降雨条件。",
+    "execution_mode": "external_cli",
+    "implementation": {
+      "module": "components.field_research.weather",
+      "symbol": "conditions",
+      "source_sha256": "f31268421bbdd8cde36c8f34e6f5a92a7479e169a85b8cafc67a49d0df0d0474"
+    },
+    "algorithm": "版本化逐日窗口暴露规则",
+    "mechanism": "按对象独立核对窗口，保留缺日与估计性质，不诊断田间灾损。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "标准观测表",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "request",
+        "name": "暴露窗口设置",
+        "description": "选择需要统计的列",
+        "data_type": {
+          "semantic": "catalog_weather_conditions_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "report",
+        "name": "条件分析结果",
+        "description": "条件信号、逐地块覆盖和解释范围",
+        "data_type": {
+          "semantic": "catalog_weather_conditions_report",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      },
+      {
+        "code": "series",
+        "name": "实际日值序列",
+        "description": "本次窗口中实际采用的准确指标日值",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "requirements": [
+      "输入为已对齐并封存的标准数值观测。"
+    ],
+    "limitations": [
+      "网格估计不等同田间实测，气象暴露不等于已发生灾损。",
+      "参考阈值没有分生育阶段，不宣称跨作物通用的灾害诊断精度。",
+      "缺日时保留覆盖不足，不能把不完整窗口判为筛查阴性。"
+    ],
+    "configuration": {
+      "research_model": {
+        "request_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "variables": {
+              "title": "统计指标",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,95}$"
+              },
+              "x-research-variables": {
+                "table_port": "observations",
+                "roles": [
+                  "covariate",
+                  "driver",
+                  "target",
+                  "validation",
+                  "parameter"
+                ]
+              },
+              "maxItems": 1
+            },
+            "rule": {
+              "title": "条件规则",
+              "type": "string",
+              "enum": [
+                "heat_exposure",
+                "frost_exposure",
+                "rainfall_excess",
+                "rainfall_deficit"
+              ]
+            },
+            "as_of": {
+              "title": "分析截止日期",
+              "type": "string",
+              "format": "date"
+            },
+            "window_days": {
+              "title": "窗口天数",
+              "type": "integer",
+              "enum": [
+                7,
+                30
+              ]
+            }
+          },
+          "required": [
+            "rule",
+            "as_of",
+            "window_days",
+            "variables"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "rule": {
+                    "const": "heat_exposure"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "variables": {
+                    "const": [
+                      "temperature_maximum_daily"
+                    ]
+                  },
+                  "window_days": {
+                    "const": 7
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "rule": {
+                    "const": "frost_exposure"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "variables": {
+                    "const": [
+                      "temperature_minimum_daily"
+                    ]
+                  },
+                  "window_days": {
+                    "const": 7
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "rule": {
+                    "const": "rainfall_excess"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "variables": {
+                    "const": [
+                      "precipitation_daily"
+                    ]
+                  },
+                  "window_days": {
+                    "const": 7
+                  }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "rule": {
+                    "const": "rainfall_deficit"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "variables": {
+                    "const": [
+                      "precipitation_daily"
+                    ]
+                  },
+                  "window_days": {
+                    "const": 30
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "execution": {
+          "operations": [
+            "analyze"
+          ],
+          "input_uses": {
+            "variables": {
+              "role": "analysis",
+              "phases": [
+                "analysis"
+              ]
+            }
+          }
+        },
+        "table_outputs": {
+          "series": {
+            "inherit": "observations"
+          }
+        }
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true
+      },
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "sentinel_ndvi_features",
+    "revision": 1,
+    "name": "卫星NDVI计算与土壤气象配对",
+    "category": "transform",
+    "summary": "明确计算NDVI，并与同对象同日的土壤、气象及实测目标配对。",
+    "execution_mode": "external_cli",
+    "implementation": {
+      "module": "components.field_research.ndvi",
+      "symbol": "derive_ndvi",
+      "source_sha256": "c08f7bb4549c649546ef09ea073715fc6649201b36ab2ec039de674477ddca91"
+    },
+    "algorithm": "NDVI=(B08−B04)/(B08+B04)，完整对象与日期严格配对",
+    "mechanism": "反射率保留估计性质；缺日期不插值，不以派生NDVI代替实测标签。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "气象与实测目标",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "soil",
+        "name": "准确土层参考",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "satellite",
+        "name": "卫星红光与近红外反射率",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "request",
+        "name": "NDVI变量绑定",
+        "description": "选择实际红光、近红外和派生列",
+        "data_type": {
+          "semantic": "sentinel_ndvi_features_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "table",
+        "name": "含NDVI的研究观测",
+        "description": "配对后的土壤、气象、实测及明确派生NDVI",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "requirements": [
+      "三组输入严格按完整地块、作物、种植季和实际卫星业务日期配对。",
+      "反射率为已验证准确来源的无量纲估计值；不能用拉伸显示像素替代。"
+    ],
+    "limitations": [
+      "无清晰场景不产生该日NDVI，不能伪造逐日连续观测。",
+      "参考网格不是整个地块均值；数据性质和支撑随源快照保留。",
+      "分母接近零或不合格反射率拒绝计算；NDVI为派生量，不授予实测标签资格。"
+    ],
+    "configuration": {
+      "research_model": {
+        "request_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "red_code": {
+              "type": "string",
+              "title": "红光反射率",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "x-research-variables": {
+                "table_port": "satellite",
+                "roles": [
+                  "driver",
+                  "covariate",
+                  "target",
+                  "validation",
+                  "parameter"
+                ],
+                "unit": "dimensionless"
+              }
+            },
+            "nir_code": {
+              "type": "string",
+              "title": "近红外反射率",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "x-research-variables": {
+                "table_port": "satellite",
+                "roles": [
+                  "driver",
+                  "covariate",
+                  "target",
+                  "validation",
+                  "parameter"
+                ],
+                "unit": "dimensionless"
+              }
+            },
+            "output_code": {
+              "type": "string",
+              "title": "派生NDVI列",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "x-research-variables": {
+                "table_port": "observations",
+                "roles": [
+                  "driver",
+                  "covariate",
+                  "target",
+                  "validation",
+                  "parameter"
+                ],
+                "unit": "dimensionless",
+                "new_column": true,
+                "source_field": "red_code"
+              }
+            }
+          },
+          "required": [
+            "red_code",
+            "nir_code",
+            "output_code"
+          ]
+        },
+        "execution": {
+          "operations": [
+            "train",
+            "predict",
+            "analyze"
+          ],
+          "input_uses": {
+            "red_code": {
+              "role": "feature",
+              "phases": [
+                "training",
+                "application",
+                "analysis"
+              ]
+            },
+            "nir_code": {
+              "role": "feature",
+              "phases": [
+                "training",
+                "application",
+                "analysis"
+              ]
+            },
+            "output_code": {
+              "role": "derived",
+              "phases": [
+                "training",
+                "application",
+                "analysis"
+              ]
+            }
+          }
+        },
+        "table_outputs": {
+          "table": {
+            "inherit": "observations",
+            "merge": [
+              "soil"
+            ],
+            "computed": [
+              "output_code"
+            ]
+          }
+        }
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true
+      },
+      {
+        "code": "soil",
+        "required": true
+      },
+      {
+        "code": "satellite",
+        "required": true
+      },
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
+  }
+]

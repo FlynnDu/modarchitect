@@ -1,0 +1,26 @@
+[
+  {
+    "algorithm": "random_forest",
+    "two_targets": true,
+    "label_free_prediction": true,
+    "wrong_unit_rejected": true,
+    "estimated_target_rejected": true,
+    "network": "none"
+  },
+  {
+    "algorithm": "xgboost",
+    "two_targets": true,
+    "label_free_prediction": true,
+    "wrong_unit_rejected": true,
+    "estimated_target_rejected": true,
+    "network": "none"
+  },
+  {
+    "algorithm": "gaussian_process",
+    "two_targets": true,
+    "label_free_prediction": true,
+    "wrong_unit_rejected": true,
+    "estimated_target_rejected": true,
+    "network": "none"
+  }
+]

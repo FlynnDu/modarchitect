@@ -1,0 +1,140 @@
+{
+  "verified_utc": "2026-11-16T14:29:42.631913+00:00",
+  "scope": "per-interface documentation; no API or deployment change",
+  "endpoint_examples_per_document": 18,
+  "distinct_http_operations": 17,
+  "live_curl_exchanges": 21,
+  "model_detail_positive_case_tested": false,
+  "model_detail_example": "contract-field illustration; isolated company has no trained models",
+  "save_verification": "exact idempotent replay of existing isolated acceptance request; no new design/run",
+  "documents": [
+    {
+      "document": "frontend-integration.md",
+      "endpoint_examples": 18,
+      "json_blocks_valid": 30,
+      "shell_blocks_valid": 20,
+      "all_documented_routes_in_live_openapi": true,
+      "local_links_valid": true
+    },
+    {
+      "document": "business-api-integration.md",
+      "endpoint_examples": 18,
+      "json_blocks_valid": 28,
+      "shell_blocks_valid": 20,
+      "all_documented_routes_in_live_openapi": true,
+      "local_links_valid": true
+    }
+  ],
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-growth-prediction",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/multivariate_linear_regression",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/multivariate_linear_regression/versions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/aab76205-6c76-43f6-800d-10967ac59ded",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/import",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/multivariate_linear_training",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/multivariate_linear_training/versions",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/multivariate_linear_training/outputs/trained_model/compatible-inputs",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    }
+  ],
+  "document_sha256": {
+    "docs\\frontend-integration.md": "38eb12fd1039bbe0d3a6032ccb1ded8086bbf013ea037aa2ff402e584ba5213b",
+    "docs\\business-api-integration.md": "b1957bba72c0366d6036fd09c7517e5dfd0c540ef80ea74834fc67a154fcf8ce",
+    "docs\\examples\\model-designer.json": "3726ed1b6876fd231f77589a2970e3a670f42efe15a2879f72caeee17a954b99"
+  }
+}

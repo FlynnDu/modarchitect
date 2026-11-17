@@ -1,0 +1,1398 @@
+[
+  {
+    "code": "convlstm",
+    "revision": 1,
+    "name": "ConvLSTM 网格时序预测",
+    "summary": "保持格点和空间卷积的等间隔图像序列，预测下一有效网格。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.cpu_sequence",
+      "symbol": "evaluate_sequence",
+      "source_sha256": "8c1b1ec772f52d4da6ba076f850eff7bea75e98049a6bcee02eb42f04998e482"
+    },
+    "algorithm": "ConvLSTM 网格时序预测",
+    "mechanism": "保持格点和空间卷积的等间隔图像序列，预测下一有效网格。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "研究参数",
+        "data_type": {
+          "semantic": "research_cpu_fit_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "description": "配置所选变量、时间截点和种子。"
+      },
+      {
+        "code": "dataset",
+        "name": "冻结研究数据",
+        "data_type": {
+          "semantic": "research_cpu_grid_sequence_dataset",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "已授权且符合本模型形态的冻结成果。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "holdout",
+        "name": "独立留出预测",
+        "data_type": {
+          "semantic": "research_cpu_holdout_predictions",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "预测、实测、评价误差及数据摘要。"
+      }
+    ],
+    "requirements": [
+      "实验单位和时间同时分隔，目标必须有独立实测。"
+    ],
+    "limitations": [
+      "CPU 工程候选，适用范围和农业效果需使用真实资料独立验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "call_kwargs": {
+        "algorithm": "convlstm"
+      },
+      "output_products": {
+        "holdout": {
+          "code": "research_cpu_holdout_predictions",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "features": {
+              "items": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$",
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "输入变量（按冻结数据顺序）",
+              "type": "array"
+            },
+            "target": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "实测目标",
+              "type": "string"
+            },
+            "cutoff": {
+              "format": "date-time",
+              "title": "训练冻结时间（带时区）",
+              "type": "string"
+            },
+            "seed": {
+              "default": 17,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "复现种子",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "features",
+            "target",
+            "cutoff"
+          ],
+          "title": "CPUResearchRequest",
+          "type": "object"
+        },
+        "target_description": "指定变量的后段、独立实验单位实测值。",
+        "research_use": "保持格点和空间卷积的等间隔图像序列，预测下一有效网格。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "CPU 工程候选，要求冻结数据和独立实测标签。",
+        "method": "保持格点和空间卷积的等间隔图像序列，预测下一有效网格。"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "dataset",
+        "required": true
+      },
+      {
+        "code": "algorithm",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "gaussian_process",
+    "revision": 1,
+    "name": "Gaussian Process 高斯过程回归",
+    "summary": "固定 RBF 核和训练集标准化，适用于小样本表格回归。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.cpu_tabular",
+      "symbol": "evaluate_tabular",
+      "source_sha256": "dc58f324a103d9860fd2b3e640f833ed1b1a30b6141e72d3b1fd609d7de359a5"
+    },
+    "algorithm": "Gaussian Process 高斯过程回归",
+    "mechanism": "固定 RBF 核和训练集标准化，适用于小样本表格回归。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "研究参数",
+        "data_type": {
+          "semantic": "research_cpu_fit_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "description": "配置所选变量、时间截点和种子。"
+      },
+      {
+        "code": "dataset",
+        "name": "冻结研究数据",
+        "data_type": {
+          "semantic": "research_cpu_tabular_dataset",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "已授权且符合本模型形态的冻结成果。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "holdout",
+        "name": "独立留出预测",
+        "data_type": {
+          "semantic": "research_cpu_holdout_predictions",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "预测、实测、评价误差及数据摘要。"
+      }
+    ],
+    "requirements": [
+      "实验单位和时间同时分隔，目标必须有独立实测。"
+    ],
+    "limitations": [
+      "CPU 工程候选，适用范围和农业效果需使用真实资料独立验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "call_kwargs": {
+        "algorithm": "gaussian_process"
+      },
+      "output_products": {
+        "holdout": {
+          "code": "research_cpu_holdout_predictions",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "features": {
+              "items": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$",
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "输入变量（按冻结数据顺序）",
+              "type": "array"
+            },
+            "target": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "实测目标",
+              "type": "string"
+            },
+            "cutoff": {
+              "format": "date-time",
+              "title": "训练冻结时间（带时区）",
+              "type": "string"
+            },
+            "seed": {
+              "default": 17,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "复现种子",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "features",
+            "target",
+            "cutoff"
+          ],
+          "title": "CPUResearchRequest",
+          "type": "object"
+        },
+        "target_description": "指定变量的后段、独立实验单位实测值。",
+        "research_use": "固定 RBF 核和训练集标准化，适用于小样本表格回归。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "CPU 工程候选，要求冻结数据和独立实测标签。",
+        "method": "固定 RBF 核和训练集标准化，适用于小样本表格回归。"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "dataset",
+        "required": true
+      },
+      {
+        "code": "algorithm",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "greenhouse_crop_et_daily_comparison",
+    "revision": 2,
+    "name": "温室作物日蒸散对照",
+    "summary": "把日参考蒸散乘冻结 Kc，并与完整日称重估算比较。",
+    "category": "assessment",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.model_components.greenhouse_design",
+      "symbol": "crop_et_comparison_node",
+      "source_sha256": "c50be4905d419897c3316c4f68706f448c159bde4c179cfa316de5e1fb83c21c"
+    },
+    "algorithm": "把日参考蒸散乘冻结 Kc，并与完整日称重估算比较。",
+    "mechanism": "把日参考蒸散乘冻结 Kc，并与完整日称重估算比较。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "冻结作物系数",
+        "data_type": {
+          "semantic": "greenhouse_crop_coefficient",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "同棚同日同单元的作物系数及冻结证据。"
+      },
+      {
+        "code": "reference_et",
+        "name": "日参考蒸散",
+        "data_type": {
+          "semantic": "greenhouse_reference_et",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "同棚同业务日的日参考蒸散 ET₀，单位 mm/d。"
+      },
+      {
+        "code": "weighing_day",
+        "name": "整日称重水量平衡",
+        "data_type": {
+          "semantic": "greenhouse_weighing_et_day",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "同栽培单元完整 24 小时的称重估算及供水证据。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "comparison",
+        "name": "作物日蒸散偏差",
+        "data_type": {
+          "semantic": "greenhouse_crop_et_comparison",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "两种作物日蒸散估算和差值，单位 mm/d。"
+      }
+    ],
+    "requirements": [
+      "冻结输入，保持温室、日期、栽培单元和度量口径一致。"
+    ],
+    "limitations": [
+      "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。"
+    ],
+    "configuration": {
+      "research_tool": true,
+      "engineering_only": true,
+      "request_schema": {
+        "$defs": {
+          "GreenhouseDay": {
+            "additionalProperties": false,
+            "description": "业务系统提供温室引用。首批使用项目的上海业务日。",
+            "properties": {
+              "greenhouse_ref": {
+                "maxLength": 2000,
+                "minLength": 1,
+                "pattern": "\\S",
+                "title": "Greenhouse Ref",
+                "type": "string"
+              },
+              "business_date": {
+                "format": "date",
+                "title": "Business Date",
+                "type": "string"
+              },
+              "timezone": {
+                "const": "Asia/Shanghai",
+                "title": "Timezone",
+                "type": "string"
+              }
+            },
+            "required": [
+              "greenhouse_ref",
+              "business_date",
+              "timezone"
+            ],
+            "title": "GreenhouseDay",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "description": "宿主按栽培单元与生育阶段采用的日系数，独立于同日评价数据。",
+        "properties": {
+          "scope": {
+            "$ref": "#/$defs/GreenhouseDay",
+            "title": "温室和业务日",
+            "x-designer-editor": "json"
+          },
+          "cultivation_unit_ref": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "栽培单元",
+            "type": "string"
+          },
+          "season_ref": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "种植季",
+            "type": "string"
+          },
+          "kc": {
+            "exclusiveMinimum": 0,
+            "title": "作物系数 Kc",
+            "type": "number"
+          },
+          "frozen_at": {
+            "format": "date-time",
+            "title": "系数冻结时刻（含时区）",
+            "type": "string"
+          },
+          "evidence_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "系数证据摘要",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scope",
+          "cultivation_unit_ref",
+          "season_ref",
+          "kc",
+          "frozen_at",
+          "evidence_sha256"
+        ],
+        "title": "FrozenCropCoefficient",
+        "type": "object"
+      },
+      "designer": {
+        "group": "analysis",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。",
+        "method": "把日参考蒸散乘冻结 Kc，并与完整日称重估算比较。"
+      },
+      "output_products": {
+        "comparison": {
+          "code": "greenhouse_crop_et_comparison",
+          "definition_version": "1.0.0"
+        }
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "reference_et",
+        "required": true
+      },
+      {
+        "code": "weighing_day",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "greenhouse_reference_et_daily",
+    "revision": 3,
+    "name": "温室日参考蒸散",
+    "summary": "弱风日光温室勘误公式计算日参考蒸散。",
+    "category": "mechanistic",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.model_components.greenhouse_design",
+      "symbol": "reference_et_node",
+      "source_sha256": "c50be4905d419897c3316c4f68706f448c159bde4c179cfa316de5e1fb83c21c"
+    },
+    "algorithm": "弱风日光温室勘误公式计算日参考蒸散。",
+    "mechanism": "弱风日光温室勘误公式计算日参考蒸散。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "温室日气象参数",
+        "data_type": {
+          "semantic": "greenhouse_day_weather",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "上海业务日、日净辐射、热通量、气温和水汽压差等。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "reference_et",
+        "name": "日参考蒸散",
+        "data_type": {
+          "semantic": "greenhouse_reference_et",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "同棚同业务日的日参考蒸散 ET₀，单位 mm/d。"
+      }
+    ],
+    "requirements": [
+      "冻结输入，保持温室、日期、栽培单元和度量口径一致。"
+    ],
+    "limitations": [
+      "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。",
+        "method": "弱风日光温室勘误公式计算日参考蒸散。"
+      },
+      "output_products": {
+        "reference_et": {
+          "code": "greenhouse_reference_et",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "mechanistic",
+        "requires_model_package": false,
+        "request_schema": {
+          "$defs": {
+            "GreenhouseDay": {
+              "additionalProperties": false,
+              "description": "业务系统提供温室引用。首批使用项目的上海业务日。",
+              "properties": {
+                "greenhouse_ref": {
+                  "maxLength": 2000,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "title": "Greenhouse Ref",
+                  "type": "string"
+                },
+                "business_date": {
+                  "format": "date",
+                  "title": "Business Date",
+                  "type": "string"
+                },
+                "timezone": {
+                  "const": "Asia/Shanghai",
+                  "title": "Timezone",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "greenhouse_ref",
+                "business_date",
+                "timezone"
+              ],
+              "title": "GreenhouseDay",
+              "type": "object"
+            }
+          },
+          "additionalProperties": false,
+          "description": "已冻结的弱风日光温室日气象量。净辐射和地表热通量以日能量积分输入。",
+          "properties": {
+            "scope": {
+              "$ref": "#/$defs/GreenhouseDay",
+              "title": "温室和业务日",
+              "x-designer-editor": "json"
+            },
+            "net_radiation_mj_m2_d": {
+              "title": "日净辐射 MJ/(m²·d)",
+              "type": "number"
+            },
+            "ground_heat_flux_mj_m2_d": {
+              "title": "日地表热通量 MJ/(m²·d)",
+              "type": "number"
+            },
+            "air_temperature_c": {
+              "exclusiveMinimum": -273,
+              "title": "日气温 °C",
+              "type": "number"
+            },
+            "vapor_pressure_deficit_kpa": {
+              "minimum": 0,
+              "title": "水汽压差 kPa",
+              "type": "number"
+            },
+            "saturation_slope_kpa_per_c": {
+              "exclusiveMinimum": 0,
+              "title": "饱和水汽压曲线斜率 kPa/°C",
+              "type": "number"
+            },
+            "psychrometric_constant_kpa_per_c": {
+              "exclusiveMinimum": 0,
+              "title": "干湿表常数 kPa/°C",
+              "type": "number"
+            }
+          },
+          "required": [
+            "scope",
+            "net_radiation_mj_m2_d",
+            "ground_heat_flux_mj_m2_d",
+            "air_temperature_c",
+            "vapor_pressure_deficit_kpa",
+            "saturation_slope_kpa_per_c",
+            "psychrometric_constant_kpa_per_c"
+          ],
+          "title": "GreenhouseDayWeather",
+          "type": "object"
+        },
+        "target_description": "弱风日光温室的日参考蒸散 ET₀，单位 mm/d。",
+        "research_use": "按准确气象输入估算单棚单日参考蒸散，可独立使用或连入作物蒸散对照。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "greenhouse_weighing_water_balance",
+    "revision": 2,
+    "name": "温室整日称重水量平衡",
+    "summary": "按小时核对进液、排液和重量变化，保留 24 小时结果。",
+    "category": "transform",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.model_components.greenhouse_design",
+      "symbol": "weighing_day_node",
+      "source_sha256": "c50be4905d419897c3316c4f68706f448c159bde4c179cfa316de5e1fb83c21c"
+    },
+    "algorithm": "按小时核对进液、排液和重量变化，保留 24 小时结果。",
+    "mechanism": "按小时核对进液、排液和重量变化，保留 24 小时结果。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "24 小时称重输入",
+        "data_type": {
+          "semantic": "greenhouse_weighing_day_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "24 个完整原始小时窗口及独立供水证据。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "weighing_day",
+        "name": "整日称重水量平衡",
+        "data_type": {
+          "semantic": "greenhouse_weighing_et_day",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "同栽培单元完整 24 小时的称重估算及供水证据。"
+      }
+    ],
+    "requirements": [
+      "冻结输入，保持温室、日期、栽培单元和度量口径一致。"
+    ],
+    "limitations": [
+      "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。"
+    ],
+    "configuration": {
+      "research_tool": true,
+      "engineering_only": true,
+      "request_schema": {
+        "$defs": {
+          "CultivationHour": {
+            "additionalProperties": false,
+            "description": "栽培单元的一小时闭合称重边界，两个端点均带时区。",
+            "properties": {
+              "greenhouse_ref": {
+                "maxLength": 2000,
+                "minLength": 1,
+                "pattern": "\\S",
+                "title": "Greenhouse Ref",
+                "type": "string"
+              },
+              "cultivation_unit_ref": {
+                "maxLength": 2000,
+                "minLength": 1,
+                "pattern": "\\S",
+                "title": "Cultivation Unit Ref",
+                "type": "string"
+              },
+              "season_ref": {
+                "maxLength": 2000,
+                "minLength": 1,
+                "pattern": "\\S",
+                "title": "Season Ref",
+                "type": "string"
+              },
+              "ground_area_m2": {
+                "exclusiveMinimum": 0,
+                "title": "Ground Area M2",
+                "type": "number"
+              },
+              "started_at": {
+                "format": "date-time",
+                "title": "Started At",
+                "type": "string"
+              },
+              "ended_at": {
+                "format": "date-time",
+                "title": "Ended At",
+                "type": "string"
+              }
+            },
+            "required": [
+              "greenhouse_ref",
+              "cultivation_unit_ref",
+              "season_ref",
+              "ground_area_m2",
+              "started_at",
+              "ended_at"
+            ],
+            "title": "CultivationHour",
+            "type": "object"
+          },
+          "SubstrateEvaporation": {
+            "additionalProperties": false,
+            "description": "同称重边界同小时单独估计的基质蒸发量，单位 g。",
+            "properties": {
+              "mass_g": {
+                "minimum": 0,
+                "title": "Mass G",
+                "type": "number"
+              },
+              "evidence_sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "title": "Evidence Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "mass_g",
+              "evidence_sha256"
+            ],
+            "title": "SubstrateEvaporation",
+            "type": "object"
+          },
+          "WeighingWaterBalance": {
+            "additionalProperties": false,
+            "description": "宿主已审核的闭合窗口。起止总质量及进排液均以 g 计。",
+            "properties": {
+              "scope": {
+                "$ref": "#/$defs/CultivationHour"
+              },
+              "boundary_quality": {
+                "const": "qualified",
+                "title": "Boundary Quality",
+                "type": "string"
+              },
+              "evidence_sha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "title": "Evidence Sha256",
+                "type": "string"
+              },
+              "start_mass_g": {
+                "exclusiveMinimum": 0,
+                "title": "Start Mass G",
+                "type": "number"
+              },
+              "end_mass_g": {
+                "exclusiveMinimum": 0,
+                "title": "End Mass G",
+                "type": "number"
+              },
+              "irrigation_g": {
+                "minimum": 0,
+                "title": "Irrigation G",
+                "type": "number"
+              },
+              "drainage_g": {
+                "minimum": 0,
+                "title": "Drainage G",
+                "type": "number"
+              },
+              "substrate_evaporation": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/SubstrateEvaporation"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              }
+            },
+            "required": [
+              "scope",
+              "boundary_quality",
+              "evidence_sha256",
+              "start_mass_g",
+              "end_mass_g",
+              "irrigation_g",
+              "drainage_g"
+            ],
+            "title": "WeighingWaterBalance",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "description": "24 个原始小时窗口与单独冻结的供水证据。",
+        "properties": {
+          "hours": {
+            "items": {
+              "$ref": "#/$defs/WeighingWaterBalance"
+            },
+            "maxItems": 24,
+            "minItems": 24,
+            "title": "24 小时原始称重记录",
+            "type": "array",
+            "x-designer-editor": "json"
+          },
+          "non_stressed_water_evidence_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "供水条件证据摘要",
+            "type": "string"
+          }
+        },
+        "required": [
+          "hours",
+          "non_stressed_water_evidence_sha256"
+        ],
+        "title": "GreenhouseWeighingDayRequest",
+        "type": "object"
+      },
+      "designer": {
+        "group": "data",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "工程候选。可设计和验证，真实温室来源、对象绑定和现场效果需单独验收。",
+        "method": "按小时核对进液、排液和重量变化，保留 24 小时结果。"
+      },
+      "output_products": {
+        "weighing_day": {
+          "code": "greenhouse_weighing_crop_et_day",
+          "definition_version": "1.0.0"
+        }
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "lstm",
+    "revision": 1,
+    "name": "LSTM 时序预测",
+    "summary": "固定等间隔标量窗口，预测未来株高、棚内小气候或小时耗水量。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.cpu_sequence",
+      "symbol": "evaluate_sequence",
+      "source_sha256": "8c1b1ec772f52d4da6ba076f850eff7bea75e98049a6bcee02eb42f04998e482"
+    },
+    "algorithm": "LSTM 时序预测",
+    "mechanism": "固定等间隔标量窗口，预测未来株高、棚内小气候或小时耗水量。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "研究参数",
+        "data_type": {
+          "semantic": "research_cpu_fit_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "description": "配置所选变量、时间截点和种子。"
+      },
+      {
+        "code": "dataset",
+        "name": "冻结研究数据",
+        "data_type": {
+          "semantic": "research_cpu_sequence_dataset",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "已授权且符合本模型形态的冻结成果。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "holdout",
+        "name": "独立留出预测",
+        "data_type": {
+          "semantic": "research_cpu_holdout_predictions",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "预测、实测、评价误差及数据摘要。"
+      }
+    ],
+    "requirements": [
+      "实验单位和时间同时分隔，目标必须有独立实测。"
+    ],
+    "limitations": [
+      "CPU 工程候选，适用范围和农业效果需使用真实资料独立验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "call_kwargs": {
+        "algorithm": "lstm"
+      },
+      "output_products": {
+        "holdout": {
+          "code": "research_cpu_holdout_predictions",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "features": {
+              "items": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$",
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "输入变量（按冻结数据顺序）",
+              "type": "array"
+            },
+            "target": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "实测目标",
+              "type": "string"
+            },
+            "cutoff": {
+              "format": "date-time",
+              "title": "训练冻结时间（带时区）",
+              "type": "string"
+            },
+            "seed": {
+              "default": 17,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "复现种子",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "features",
+            "target",
+            "cutoff"
+          ],
+          "title": "CPUResearchRequest",
+          "type": "object"
+        },
+        "target_description": "指定变量的后段、独立实验单位实测值。",
+        "research_use": "固定等间隔标量窗口，预测未来株高、棚内小气候或小时耗水量。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "CPU 工程候选，要求冻结数据和独立实测标签。",
+        "method": "固定等间隔标量窗口，预测未来株高、棚内小气候或小时耗水量。"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "dataset",
+        "required": true
+      },
+      {
+        "code": "algorithm",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "random_forest",
+    "revision": 1,
+    "name": "Random Forest 随机森林回归",
+    "summary": "有界单线程树集成，适用于鲜重、株高或温室耗水的表格回归。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.cpu_tabular",
+      "symbol": "evaluate_tabular",
+      "source_sha256": "dc58f324a103d9860fd2b3e640f833ed1b1a30b6141e72d3b1fd609d7de359a5"
+    },
+    "algorithm": "Random Forest 随机森林回归",
+    "mechanism": "有界单线程树集成，适用于鲜重、株高或温室耗水的表格回归。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "研究参数",
+        "data_type": {
+          "semantic": "research_cpu_fit_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "description": "配置所选变量、时间截点和种子。"
+      },
+      {
+        "code": "dataset",
+        "name": "冻结研究数据",
+        "data_type": {
+          "semantic": "research_cpu_tabular_dataset",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "已授权且符合本模型形态的冻结成果。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "holdout",
+        "name": "独立留出预测",
+        "data_type": {
+          "semantic": "research_cpu_holdout_predictions",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "预测、实测、评价误差及数据摘要。"
+      }
+    ],
+    "requirements": [
+      "实验单位和时间同时分隔，目标必须有独立实测。"
+    ],
+    "limitations": [
+      "CPU 工程候选，适用范围和农业效果需使用真实资料独立验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "call_kwargs": {
+        "algorithm": "random_forest"
+      },
+      "output_products": {
+        "holdout": {
+          "code": "research_cpu_holdout_predictions",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "features": {
+              "items": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$",
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "输入变量（按冻结数据顺序）",
+              "type": "array"
+            },
+            "target": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "实测目标",
+              "type": "string"
+            },
+            "cutoff": {
+              "format": "date-time",
+              "title": "训练冻结时间（带时区）",
+              "type": "string"
+            },
+            "seed": {
+              "default": 17,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "复现种子",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "features",
+            "target",
+            "cutoff"
+          ],
+          "title": "CPUResearchRequest",
+          "type": "object"
+        },
+        "target_description": "指定变量的后段、独立实验单位实测值。",
+        "research_use": "有界单线程树集成，适用于鲜重、株高或温室耗水的表格回归。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "CPU 工程候选，要求冻结数据和独立实测标签。",
+        "method": "有界单线程树集成，适用于鲜重、株高或温室耗水的表格回归。"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "dataset",
+        "required": true
+      },
+      {
+        "code": "algorithm",
+        "required": true
+      }
+    ]
+  },
+  {
+    "code": "survey_assessment",
+    "revision": 4,
+    "name": "综合证据解释",
+    "summary": "综合证据解释：已有计算能力，按准确输入输出参与设计。",
+    "category": "assessment",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "mlgrowth_contracts.survey_assessment.qualified_summary",
+      "symbol": "build_qualified_assessment",
+      "source_sha256": "d57d0ad1c110865b53e21ba04c61362b408e1fa490cf299bc183a7d8a91505e8"
+    },
+    "algorithm": "冻结证据、条件参考与缺项披露",
+    "mechanism": "冻结证据、条件参考与缺项披露",
+    "inputs": [
+      {
+        "code": "snapshot",
+        "name": "snapshot",
+        "data_type": {
+          "semantic": "frozen_survey_snapshot",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对应原函数参数 snapshot；运行时必须经过数据绑定及科学校验。",
+        "allow_none": false
+      },
+      {
+        "code": "evidence",
+        "name": "evidence",
+        "data_type": {
+          "semantic": "survey_analysis_evidence",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "对应原函数参数 evidence；运行时必须经过数据绑定及科学校验。",
+        "allow_none": false
+      }
+    ],
+    "outputs": [
+      {
+        "code": "assessment",
+        "name": "规则资格及风险候选",
+        "data_type": {
+          "semantic": "qualified_survey_assessment",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "season"
+        },
+        "required": true,
+        "description": "遵循原生数据合同；绑定时核验对象、日期、单位和质量。"
+      }
+    ],
+    "requirements": [
+      "真实运行前核验企业、地块、作物、种植季、边界、日期/网格和质量。",
+      "实际制品、数据与执行权限须单独验证；目录和设计不授予执行资格。"
+    ],
+    "limitations": [
+      "不恢复已取消的综合分；不把参考条件当成真实产量品质。"
+    ],
+    "configuration": {
+      "designer": {
+        "group": "diagnostics",
+        "tier": "advanced",
+        "availability": "adapter_required",
+        "reason": "保留已有诊断/评价实现及候选/复核/资格边界；按明确科学任务封装输入资产与标准成果，不能将后处理函数重复计为新模型。",
+        "method": "冻结证据、条件参考与缺项披露",
+        "family": null,
+        "family_name": null
+      }
+    },
+    "related_capabilities": [
+      "growth_monitoring_forecast"
+    ],
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "snapshot",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      },
+      {
+        "code": "evidence",
+        "required": true,
+        "annotation": "dict",
+        "default": ""
+      }
+    ],
+    "runtime_parameters": [],
+    "requires_instance": false
+  },
+  {
+    "code": "xgboost",
+    "revision": 1,
+    "name": "XGBoost 梯度提升回归",
+    "summary": "CPU 直方图树提升，用于有实测标签的非线性表格预测。",
+    "category": "learning",
+    "execution_mode": "kernel",
+    "implementation": {
+      "module": "pymlgrowth.research_models.cpu_tabular",
+      "symbol": "evaluate_tabular",
+      "source_sha256": "dc58f324a103d9860fd2b3e640f833ed1b1a30b6141e72d3b1fd609d7de359a5"
+    },
+    "algorithm": "XGBoost 梯度提升回归",
+    "mechanism": "CPU 直方图树提升，用于有实测标签的非线性表格预测。",
+    "inputs": [
+      {
+        "code": "request",
+        "name": "研究参数",
+        "data_type": {
+          "semantic": "research_cpu_fit_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "description": "配置所选变量、时间截点和种子。"
+      },
+      {
+        "code": "dataset",
+        "name": "冻结研究数据",
+        "data_type": {
+          "semantic": "research_cpu_tabular_dataset",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "已授权且符合本模型形态的冻结成果。"
+      }
+    ],
+    "outputs": [
+      {
+        "code": "holdout",
+        "name": "独立留出预测",
+        "data_type": {
+          "semantic": "research_cpu_holdout_predictions",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "cutoff"
+        },
+        "description": "预测、实测、评价误差及数据摘要。"
+      }
+    ],
+    "requirements": [
+      "实验单位和时间同时分隔，目标必须有独立实测。"
+    ],
+    "limitations": [
+      "CPU 工程候选，适用范围和农业效果需使用真实资料独立验收。"
+    ],
+    "configuration": {
+      "engineering_only": true,
+      "call_kwargs": {
+        "algorithm": "xgboost"
+      },
+      "output_products": {
+        "holdout": {
+          "code": "research_cpu_holdout_predictions",
+          "definition_version": "1.0.0"
+        }
+      },
+      "research_model": {
+        "kind": "regression",
+        "requires_model_package": false,
+        "request_schema": {
+          "additionalProperties": false,
+          "properties": {
+            "features": {
+              "items": {
+                "pattern": "^[a-z][a-z0-9_]{0,95}$",
+                "type": "string"
+              },
+              "maxItems": 16,
+              "minItems": 1,
+              "title": "输入变量（按冻结数据顺序）",
+              "type": "array"
+            },
+            "target": {
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "title": "实测目标",
+              "type": "string"
+            },
+            "cutoff": {
+              "format": "date-time",
+              "title": "训练冻结时间（带时区）",
+              "type": "string"
+            },
+            "seed": {
+              "default": 17,
+              "maximum": 2147483647,
+              "minimum": 0,
+              "title": "复现种子",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "features",
+            "target",
+            "cutoff"
+          ],
+          "title": "CPUResearchRequest",
+          "type": "object"
+        },
+        "target_description": "指定变量的后段、独立实验单位实测值。",
+        "research_use": "CPU 直方图树提升，用于有实测标签的非线性表格预测。",
+        "standalone_entry": "python -m pymlgrowth.research_models"
+      },
+      "designer": {
+        "group": "model",
+        "tier": "advanced",
+        "availability": "research_adapter",
+        "reason": "CPU 工程候选，要求冻结数据和独立实测标签。",
+        "method": "CPU 直方图树提升，用于有实测标签的非线性表格预测。"
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "request",
+        "required": true
+      },
+      {
+        "code": "dataset",
+        "required": true
+      },
+      {
+        "code": "algorithm",
+        "required": true
+      }
+    ]
+  }
+]

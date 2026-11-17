@@ -1,0 +1,1353 @@
+{
+  "service": "http://192.168.3.249:18925",
+  "application_image": "sha256:d591403811242e3b3659932b4d6a566dede46ff062353ffcaa2883b40a2d9919",
+  "engineering_labels_not_field_measurements": true,
+  "catalog": {
+    "total": 65,
+    "configured": 35,
+    "unbound_rejected": 30,
+    "categories": [
+      {
+        "code": "manual",
+        "name": "人工采集",
+        "count": 15,
+        "children": [
+          {
+            "code": "manual_morphology",
+            "name": "植株形态",
+            "count": 6
+          },
+          {
+            "code": "manual_leaf_cover",
+            "name": "叶面积与冠层覆盖",
+            "count": 3
+          },
+          {
+            "code": "manual_biomass_yield",
+            "name": "生物量与产量",
+            "count": 6
+          }
+        ]
+      },
+      {
+        "code": "third_party",
+        "name": "第三方数据",
+        "count": 20,
+        "children": [
+          {
+            "code": "third_party_weather",
+            "name": "气象数据",
+            "count": 7
+          },
+          {
+            "code": "third_party_soil",
+            "name": "土壤数据",
+            "count": 11
+          },
+          {
+            "code": "third_party_satellite",
+            "name": "卫星观测",
+            "count": 2
+          }
+        ]
+      },
+      {
+        "code": "platform_analysis",
+        "name": "平台分析成果",
+        "count": 21,
+        "children": [
+          {
+            "code": "analysis_growth",
+            "name": "长势分析",
+            "count": 21
+          },
+          {
+            "code": "analysis_3d_phenotype",
+            "name": "三维表型",
+            "count": 0
+          }
+        ]
+      },
+      {
+        "code": "iot_platform",
+        "name": "物联网监测",
+        "count": 9,
+        "children": [
+          {
+            "code": "iot_greenhouse",
+            "name": "棚内环境监测",
+            "count": 5
+          },
+          {
+            "code": "iot_root_water",
+            "name": "根区水分监测",
+            "count": 1
+          },
+          {
+            "code": "iot_water_weighing",
+            "name": "水肥与称重监测",
+            "count": 3
+          }
+        ]
+      }
+    ]
+  },
+  "template_proofs": {
+    "crop-growth-prediction": {
+      "template_id": "crop-growth-prediction",
+      "template_sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f",
+      "design_id": "01a1d4a3-c8e4-7d15-8d3c-b90abf0f99d6",
+      "run_id": "01a1d4a3-c9cd-75a7-a926-31ca3fbf1eb7",
+      "scheduler_id": "189",
+      "operation": "train",
+      "result_sha256": "44eac1056a8bf19c09bb2ab43e0fc1877ee3543c6841b4b0cb10e360abd0cdc9",
+      "input_sources_sha256": "f6a3a52c5c6dc6852710cd797a0422f7562d4e411e36d9d8ad9de190e8c40477",
+      "receipts": [
+        {
+          "node": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "image": "sha256:6336fb86f4fef6c618161eb927300e792195605730992bf8013cd79f709e4ed6",
+          "inputs": {
+            "observations": "ef18e45daf986b46753c14569dc7f3881ef88f47a246277d8426b5306afb3232"
+          },
+          "outputs": {
+            "trained_model": "ce7e55ce1c5ceee2ad2e978a66b5d58365888720c0ad9a3f3334f2d4ad478e8e",
+            "predictions": "4b13c8c40c8d44e6f9fc09cdca3abe370cdcd63ab9648a26a36b6db2c0a5c4fe"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4a3-d98c-7bab-a53b-dc4759118e3d",
+      "model_sha256": "e760a91d1f0c52c316841ce7d95c8d6733ff266928d8d421fa3827925debb0f9",
+      "prediction_run_id": "01a1d4a3-da01-79c7-9980-173402edf00f",
+      "prediction_scheduler_id": "190",
+      "state_unchanged": true
+    },
+    "growth-trend-and-environment": {
+      "template_id": "growth-trend-and-environment",
+      "template_sha256": "6515600a4c80c4886ec860b56716f1cf15e1287abb0b8074641f3f9b322d2ca5",
+      "design_id": "01a1d4a3-e9fb-774a-b044-39ffb3ed4df8",
+      "run_id": "01a1d4a3-ea22-74fb-979c-c3e7612540c1",
+      "scheduler_id": "191",
+      "operation": "train",
+      "result_sha256": "e051a4ddb61fc315964090401eaefcdfd112b7166968e6a9b2e0e6ca695ace1b",
+      "input_sources_sha256": "151586193e331266d828dd30f71c3d8d0e0d12964bfb52792890f208e590d9ce",
+      "receipts": [
+        {
+          "node": "baseline",
+          "component": {
+            "code": "historical_logistic_training",
+            "revision": 1
+          },
+          "image": "sha256:9f06d3f5fdbff2dc58557d564905148ad52638a36d776ff428634aa09474cdbc",
+          "inputs": {
+            "observations": "eebb9ea102e7358418841c78d3ec704a62201cd28f231097e2a1c044d24d5745"
+          },
+          "outputs": {
+            "trained_model": "23cba2562c8fc7710bef3aa322ecf434f36ca5f8604b3ce7fb18218e169a83de",
+            "forecast": "ce224ee50f5ea94eae8a9c7fde4cee2237147964e40e9f8ae3b68efda394fad1"
+          }
+        },
+        {
+          "node": "merge",
+          "component": {
+            "code": "research_forecast_feature_join",
+            "revision": 1
+          },
+          "image": "sha256:e13211b0fd10cc474ad46bf2f296939e5518f45c8b0c5beba017ab860da4ac2d",
+          "inputs": {
+            "observations": "eebb9ea102e7358418841c78d3ec704a62201cd28f231097e2a1c044d24d5745",
+            "forecast": "ce224ee50f5ea94eae8a9c7fde4cee2237147964e40e9f8ae3b68efda394fad1"
+          },
+          "outputs": {
+            "table": "60436b805390f7b19c6e89ec2aad9d7352e16a827183002917bb98248e662956"
+          }
+        },
+        {
+          "node": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "image": "sha256:6336fb86f4fef6c618161eb927300e792195605730992bf8013cd79f709e4ed6",
+          "inputs": {
+            "observations": "60436b805390f7b19c6e89ec2aad9d7352e16a827183002917bb98248e662956"
+          },
+          "outputs": {
+            "trained_model": "dadefbd1b2f2bbdd84c1255ffdcaba6b464f0f05d99bb3be7c6c610af9015e96",
+            "predictions": "e5b947b9874caef9da4f8f37b5aa5764a6aa9d4fcde3531e2c71f2e1579827d1"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4a3-f9ed-70a0-a2b6-e78e8aa9a028",
+      "model_sha256": "5797b58a1b036eac5cc9f0f762d6efbd4b5c58012c0f4787d10772bb58b8f29c",
+      "prediction_run_id": "01a1d4a3-fa0a-7b4a-92e8-b5e7b3652a6a",
+      "prediction_scheduler_id": "192",
+      "state_unchanged": true
+    },
+    "field-indicator-summary": {
+      "template_id": "field-indicator-summary",
+      "template_sha256": "543e26164b1877471c131f572e6e229eb086b13251e09530e3637303cdb8cd3d",
+      "design_id": "01a1d4a4-0c76-7c5c-9143-c3fa20448ceb",
+      "run_id": "01a1d4a4-0d80-7add-82c3-174f764d085a",
+      "scheduler_id": "193",
+      "operation": "analyze",
+      "result_sha256": "ca932d2828059370f5579a958dd880de2a193e3dbe5bef3047fca4896596c02d",
+      "input_sources_sha256": "69283f472892319dbfe4200a4b33ea56c72c05c73ecf21ad9645eac91f6412d1",
+      "receipts": [
+        {
+          "node": "regression",
+          "component": {
+            "code": "research_descriptive_statistics",
+            "revision": 1
+          },
+          "image": "sha256:b35ebcecf49f6a2983ea3aa794d1b28265579f2d43718debbbf02a1afecb2fed",
+          "inputs": {
+            "observations": "ef18e45daf986b46753c14569dc7f3881ef88f47a246277d8426b5306afb3232"
+          },
+          "outputs": {
+            "summary": "109179a0108e70ad4c707ea8fae81d06f28b1113fcc1de14a7ebfd8844a3e4d9"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true
+    },
+    "greenhouse-water-use": {
+      "template_id": "greenhouse-water-use",
+      "template_sha256": "6f6d60012d6f2c879f0fc6339fd9d0f06a120adb27182ac9cdc10a25d073d1d9",
+      "design_id": "01a1d4a4-15c2-774e-bcff-ad0d4fd88191",
+      "run_id": "01a1d4a4-15e9-70f2-8893-8d1d81ca0e25",
+      "scheduler_id": "194",
+      "operation": "simulate",
+      "result_sha256": "2027443cd192f964c3818dc037367afdbedef6e1686ac72afdc511ea328692d4",
+      "input_sources_sha256": "f6b7387ba87b1826ed62ef5d9587c6fea4d56baf7f65e40e208cb84fbcb386a6",
+      "receipts": [
+        {
+          "node": "node_1",
+          "component": {
+            "code": "greenhouse_reference_et_daily",
+            "revision": 3
+          },
+          "image": "sha256:4164a95503b86f8e86c3652040fc595142cfa837d4c9f8989ff35e308f64fabc",
+          "inputs": {
+            "request": "98acbc8a1c874d9582a6f41c0db4a79d34f2ee6571a451f6fd34659c13b6aab2"
+          },
+          "outputs": {
+            "reference_et": "13309654a870992d109009d7830c6c26baf6ea3411f0a0573f6005ef86eafe1f"
+          }
+        },
+        {
+          "node": "node_2",
+          "component": {
+            "code": "greenhouse_weighing_water_balance",
+            "revision": 2
+          },
+          "image": "sha256:a6a0d5623e74b9e0ce5b4734bdf9312faddd2843e713c52be9d937874f6a990a",
+          "inputs": {
+            "request": "2f29f5185e06f59223b2575236befb9e0bd8b5802d11eabb49b0b6e330c56c4c"
+          },
+          "outputs": {
+            "weighing_day": "24bf99b9f0b17899274f6238e9ca6cc4b046e96789979fbb3659b251ab83a5cf"
+          }
+        },
+        {
+          "node": "node_3",
+          "component": {
+            "code": "greenhouse_crop_et_daily_comparison",
+            "revision": 2
+          },
+          "image": "sha256:9f3921bd3a1bf46f2ac86041f051d978efd0f78ae213e2643d602e7a2167870e",
+          "inputs": {
+            "request": "c72a721652a79f7ed473cb9ec0618c0c3b83d912604e7cdb9d09519a466ef1c9",
+            "reference_et": "13309654a870992d109009d7830c6c26baf6ea3411f0a0573f6005ef86eafe1f",
+            "weighing_day": "24bf99b9f0b17899274f6238e9ca6cc4b046e96789979fbb3659b251ab83a5cf"
+          },
+          "outputs": {
+            "comparison": "6c310aef2a0e27711b6575303777270b9e2661d09a5253a779255a649a1827d5"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "scientific_outputs": {
+        "reference_et": {
+          "formula_doi": "10.1016/j.agwat.2013.11.006",
+          "reference_et_mm_d": 3.4633905552598474,
+          "schema_version": "1.0",
+          "scope": {
+            "business_date": "2026-05-06",
+            "greenhouse_ref": "demo-solar-greenhouse",
+            "timezone": "Asia/Shanghai"
+          },
+          "value_kind": "estimated"
+        },
+        "weighing_day": {
+          "hours": [
+            {
+              "evapotranspiration_g_h": 35.0,
+              "evidence_sha256": "7c819b2a32fd732c336db1906c231a3ec498a0cc6acdc099a0d66b1321a44dbb",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T01:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T00:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "4dc2fc58b44ee5656e99592d4a00e00278b05095c4392965d82d226f9679cf3c",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 23.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 35.0,
+              "evidence_sha256": "17c0ce067227d6c31e2402f7ed5997b0f27acf6f64c7ac953cd9a32182b9f5ff",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T02:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T01:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "7d185cc8ced1e54262501cbe850f80107b69b587496db3a6e8c5ee561bf8cd53",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 23.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 30.0,
+              "evidence_sha256": "5517c5f555594e740ba14ccc9a6f36b65685c82c6b407a67884f78271bcfc850",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T03:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T02:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "91b6566409b2c63eb99d626ddfbc208e03b766167d633d6e8ed25a74fecdf577",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 18.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 30.0,
+              "evidence_sha256": "c38fd4055fd7286e9ff4635ca455a337d12e136e68ed105def6c57325356ddcf",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T04:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T03:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "d797d54dc9dba843ca0cc173170b8a22984bbc6765c19a394024752568d0f039",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 18.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 30.0,
+              "evidence_sha256": "3f8779f8a03fa3768a38cc29c8d9513cacac74b523e35da4c4b647062725f38c",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T05:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T04:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "11f2e9a271edcd3f0a837dc3c626af24d00fa5e200209d0977becabfabb3625f",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 18.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 40.0,
+              "evidence_sha256": "69ca39e56a9066d6bddd09ca5ec9dc658d51c9c033e909f2b837be80dd26ee63",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T06:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T05:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "9c1be36af2d588b64bbf71c0cbcb35026061af95f5c30345a0bc7647960a4cb7",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 28.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 55.0,
+              "evidence_sha256": "307246b14514b53c27ac6c6d8515298b08dc958caa5dff6b969754030d9ac561",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T07:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T06:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "445fcd9fe071a506b0bcce93f6d58ccefb0df0d24bbf60b6d3ea66c9edff0662",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 43.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 70.0,
+              "evidence_sha256": "fb51d8d2411d556e1def5625019b3206f117de0605251c3873ca09135c646d98",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T08:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T07:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "7f579b5f6f2003b42e88b7a3e39de6700de514ff6ba257d6768796b953f6ff03",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 58.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 85.0,
+              "evidence_sha256": "600280d6168132f8be1b84fb0b57619f2f3b471b44472af19ec40362b8ffc007",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T09:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T08:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "30cd563f0064974ecd666f41e9ed3ad33bbe66220bc6a07d5259ee8449c4a2fd",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 73.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 105.0,
+              "evidence_sha256": "05202fbcc0000e8bd8d893709192ff9dedff9db9693f23e631d72f43bb267bb9",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T10:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T09:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "f8a108434281aebac45f43fcb899a61d7c6cf83e8f44a119e981bd7d694a7a15",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 93.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 125.0,
+              "evidence_sha256": "5d72cca9c3bf35285b60bbcd4cfff33865667ca475e38d005016b38475a9386f",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T11:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T10:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "6d483ac96a7f6c79360d7ad980eb75ac864b0f61ada68587608af196f1d6fe5f",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 113.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 140.0,
+              "evidence_sha256": "8574b88b3abb922846e8205e57a5c7e43c8f52c32748027e8ee4b3df0caed14c",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T12:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T11:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "82ecf2045f94a59f252e61d67dce380988d859c7baecedddf6561e24b8f09899",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 128.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 150.0,
+              "evidence_sha256": "22d0c2e8b53d60ecc7265680de7b4fc046b64a164f9177bba471e5c8ae09fae6",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T13:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T12:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "8427661d5a4b1572dd63be698c83c73c6d991d4ad3870268ab14487a4c888e4f",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 138.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 160.0,
+              "evidence_sha256": "a0d33bc94c8deb530ebd762f9680cf4448284d405ca59e29e6b0c1b14c620c33",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T14:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T13:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "bcc0a729fbb974e2b6cd2bf2e845b9566522d5e4d1fe476adef71649a9e4f90e",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 148.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 150.0,
+              "evidence_sha256": "61081476c40749aae126d8e771cdbe1f820d333c48b5d7bc597ff359a8950e95",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T15:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T14:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "7769dfc417a2f9c19c635a17529c903f56113e6ad7444134755c87e8aab9b860",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 138.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 130.0,
+              "evidence_sha256": "435218e41ffc9690f0f63808f23f2bf7bbb8cd18cfd7d51d27c2488bba177c2b",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T16:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T15:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "9d38a7ad579a7f9fddb451ff4e9635304ad02514842fa03e67e34cc0eedc9dd4",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 118.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 115.0,
+              "evidence_sha256": "e9c74d3c80e6d6ac5cfb88f9f1c68dd35946dbdd5bccf0e0365f5ff4861e9558",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T17:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T16:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "ed3eb4c13bc1ebf5b26af05ef9449b2ed9661481b9b30394b7d2558a2716a866",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 103.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 95.0,
+              "evidence_sha256": "3d18d0cbccea16e1e582a4270dd97b5f9a1d09cc81072d7951452989e49bccd8",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T18:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T17:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "0e3273a5c4df5042acffdc53799c085056e63b15b39f96a1757dd88190f7d3ae",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 83.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 80.0,
+              "evidence_sha256": "fa41a367f436231bdee9a57af28efa927121f5d4984d1723a05c387c0de75175",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T19:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T18:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "cc74872afe1190245942daa485855f2725f8d0c805180bda034d42e1f17526f1",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 68.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 65.0,
+              "evidence_sha256": "d67dd31563eb6ed04a560cdb8ac48d96e8d701b35075f7374623f337feafd9eb",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T20:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T19:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "9a68aff11b24418d9bdba5a5d026795eacf50d9bd79d3b2b7a3a5cbef8473984",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 53.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 55.0,
+              "evidence_sha256": "69d108c565a5f2390baa81110f00f0164c58f3ed473324e828858ebb763f59df",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T21:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T20:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "dfb750db1a1b79231343acfb2b674005f01e2bffab217e798a4b3229467464f3",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 43.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 50.0,
+              "evidence_sha256": "e85bf6521fc14c234b4fb5ad9ff63dba8cf34dbb11a0de89acab993e2adffc12",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T22:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T21:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "dbea455371c78105814186b001c2b0d7dc474d7324a65190a53654ba3b1b4f89",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 38.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 45.0,
+              "evidence_sha256": "18de3a625b261f92abd334b350dcd800fc970f1080b96e8a3e5ebb6e2a53e84e",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-06T23:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T22:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "75fadc4c4265200e9e108242170c537b85534b1c559bc9ff9579ef03f53ad9f7",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 33.0,
+              "value_kind": "estimated"
+            },
+            {
+              "evapotranspiration_g_h": 40.0,
+              "evidence_sha256": "50ecb0eec403e8ffcb4bd281ba03be9f111b8d05d4e17ec23ceec0409afc5d95",
+              "scope": {
+                "cultivation_unit_ref": "demo-weighing-unit",
+                "ended_at": "2026-05-07T00:00:00+08:00",
+                "greenhouse_ref": "demo-solar-greenhouse",
+                "ground_area_m2": 0.5,
+                "season_ref": "demo-season",
+                "started_at": "2026-05-06T23:00:00+08:00"
+              },
+              "substrate_evaporation": {
+                "evidence_sha256": "6754f268192208072bfff823accdb0137aee67bb48c1786610f61a83367933ea",
+                "mass_g": 12.0
+              },
+              "transpiration_g_h": 28.0,
+              "value_kind": "estimated"
+            }
+          ],
+          "non_stressed_water_evidence_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "schema_version": "1.0"
+        },
+        "comparison": {
+          "basis": "crop_evapotranspiration",
+          "coefficient": {
+            "cultivation_unit_ref": "demo-weighing-unit",
+            "evidence_sha256": "f9bcf078b6dceedca0ae8b52238759e83e37cc6e8e3dcd55661c06635c87cd0d",
+            "frozen_at": "2026-05-06T00:00:00+08:00",
+            "kc": 1.2,
+            "scope": {
+              "business_date": "2026-05-06",
+              "greenhouse_ref": "demo-solar-greenhouse",
+              "timezone": "Asia/Shanghai"
+            },
+            "season_ref": "demo-season"
+          },
+          "difference_mm_d": 0.32606866631181664,
+          "estimated_crop_et_mm_d": 4.156068666311817,
+          "ground_area_m2": 0.5,
+          "schema_version": "1.0",
+          "weighing_crop_et_mm_d": 3.83
+        }
+      }
+    },
+    "canopy-temperature-rf": {
+      "template_id": "canopy-temperature-rf",
+      "template_sha256": "7d201da4e2001b2fea73a281f61b5c13d59051a8e5d67e094a28dad004afe4cd",
+      "design_id": "01a1d4a4-25e0-7e7e-9766-f95ed85cf70f",
+      "run_id": "01a1d4a4-25fb-7d20-bd35-5aa8cd7af5c1",
+      "scheduler_id": "195",
+      "operation": "analyze",
+      "result_sha256": "2b4a6f5d915aba2bd00d8edd60ad6a98c7092220eadd2c6d7c1d8fab75136ee5",
+      "input_sources_sha256": "0d1bc1b80c802b0bd7a3d8bb0c670f2d37483d7d1d852eda1c2ff298c418246a",
+      "receipts": [
+        {
+          "node": "method",
+          "component": {
+            "code": "random_forest",
+            "revision": 1
+          },
+          "image": "sha256:e7f66c4b7b509519ea7bcb39629878fafcc89f54ff2775b8b9623a06f3f5629b",
+          "inputs": {
+            "request": "5e13d63c2e9df5eae00d81c1316eea945ae8712519b239899154963bcdad31b5",
+            "dataset": "4757193bf4417a345c88e9276264b0a21fb1717657aefa4679eeb075e907bc31"
+          },
+          "outputs": {
+            "holdout": "5388c09e532f312922d73f62fe16da8ba0e7689542f51c09b4cc1e4e26e05f5f"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "training_count": 9,
+      "holdout_count": 5,
+      "mae": 7.03125,
+      "rmse": 7.578817622987111
+    },
+    "canopy-temperature-forecast": {
+      "template_id": "canopy-temperature-forecast",
+      "template_sha256": "4cc813b7d8339b66490a8c7217656409a1b28f2a0b53f9009cf0f55ed1fb361b",
+      "design_id": "01a1d4a4-35e5-780a-a7ba-f6c19837c2b5",
+      "run_id": "01a1d4a4-3603-7daa-aded-6d5efac9f52f",
+      "scheduler_id": "196",
+      "operation": "analyze",
+      "result_sha256": "a5510558e7e8b03dd58d408e2c16d2401c0ecdbe15f92b944036212b06de5b08",
+      "input_sources_sha256": "4eb138332dddc4589311db7c380e2e84f898bb4ed5b44f00fd95f5f2a3cec1ec",
+      "receipts": [
+        {
+          "node": "method",
+          "component": {
+            "code": "lstm",
+            "revision": 1
+          },
+          "image": "sha256:a03f8da85668cc6fcc01025f0e291eabf9ac1b1dfafc5a8ed1045417c8f1fbe3",
+          "inputs": {
+            "request": "5e13d63c2e9df5eae00d81c1316eea945ae8712519b239899154963bcdad31b5",
+            "dataset": "d2edb8c06c90f2d7710e286b8ed5c7e8b3c791fcc7d50b574c7406b4996c00e3"
+          },
+          "outputs": {
+            "holdout": "a42f7f95730d9aa2d9e29e3122ebbe61ec6d898618c21a09a39e8a33950c6723"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "training_count": 9,
+      "holdout_count": 4,
+      "mae": 6.637854099273682,
+      "rmse": 7.0180236073888596
+    },
+    "canopy-temperature-spatial-forecast": {
+      "template_id": "canopy-temperature-spatial-forecast",
+      "template_sha256": "8b4ee5dae033fa6e68ac4e97c94f496dd3526936482cbf6e3aa16a705853e96f",
+      "design_id": "01a1d4a4-4dce-757e-ab01-f015f1233666",
+      "run_id": "01a1d4a4-4dea-7ad6-98c6-c8ce2e559469",
+      "scheduler_id": "197",
+      "operation": "analyze",
+      "result_sha256": "673912c8d5604f8977f9da26c2179605fb9bb7dc5cd3e868a959a0e891e5a104",
+      "input_sources_sha256": "902445e88f1d3aec50257a1e12e3c56603fe39d99c6ee017b4f4cb7e1c4c4445",
+      "receipts": [
+        {
+          "node": "method",
+          "component": {
+            "code": "convlstm",
+            "revision": 1
+          },
+          "image": "sha256:f62996d24a47b818625be56092f6ec95cfc9fdb7d9a125fb8a31c36a24cff97f",
+          "inputs": {
+            "request": "5e13d63c2e9df5eae00d81c1316eea945ae8712519b239899154963bcdad31b5",
+            "dataset": "aa35b8f90717ccb9ff0361a5df9cfbba979fd03f319e7a7dfd71e0ca325a7ccc"
+          },
+          "outputs": {
+            "holdout": "8fb8992f27028ee32414f6d2d4b82ee28cf3185dffb545becab27e4aeb308560"
+          }
+        }
+      ],
+      "data_kind": "synthetic",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "training_count": 9,
+      "holdout_count": 4,
+      "mae": 8.934576439857484,
+      "rmse": 9.21622069301553
+    },
+    "crop-disease-weather": {
+      "template_id": "crop-disease-weather",
+      "template_sha256": "345398425e061352dff63662571db0615f4e3f6e5cefd17eae98b03a965a3eac",
+      "design_id": "01a1d4a4-6672-767e-86db-0d75af05476b",
+      "run_id": "01a1d4a4-66a7-78d8-9d13-00e1e9b4920f",
+      "scheduler_id": "198",
+      "operation": "analyze",
+      "result_sha256": "536da7fe88ed0ca71374b55aeffe44ec8e795beb5a5010254c22dcd5b31c6eb9",
+      "input_sources_sha256": "eac1b3fffad12b9a75bfbc7008c9e00e80b3ac78c8feddaac88586e3b38525e9",
+      "receipts": [
+        {
+          "node": "analysis",
+          "component": {
+            "code": "research_weather_conditions",
+            "revision": 1
+          },
+          "image": "sha256:4f4fe609427f097faf01802362b0039ae101493119e821f4c19af4131e0a8fc0",
+          "inputs": {
+            "weather": "4c95097679d9e159adea88077b7ab98aa5f735e50b38ee62e625debd0cddace9"
+          },
+          "outputs": {
+            "report": "44d976056404fdf5da29fa9225fe7cc1b45ccfa7b4b024af7b26e256c0be705a"
+          }
+        }
+      ],
+      "data_kind": "frozen_archive",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "qualification": "complete",
+      "condition": "not_triggered",
+      "valid_days": 7,
+      "expected_days": 7
+    },
+    "vegetation-index-change": {
+      "template_id": "vegetation-index-change",
+      "template_sha256": "6601aae26fbdef066cfe5520208abf6ae4093945412d1e0405a1fe2bfbb4d5ea",
+      "design_id": "01a1d4a4-778e-7ce7-8bfc-6081ae1494a5",
+      "run_id": "01a1d4a4-77a9-7c06-986a-582bae3c591b",
+      "scheduler_id": "199",
+      "operation": "analyze",
+      "result_sha256": "fd91809c09a0815b90fe97dc7a192bc1c60d659f2f9799e0cd03da10a2968e7c",
+      "input_sources_sha256": "e73097e6cab0ea1da7392f60ab4d1c173c6f656fba21aab62a362592d54ac82b",
+      "receipts": [
+        {
+          "node": "analysis",
+          "component": {
+            "code": "agronomic_indicator_analysis",
+            "revision": 1
+          },
+          "image": "sha256:010663e219414ed668d08aed48e7e58b70a16dc85122875df2c83feb42748a6d",
+          "inputs": {
+            "series": "8d82142cffe791cae038f3b7ccebc2d84ac0b433427f58924eff1028db68ecf9"
+          },
+          "outputs": {
+            "report": "522d00a328f436339e9bd497929affa6f647bcd2a97830217bd6a9ddd3efe67e"
+          }
+        }
+      ],
+      "data_kind": "frozen_archive",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "row_count": 2,
+      "value_kinds": [
+        "estimated"
+      ]
+    },
+    "growth-water-response": {
+      "template_id": "growth-water-response",
+      "template_sha256": "90e643ed29ced0feef1db3fb6046c4431b350511c3ab7d472549fe1795d932b1",
+      "design_id": "01a1d4a4-8790-7833-810e-bc5eda3a9a7f",
+      "run_id": "01a1d4a4-87b1-7051-b76e-4a8132e2319f",
+      "scheduler_id": "200",
+      "operation": "analyze",
+      "result_sha256": "ad8943b3f40ea81dd77c0bca0b60cc189a7ee3da9a6cbb729a8eb0c0f2660dad",
+      "input_sources_sha256": "1c1b078af40f39d5384e33fac5f9655d7e667afc0f72d7a7f69e80b7b57ee5ad",
+      "receipts": [
+        {
+          "node": "analysis",
+          "component": {
+            "code": "agronomic_indicator_analysis",
+            "revision": 1
+          },
+          "image": "sha256:010663e219414ed668d08aed48e7e58b70a16dc85122875df2c83feb42748a6d",
+          "inputs": {
+            "series": "93efae1cb33cf5ed2092357ea744dc9018d5aa57fee9afc36351d71d1d873e14"
+          },
+          "outputs": {
+            "report": "00d5c6ea8edc455cbd3a9fce0d2ce8138ac2a32b1fadea19c6919be0a3f65727"
+          }
+        }
+      ],
+      "data_kind": "frozen_archive",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "row_count": 45,
+      "value_kinds": [
+        "simulated"
+      ]
+    },
+    "yield-formation": {
+      "template_id": "yield-formation",
+      "template_sha256": "63f5d9dfbbcb3a987d3c45fa6ff4609f2fabe7c22bbcd80c42f9b4c5ddaed28e",
+      "design_id": "01a1d4a4-8fcb-7567-8b0a-076468f0004e",
+      "run_id": "01a1d4a4-8feb-7715-8da1-0468c60657a6",
+      "scheduler_id": "201",
+      "operation": "analyze",
+      "result_sha256": "a920f3f1c06fc2a88855888897553bd7ee011d003a56bf130d18597a0286f79a",
+      "input_sources_sha256": "7ea1114fe76fdd53171080755efc2516663d5dd2d4d7fbeb654468c5dba09d30",
+      "receipts": [
+        {
+          "node": "analysis",
+          "component": {
+            "code": "agronomic_indicator_analysis",
+            "revision": 1
+          },
+          "image": "sha256:010663e219414ed668d08aed48e7e58b70a16dc85122875df2c83feb42748a6d",
+          "inputs": {
+            "series": "7754d1850f01a760ee254895a55aa0779b6e4b4e4065fd426bb535f37ca23a37"
+          },
+          "outputs": {
+            "report": "d199924f1b79af186adf690579a27c10c29e0b17d927eec933a90b4fc2c06aaa"
+          }
+        }
+      ],
+      "data_kind": "frozen_archive",
+      "reopened": true,
+      "edges_verified": true,
+      "not_a_reusable_model": true,
+      "row_count": 45,
+      "value_kinds": [
+        "simulated"
+      ]
+    },
+    "crop-low-temperature": {
+      "design_id": "01a1d4ac-b848-7f56-a93f-788c17b6d507",
+      "run_id": "01a1d4ac-b968-79cc-b936-23015d4e3d2b",
+      "scheduler_id": "225",
+      "operation": "analyze",
+      "input_rows": 61,
+      "result_sha256": "68becf74442b201cd2ca24bf96bc41a904216088a39744c0b05c50c9d86b8673",
+      "reopened": true,
+      "edges_verified": true
+    },
+    "crop-high-temperature": {
+      "design_id": "01a1d4ac-c9e1-741b-971e-37d72e80a515",
+      "run_id": "01a1d4ac-caee-746c-8912-4c798b1b2feb",
+      "scheduler_id": "226",
+      "operation": "analyze",
+      "input_rows": 61,
+      "result_sha256": "369f61fbd6c2202a3926237bef4bc347b650f971478f07e42a7d39841531231f",
+      "reopened": true,
+      "edges_verified": true
+    },
+    "crop-rainfall-deficit": {
+      "design_id": "01a1d4ac-db2c-730e-8075-fea94a306350",
+      "run_id": "01a1d4ac-dc53-77fd-bbb6-c5054e4330d7",
+      "scheduler_id": "227",
+      "operation": "analyze",
+      "input_rows": 61,
+      "result_sha256": "605b5a357a941f3b7e1a4e0b858906adf41c7fa58ee0b6471ec9b4c4c3e25d54",
+      "reopened": true,
+      "edges_verified": true
+    },
+    "crop-heavy-rainfall": {
+      "design_id": "01a1d4ac-e4c3-733e-b600-3c17fc82042a",
+      "run_id": "01a1d4ac-e5fa-7f8c-9d64-ec328a0beea0",
+      "scheduler_id": "228",
+      "operation": "analyze",
+      "input_rows": 61,
+      "result_sha256": "c8d1eb5c20227fb2174c30831b2a94226aa0501b2c3165641303637a530e038d",
+      "reopened": true,
+      "edges_verified": true
+    },
+    "soil-properties": {
+      "design_id": "01a1d4ac-efb3-7ec7-840e-afbb91d5e9d2",
+      "run_id": "01a1d4ac-f520-7116-b0f1-bb4629cce422",
+      "scheduler_id": "229",
+      "operation": "analyze",
+      "input_rows": 61,
+      "result_sha256": "8981632230ed9e343b8e74ace880dd65055e91c8262168ee5df79f249d0a9200",
+      "reopened": true,
+      "edges_verified": true
+    },
+    "soil-weather-lai": {
+      "design_id": "01a1d4ac-ff0c-7ea1-9eeb-ec21abb4e5f1",
+      "run_id": "01a1d4ad-048e-7177-82f4-29bde15a742a",
+      "scheduler_id": "230",
+      "operation": "train",
+      "input_rows": 183,
+      "result_sha256": "a00bb6332826bf909884a607513ace61f2ae02db996b7b286cb2484af44a40ab",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4ad-0c76-7087-93a6-249ddf3a979c",
+      "prediction_run_id": "01a1d4ad-0da8-7404-aa89-49fd9a2cb157",
+      "prediction_scheduler_id": "231",
+      "prediction_rows": 90,
+      "state_unchanged": true,
+      "new_dates_verified": true,
+      "engineering_expected_max_abs_error": 9.769962616701378e-15
+    },
+    "soil-weather-biomass": {
+      "design_id": "01a1d4ad-1796-77d1-be71-20d1d33121c3",
+      "run_id": "01a1d4ad-1c9f-71ae-988b-684a6a187744",
+      "scheduler_id": "232",
+      "operation": "train",
+      "input_rows": 183,
+      "result_sha256": "4ebdd4d29184c87badc7b01edd145d94ea49920da0acfed699aa4fdc9f2fdaee",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4ad-2495-741a-8099-f6bef75510a8",
+      "prediction_run_id": "01a1d4ad-25b4-77f8-a89e-579735f940ba",
+      "prediction_scheduler_id": "233",
+      "prediction_rows": 90,
+      "state_unchanged": true,
+      "new_dates_verified": true,
+      "engineering_expected_max_abs_error": 1.0231815394945443e-12
+    },
+    "soil-weather-canopy": {
+      "design_id": "01a1d4ad-2fed-7807-81c6-760104cd5bd2",
+      "run_id": "01a1d4ad-35cf-7bbb-b0d8-1e3c6ce08a11",
+      "scheduler_id": "234",
+      "operation": "train",
+      "input_rows": 183,
+      "result_sha256": "04cd24bc68e0709d7eecfc3d85373901f47a5524bf044ced68add27010e510af",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4ad-458c-7c10-804b-4f35f911aa13",
+      "prediction_run_id": "01a1d4ad-46c0-7bea-8f58-9f78c0428435",
+      "prediction_scheduler_id": "235",
+      "prediction_rows": 90,
+      "state_unchanged": true,
+      "new_dates_verified": true,
+      "engineering_expected_max_abs_error": 1.5765166949677223e-14
+    },
+    "soil-weather-satellite-lai": {
+      "design_id": "01a1d4ad-58ea-7b5a-95e2-b7de171e7d8c",
+      "run_id": "01a1d4ad-5fb4-7ded-8af0-3f33958030f6",
+      "scheduler_id": "236",
+      "operation": "train",
+      "input_rows": 13,
+      "result_sha256": "d3c3518dd783c016dc9537f7af8dca104c66a374d63ac39b7f8379b04bd3009f",
+      "reopened": true,
+      "edges_verified": true,
+      "model_id": "01a1d4ad-6f77-7c6b-8d50-854826647020",
+      "prediction_run_id": "01a1d4ad-70d4-72d2-a442-960a1f93dad3",
+      "prediction_scheduler_id": "237",
+      "prediction_rows": 14,
+      "state_unchanged": true,
+      "new_dates_verified": true,
+      "engineering_expected_max_abs_error": 5.861977570020827e-14
+    }
+  },
+  "source_acquisitions": {
+    "reference-0:background": {
+      "request_sha256": "1d6ca9873c1fc9df0311e650fcecbc6a0f79c0b8ac469018851b40b835d68abf",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "acquisition_id": "01a1d48a-f67f-7745-b5b2-b186392c1fe8",
+      "generation": 0,
+      "snapshot_ids": [
+        "01a1d48b-337e-7455-b854-a1cb58ec0383",
+        "01a1d48b-3387-73ec-bd12-ef9311823ce0",
+        "01a1d48b-3388-7c09-b176-fbe9196674ca",
+        "01a1d48b-3389-7953-a6d9-b8fed897d7be",
+        "01a1d48b-338a-7795-bced-b6768972e73c",
+        "01a1d48b-338b-7a42-b6c8-f96c7fa3e998",
+        "01a1d48b-338c-778b-9194-f90ad96c262d",
+        "01a1d48b-338d-7edb-aae7-7517e35f6bec",
+        "01a1d48b-338e-74ad-8924-9e0bda88b01d",
+        "01a1d48b-338f-7c76-a30e-3ff1bb1b9ef6",
+        "01a1d48b-3390-720c-9f2d-77ef336bb8ed",
+        "01a1d48b-3391-7779-8005-7867b01cc8c1",
+        "01a1d48b-3380-7252-993f-1a995dfa58ff",
+        "01a1d48b-337a-7483-909a-9e70ac4aa2a1",
+        "01a1d48b-337c-7cda-b420-aa30b0c0954a",
+        "01a1d48b-3376-7c3c-9abe-e4d3847f8d39",
+        "01a1d48b-3385-716e-94cc-18fb5b0a83ec",
+        "01a1d48b-3382-72eb-a454-b2441bdd5891"
+      ]
+    },
+    "reference-0:satellite-0": {
+      "request_sha256": "83eab1c1ebc661f86c67e1073891972564e93e5238ce7975dcaf93d68924f715",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d48f-84f1-702b-8d5a-872bcb1c86c9",
+      "snapshot_ids": [
+        "01a1d48f-cf87-791b-9045-58e038ac9c17",
+        "01a1d48f-cf81-7745-9aa0-02c1bbd9e1bc"
+      ]
+    },
+    "reference-0:satellite-1": {
+      "request_sha256": "7deac257099c3a25ff18a20c903afb80d98c0205516c4bd0e69a175f48cabfe6",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d48f-d47c-7d2e-a08d-3dbce130f894",
+      "snapshot_ids": [
+        "01a1d48f-fc92-7d68-addf-904f6cd60e8e",
+        "01a1d48f-fc8f-7363-814a-0bc1384cd87b"
+      ]
+    },
+    "reference-0:future-background": {
+      "request_sha256": "70444883dd318e55ea2c11c7922d3c6617837209ec6b557d472eba60ae09af45",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 1,
+      "acquisition_id": "01a1d492-a14d-79da-886c-a2a139bfe221",
+      "snapshot_ids": [
+        "01a1d492-d1f6-772c-a4b3-b4d12396dd5c",
+        "01a1d492-d1fa-7604-afe1-3eb464b5d1d0",
+        "01a1d492-d1f7-79f7-a958-8d02be909904",
+        "01a1d492-d1f9-70ac-915c-3b5791f06729",
+        "01a1d492-d1f8-721d-9144-a962e3e548ba",
+        "01a1d492-d1f5-73b6-a70c-13a5dcafe524",
+        "01a1d492-d1f4-7070-91b7-2e68bebca615"
+      ]
+    },
+    "reference-0:future-satellite": {
+      "request_sha256": "275395c454541d292a5b41d3c36fc4a1a309462b2d3623b661a50cfe06f36987",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d492-d97f-7abc-843c-33f80d98e76e",
+      "snapshot_ids": [
+        "01a1d493-1c34-7825-8788-c5719a47b5eb",
+        "01a1d493-1c2f-7f99-889a-1c62df07fcc1"
+      ]
+    },
+    "reference-1:background": {
+      "request_sha256": "a028c7b740f87e18849c06384b18fe12f1491835c4ab63e5adc278e926a50951",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d498-d74a-78d5-b92b-047b11e70477",
+      "snapshot_ids": [
+        "01a1d499-2195-7678-8f80-2443fea61fae",
+        "01a1d499-219a-7462-8e7d-41b2ce98cade",
+        "01a1d499-2197-78d4-b918-cb67133c7106",
+        "01a1d499-2199-7ddf-a41d-dd9d843a79aa",
+        "01a1d499-2198-7b51-a393-ad3220aa9c93",
+        "01a1d499-2193-7d6c-ac74-404e4a597074",
+        "01a1d499-2191-7313-8128-e2c6f111cb6e"
+      ]
+    },
+    "reference-1:satellite-0": {
+      "request_sha256": "074f3352187d8f39f81fc1dcc37b8b9763434acd0918ffad28b68ebb436c4ed9",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d499-26f9-7c6e-8549-699a17319d40",
+      "snapshot_ids": [
+        "01a1d499-5a0b-74be-ab83-bde725a8267e",
+        "01a1d499-5a08-7863-a4c1-9e567d6a137a"
+      ]
+    },
+    "reference-1:satellite-1": {
+      "request_sha256": "8dab229201b79813233370b33980ffc5d36debd1ce27691341132a095ae050f2",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "acquisition_id": "01a1d4a4-9f8f-7d92-8e85-3f27d0fbc8c7",
+      "generation": 1,
+      "unavailable": true,
+      "error": "No clear single-scene Sentinel observation is available in the requested dates",
+      "snapshot_ids": []
+    },
+    "reference-1:future-background": {
+      "request_sha256": "6845ae0c9f16333e6a00a9b9cff8f2acbabff5cf6899f8d437e8a1db544ee00d",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a4-dfda-70c8-ad10-28fac3ce19e5",
+      "snapshot_ids": [
+        "01a1d4a5-033f-7bad-9b1a-6b234cb5b0df",
+        "01a1d4a5-0344-7eba-b1c1-d0f9402b9d8a",
+        "01a1d4a5-0341-7752-af3a-c9e9426af9aa",
+        "01a1d4a5-0343-77ba-bb05-4a9d4fd04251",
+        "01a1d4a5-0342-7cc8-8ed3-8e16e6f47f2f",
+        "01a1d4a5-033e-768f-bbfc-a07f904b780f",
+        "01a1d4a5-033b-7585-9f98-5ce965fecd25"
+      ]
+    },
+    "reference-1:future-satellite": {
+      "request_sha256": "e1230108e9daf2d5b9b99d80af831c13541411d6e18e51d0607ac14fee02b9a0",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-0849-7f2f-aaf3-99d1432477cc",
+      "snapshot_ids": [
+        "01a1d4a5-2dd2-70a2-9e79-937d3782f636",
+        "01a1d4a5-2dd0-7f52-942b-1654dc8d40d4"
+      ]
+    },
+    "reference-2:background": {
+      "request_sha256": "10b489761aaa2ffb6721167abb84a6b4d816f3f39a3f4717e90269146ade1c8d",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-3108-7aad-97a4-56e0d6f8f644",
+      "snapshot_ids": [
+        "01a1d4a5-50ea-77bf-82df-b445e873cd9d",
+        "01a1d4a5-50f0-7165-94be-1799f2b08bc9",
+        "01a1d4a5-50ec-71cc-a3cd-4fb4b3c3802b",
+        "01a1d4a5-50ee-7016-a831-ff57d7e587cd",
+        "01a1d4a5-50ed-7401-9b6d-ed02c630bed5",
+        "01a1d4a5-50e8-7e78-8fd8-c11e9f519e6c",
+        "01a1d4a5-50e6-7a49-b8b0-76d5941741c8"
+      ]
+    },
+    "reference-2:satellite-0": {
+      "request_sha256": "2af50024f638283ac21673f43968c8df3a08d4374c3dbad76e3e2043bbc349e1",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-5988-76aa-a96a-edfa422d9a1a",
+      "snapshot_ids": [
+        "01a1d4a5-815f-7f68-abcf-5afbe7c96d34",
+        "01a1d4a5-815c-7203-8a20-32ee29d9614a"
+      ]
+    },
+    "reference-2:satellite-1": {
+      "request_sha256": "af2bfc47ab1ef6a28382fb09302b8ecdfc837086c8553973a7e8b4c059b39871",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-89bc-75d1-a57a-7c8a089a305e",
+      "snapshot_ids": [
+        "01a1d4a5-a964-7072-a073-b500b642082e",
+        "01a1d4a5-a962-7f27-ab3c-19b9c2988a2e"
+      ]
+    },
+    "reference-2:future-background": {
+      "request_sha256": "7431b1e9d18bf3e12e5a55439e7c03dba82380109679f4bf971e6b5795a38922",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-b26d-737f-968f-b5cfea3e199e",
+      "snapshot_ids": [
+        "01a1d4a5-dfba-7a84-83c5-b556a31e319f",
+        "01a1d4a5-dfc1-75ff-ae33-bb29a413ca26",
+        "01a1d4a5-dfbc-7139-b522-3117d7eb00ea",
+        "01a1d4a5-dfbf-7a22-8c43-91b8608cb6bd",
+        "01a1d4a5-dfbe-761a-a417-f98161e5affb",
+        "01a1d4a5-dfb8-7114-83e2-89ac46ad9628",
+        "01a1d4a5-dfb6-77bd-a4a4-42ec99f0b2e6"
+      ]
+    },
+    "reference-2:future-satellite": {
+      "request_sha256": "cc358fd44896652c50ed8a79ce47585f65bbf4158abdf6da8dc1dc5bfd570fac",
+      "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+      "generation": 0,
+      "acquisition_id": "01a1d4a5-e2ad-7733-be3a-28b075896338",
+      "snapshot_ids": [
+        "01a1d4a6-0b61-7a05-91fe-fdf751419c26",
+        "01a1d4a6-0b63-7637-a001-dbef4d06f933"
+      ]
+    }
+  },
+  "excluded_references": [
+    {
+      "label": "reference-1:background",
+      "job": {
+        "request_sha256": "559ea3a5510812937b391bb959736f0a24d3d546f157ba4f4b721e3e0bcf4792",
+        "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+        "acquisition_id": "01a1d495-97ec-767e-afae-f21ead87ddbb",
+        "generation": 1
+      },
+      "error": "Soil WCS pixel is missing or has an ambiguous zero value",
+      "previous_point": [
+        45.75,
+        126.63
+      ],
+      "explicit_reselected_point": [
+        48.067,
+        125.85
+      ]
+    },
+    {
+      "label": "reference-3:background",
+      "job": {
+        "request_sha256": "ea38fa8017a78c85d6d32044c6a470819c1db497f188f225b1753600ea3b6e8f",
+        "definition_sha256": "54c30925fa6e87762daf6583fc737a2549c1cf505a2537cf694ea849135e67ee",
+        "acquisition_id": "01a1d4a6-1359-799c-822d-5050cbd3efc2",
+        "generation": 0
+      },
+      "error": "Soil WCS pixel is missing or has an ambiguous zero value",
+      "previous_point": [
+        37.77,
+        115.1
+      ],
+      "selection": "explicitly excluded; three qualified engineering locations retained"
+    }
+  ],
+  "explicit_engineering_reference_selection": {
+    "included": [
+      "reference-0",
+      "reference-1",
+      "reference-2"
+    ],
+    "excluded": "reference-3 has no qualified soil pixel; not silently substituted"
+  },
+  "raw_evidence_sha256": "7d2afcb3091f5f4f87f3128a1c60ac9a821fbec5f27c6b76b07e144afbc71749"
+}

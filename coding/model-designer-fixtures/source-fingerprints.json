@@ -1,0 +1,342 @@
+{
+  "commit": "53d86cb1a3359e279776ee8825e4366d066ea859",
+  "digest": "sha256 after CRLF to LF normalization",
+  "files": {
+    "alembic/versions/35e5767e0374_add_bounded_research_dispatch_discovery.py": {
+      "committed_sha256": "e2d0f00409426a83637fb19814ad828509c65654989f0c7e9b89ef0e34db56ad",
+      "working_tree_sha256": "e2d0f00409426a83637fb19814ad828509c65654989f0c7e9b89ef0e34db56ad"
+    },
+    "alembic/versions/5db385010534_add_versioned_composable_model_.py": {
+      "committed_sha256": "a0aea68e457f7631d59797a1ec9c7e4eceb93173586c7dbb6f72dffce9ad5c7d",
+      "working_tree_sha256": "a0aea68e457f7631d59797a1ec9c7e4eceb93173586c7dbb6f72dffce9ad5c7d"
+    },
+    "alembic/versions/6d585cb36e97_retain_research_execution_attempt_.py": {
+      "committed_sha256": "be67b934d98a255a402af9ede578757f702f59d32e032398ed8cb48908ce61f9",
+      "working_tree_sha256": "be67b934d98a255a402af9ede578757f702f59d32e032398ed8cb48908ce61f9"
+    },
+    "alembic/versions/8ed4a62254b8_add_editable_research_drafts_and_.py": {
+      "committed_sha256": "30e3cf1406ec881fd5b7ed63760cbd52ae963fec353050c547e8864f045f3244",
+      "working_tree_sha256": "30e3cf1406ec881fd5b7ed63760cbd52ae963fec353050c547e8864f045f3244"
+    },
+    "alembic/versions/9ed1c915d83b_add_normalized_research_variable_sources.py": {
+      "committed_sha256": "1bce332a5e6603f8bdb3e2e44a6cab882f25483e036e28552131ccdd8bec4766",
+      "working_tree_sha256": "1bce332a5e6603f8bdb3e2e44a6cab882f25483e036e28552131ccdd8bec4766"
+    },
+    "alembic/versions/aef295e079d6_add_component_package_submissions_.py": {
+      "committed_sha256": null,
+      "working_tree_sha256": "1dee6b6399734116a7b4012fc49a739a52eeb098b46632bf50e2eebda92edcf9"
+    },
+    "alembic/versions/d164cb66545b_add_platform_prescribed_variable_source_.py": {
+      "committed_sha256": "db2685cc232feec3ee35ab4d8e3337c1147ecbe709f3b1f2a761837575ae80de",
+      "working_tree_sha256": "db2685cc232feec3ee35ab4d8e3337c1147ecbe709f3b1f2a761837575ae80de"
+    },
+    "alembic/versions/ef7978dd3535_add_enterprise_resource_scopes_and_.py": {
+      "committed_sha256": "8c90326df6b20d64b4dbb271e3f3ef2f54a744ac89dece668e46abb6284baea3",
+      "working_tree_sha256": "8c90326df6b20d64b4dbb271e3f3ef2f54a744ac89dece668e46abb6284baea3"
+    },
+    "alembic/versions/f1561346e191_add_research_study_collection_lifecycle.py": {
+      "committed_sha256": "8e7be16ba7e914155e2cb61e184867ae6b33269f966a455bfaf713b874ed6f12",
+      "working_tree_sha256": "8e7be16ba7e914155e2cb61e184867ae6b33269f966a455bfaf713b874ed6f12"
+    },
+    "api/main.py": {
+      "committed_sha256": "9f1c57064063dc41058c8994516e2aad422bc627d6834aa65e228afa0c0e36c6",
+      "working_tree_sha256": "9f1c57064063dc41058c8994516e2aad422bc627d6834aa65e228afa0c0e36c6"
+    },
+    "api/models/enterprise/scopes.py": {
+      "committed_sha256": "2899205a983a585e23d3948e7d7574adcfc6187944181bbeb702d728362513e9",
+      "working_tree_sha256": "2899205a983a585e23d3948e7d7574adcfc6187944181bbeb702d728362513e9"
+    },
+    "api/models/model_composition.py": {
+      "committed_sha256": "be213582783cd35982c9c95debfb67aa1eb85d62ea7bef95acbc18fbead06d7b",
+      "working_tree_sha256": "be213582783cd35982c9c95debfb67aa1eb85d62ea7bef95acbc18fbead06d7b"
+    },
+    "api/models/research_drafts.py": {
+      "committed_sha256": "a909f3f64fd364951f33ca84d6af89f38b60e81c3050127f00bde2711a225482",
+      "working_tree_sha256": "a909f3f64fd364951f33ca84d6af89f38b60e81c3050127f00bde2711a225482"
+    },
+    "api/models/research_publications.py": {
+      "committed_sha256": "2ad0d8e314121666783ac46da7dfe715aa126cfadcd7616fe5d3c1a77103fdf4",
+      "working_tree_sha256": "2ad0d8e314121666783ac46da7dfe715aa126cfadcd7616fe5d3c1a77103fdf4"
+    },
+    "api/models/research_studies.py": {
+      "committed_sha256": "0493d32111391797da66c14a1c08be78671655b6f7d242a6769720fe973d7db9",
+      "working_tree_sha256": "0493d32111391797da66c14a1c08be78671655b6f7d242a6769720fe973d7db9"
+    },
+    "api/models/research_variables.py": {
+      "committed_sha256": "434211a5ee1c490f1e6018107b745a38d9299f4508d3612e72e82a5febd97086",
+      "working_tree_sha256": "434211a5ee1c490f1e6018107b745a38d9299f4508d3612e72e82a5febd97086"
+    },
+    "api/routers/model_composition.py": {
+      "committed_sha256": "d9645a4c20407ec644a8eb1303681fe7f1fec05b411a81414260c4d52c7d324b",
+      "working_tree_sha256": "972823f6b9be3baa55cb0575d7be30df88a248cfc46873da418e14440515dad3"
+    },
+    "api/routers/research_coordination.py": {
+      "committed_sha256": "6f86c9d1e1677ab141e834fcfdfb962e5003468743f458ad663868ef685bb20f",
+      "working_tree_sha256": "6f86c9d1e1677ab141e834fcfdfb962e5003468743f458ad663868ef685bb20f"
+    },
+    "api/routers/research_drafts.py": {
+      "committed_sha256": "1b9596e900edfdc0d5031e7a886d08a80cf4a9ad8dbb728eec05da2fc9ded084",
+      "working_tree_sha256": "ed9720824cbd4b3ed070de50e9d05fdd85d6687196dae64d9feb08b23ed33877"
+    },
+    "api/routers/research_execution.py": {
+      "committed_sha256": "555cde4e597928e9d7a0c4c7c34429ce83cbb8750842bcc322e57ffb909839b0",
+      "working_tree_sha256": "555cde4e597928e9d7a0c4c7c34429ce83cbb8750842bcc322e57ffb909839b0"
+    },
+    "api/routers/research_launch.py": {
+      "committed_sha256": "3c86d0742b2fda810a0d3e2c9e48ad1002026d295b87bfe9ceef8c6f080430bc",
+      "working_tree_sha256": "a83b63f52455476b53e8f172396c92cd82af0ed888a816d9f0b0319e3cc50278"
+    },
+    "api/routers/research_publications.py": {
+      "committed_sha256": "fbc54f1045a60d28c8a67a62b9a0eb5fe0045ac9e48cd9c856cb8a754afcc6bf",
+      "working_tree_sha256": "fbc54f1045a60d28c8a67a62b9a0eb5fe0045ac9e48cd9c856cb8a754afcc6bf"
+    },
+    "api/routers/research_studies.py": {
+      "committed_sha256": "d59763917cceeb75a41d39c0537433106df73d67fa4f476cd319f44135fff698",
+      "working_tree_sha256": "bf8fd401c8abcdc4426d5b017c89ddf426ddc06eb675f16994ee0ad398572625"
+    },
+    "api/security/research_designs.py": {
+      "committed_sha256": "9623ca63152818149b29c4e2846a024a6c2f27609f31b846a284ef3fa72e980b",
+      "working_tree_sha256": "7d82e415ffe0a93fb13b21f489394ba2ec659308cbdeb5185759229aa20b6fb6"
+    },
+    "api/services/component_packages.py": {
+      "committed_sha256": null,
+      "working_tree_sha256": "36544c40bcf103a5f7a8e1e5700cbc5ce5e2c39095a6a24eed190907ba6fef96"
+    },
+    "api/services/dolphin.py": {
+      "committed_sha256": "6c8e84fd078b0e93ac5d7b85f1120580d7654b2deaa6042cfebe74e83d97a834",
+      "working_tree_sha256": "6c8e84fd078b0e93ac5d7b85f1120580d7654b2deaa6042cfebe74e83d97a834"
+    },
+    "api/services/model_components.py": {
+      "committed_sha256": "0d9a59bbe49bb4f6302059264ca98d8fecf35ffa0540e3bc985d1b3d96e86703",
+      "working_tree_sha256": "242506d0a627366fd71b6648fd11b8057f190b56ffff106f1df376837b2ed929"
+    },
+    "api/services/research_designs.py": {
+      "committed_sha256": "69d21c25f7a0c76a07537146f0db3e6499764bdf9fd1cdb2e1e375c53e4da8f4",
+      "working_tree_sha256": "73abc02fadf7143bcc8636423dbf5879f5f04380a21cc9c143a0c0257183c2a8"
+    },
+    "api/services/research_drafts.py": {
+      "committed_sha256": "5b93b5b1d62bcacd7ff28ddacb4719e1afe336f623a54c95ccfe9324efa7b2c2",
+      "working_tree_sha256": "8773d4510cc02290ecd6511dfff15981cb276e0d063b9950eb71d507ef05862b"
+    },
+    "api/services/research_input_bindings.py": {
+      "committed_sha256": null,
+      "working_tree_sha256": "aef2a71f6957b4c54917083bffa944cd19466910de222f33027f46140154b6b6"
+    },
+    "api/services/research_launch.py": {
+      "committed_sha256": "3e2764175fd08bf5d234c30f2909a59f7d8ef53c04d7800b24156f3a2132ced1",
+      "working_tree_sha256": "8219aa85e230190967e25f826e73b032dbf9f37b1f1c97e1fd0021804f7fbe2d"
+    },
+    "api/services/research_plan_validation.py": {
+      "committed_sha256": "5df99e2ee011bdab0031b9f8d48ca96e6cfd5a71b33b4bea47cfccaa74f64d33",
+      "working_tree_sha256": "06a85945d1292a7f7d1c6e0ed90b2ef2209946cfddb2b6c4fb7b493cc2d7ecef"
+    },
+    "api/services/research_studies/business.py": {
+      "committed_sha256": "3cba82c6fc682307f3fa7b2f7341073898bae127098825b012f22a329221295d",
+      "working_tree_sha256": "3cba82c6fc682307f3fa7b2f7341073898bae127098825b012f22a329221295d"
+    },
+    "api/services/research_studies/collection.py": {
+      "committed_sha256": "f63414acada9d0a1bae2be747b8805f8606ee8553965c519206562ff588386ea",
+      "working_tree_sha256": "415d2560f73c82855018e6bf97cbd962481ac2e13a34b0e21225bc9cbf934fb7"
+    },
+    "api/services/research_studies/coordinator.py": {
+      "committed_sha256": "b54de79bbc134c36697b13087e6159105b24c39eea9c5d6a0ee9f1a46ec83234",
+      "working_tree_sha256": "b54de79bbc134c36697b13087e6159105b24c39eea9c5d6a0ee9f1a46ec83234"
+    },
+    "api/services/research_studies/runs.py": {
+      "committed_sha256": "5d1f4879c78495702fae730eb14717d44062f670726844911d83742e0298f57f",
+      "working_tree_sha256": "d96d57d90c00c5cb6bee164bd32b34d681297e1270b468285a177b604ca1fd77"
+    },
+    "api/services/research_studies/runtime.py": {
+      "committed_sha256": "139675d5b86a67a85eb23d1bb7d974891c698ffcfec432b51113c56afba1af84",
+      "working_tree_sha256": "139675d5b86a67a85eb23d1bb7d974891c698ffcfec432b51113c56afba1af84"
+    },
+    "api/services/research_variable_catalog.py": {
+      "committed_sha256": "c7b950a65ecc89fc764b60ef0ff6b2707a5b38295f1e069b97ec602ac9e71c60",
+      "working_tree_sha256": "c7b950a65ecc89fc764b60ef0ff6b2707a5b38295f1e069b97ec602ac9e71c60"
+    },
+    "api/services/research_variable_library.py": {
+      "committed_sha256": "6e47b2f2cbb1b53a313b1ed0a9c69330558c41e0d81a263ccfc201211363c42e",
+      "working_tree_sha256": "fc8beb6be98e8142e77380cd19bad80e4a06a8e41528d9266a46797dc44319ed"
+    },
+    "api/web/model_center/components.html": {
+      "committed_sha256": "a38a153ab97d2ece6e194fac17183a578fc2612158e8630cb8b9430c78be96aa",
+      "working_tree_sha256": "4bf31609308348c9c1223d6e2533c0de0b32e5f1b7cb3060f898c1af2d9e8afa"
+    },
+    "api/web/model_center/components.js": {
+      "committed_sha256": "f94b671df76c1c6d815afe4826dd19950164a60f130334872ad5befc0cdaca4d",
+      "working_tree_sha256": "67d71688878b7aac65d16d1797115f811cbdfd1c34d09aaabc98cdd843b4261d"
+    },
+    "api/web/model_center/research-launch.js": {
+      "committed_sha256": "a5918eddf538a4ae279bb9ecc36c79777af98e2daaea61fe82d30bfd21408d65",
+      "working_tree_sha256": "e6705b0898d1ed79dced79a4dde41d80a6d66015ecb6822293242923edae3b09"
+    },
+    "api/web/model_center/research-report.js": {
+      "committed_sha256": null,
+      "working_tree_sha256": "cb99fbb05b5c2eaa00a5c07519cbfb66709eddc438dc15c044b2187605056d0d"
+    },
+    "api/web/model_center/research-study-overview.js": {
+      "committed_sha256": null,
+      "working_tree_sha256": "84899ba7da991be8caffce3445e4a1852ab848435bd26109cfbe87e1b04f487e"
+    },
+    "components/logistic_growth/file_entrypoint.py": {
+      "committed_sha256": null,
+      "working_tree_sha256": "ace2240bbcbae64f48908a50df83ad2883c84c551a99fcb583ad0a3d8e76007b"
+    },
+    "components/logistic_growth/pyproject.toml": {
+      "committed_sha256": "987a3b57c0694d24deb5f187f66c0b3d11f148cd8c1e2c6c7aadcc3ae29d1f8e",
+      "working_tree_sha256": "987a3b57c0694d24deb5f187f66c0b3d11f148cd8c1e2c6c7aadcc3ae29d1f8e"
+    },
+    "docs/component-development-standard.md": {
+      "committed_sha256": null,
+      "working_tree_sha256": "52a383d5398aec25d35790df420a3571fe186e24adbf543c42c79af7032532f1"
+    },
+    "specs/enterprise-model-services/research-fit.engineering.example.json": {
+      "committed_sha256": "13f14de40832a06b022ed66d328dd93b4684f0e9222f39a4438bce2007e634cd",
+      "working_tree_sha256": "c1063922616aba16b5ca65a416331ba45ee211fa36e3de26576c865e70d0f28c"
+    },
+    "specs/enterprise-model-services/research-plan.schema.json": {
+      "committed_sha256": "0affcb1820f12de91fdb16849be83aa5fe57bb3c4dfe476b2a195675d8d7a256",
+      "working_tree_sha256": "c51de8e2f4f0e028858220ca7d317b4a3cb90fc2d339495f05b76fc4c42ca336"
+    },
+    "specs/enterprise-model-services/research-workflow.openapi.json": {
+      "committed_sha256": "b745978bebe273c99e8a5594eac086c9b3910c3973142e64438ecddcaa790f60",
+      "working_tree_sha256": "ba6de3329c4be5ee533fd9acd79c08b86854bd2ab3704ebe61bc10c5697a553a"
+    },
+    "src/mlgrowth_contracts/identifiers.py": {
+      "committed_sha256": "5946f2310bf87d430d8364a01bdbf445be1b344d2513d8c1f507ae60e0f5c807",
+      "working_tree_sha256": "5946f2310bf87d430d8364a01bdbf445be1b344d2513d8c1f507ae60e0f5c807"
+    },
+    "src/mlgrowth_contracts/model_center/component_catalog.py": {
+      "committed_sha256": "c85de031a0f939a269bce5aaf7a8d0bfa9715ca4fa31ae77259e23895ac8ebe7",
+      "working_tree_sha256": "1b2777ecd1c4aad3c2dc915c9f8e83c4bbe9aa41f1d0dad522d797b30e18bba6"
+    },
+    "src/mlgrowth_contracts/model_center/component_packages.py": {
+      "committed_sha256": null,
+      "working_tree_sha256": "6ce0f05a5983bea855c911400d5b13c4461c709201ba73311070d5b09bb6f6e2"
+    },
+    "src/mlgrowth_contracts/model_center/components/current.json": {
+      "committed_sha256": null,
+      "working_tree_sha256": "f15094b4db00179f3c16cb0b6f59369899d26f0d2074ddedff9ba96549aad059"
+    },
+    "src/mlgrowth_contracts/model_center/components/history.json": {
+      "committed_sha256": null,
+      "working_tree_sha256": "d5bb43ecbe19528169d4fc2c4a3cc81fbda05ff5432a3f5f55d684e4e8f619a6"
+    },
+    "src/mlgrowth_contracts/model_center/components/v1.json": {
+      "committed_sha256": "0e5b3f65610dc3fd25a0482c51230e521c7a511d3edd09c0b445535a8e82a432",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v10.json": {
+      "committed_sha256": "617c062b618863882e3a8f8450cd3594fa885659a007be264bef98c25da11749",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v11.json": {
+      "committed_sha256": "4894d4f0f11816ad5edfc8ac6bc8419d90a13974b70aa62a598856b6278bbc27",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v2.json": {
+      "committed_sha256": "6a3e64f2f1a99c24e5f1911cfac47d180e6e8fe380acb4d5b3dd371c6a851a2e",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v3.json": {
+      "committed_sha256": "3d8ab9d133927a0c5d61510bbc1b693bcdaf271904cec3d5a0902013573d5d24",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v4.json": {
+      "committed_sha256": "42fecca6ccbc98c98985f92d39b5ec0ab155ff4394f15b019d8b359c48dfd2cb",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v5.json": {
+      "committed_sha256": "2ff2399d3e1019bdefd8a3bda37dd911e6ffe75b49b2d144d1e0d83f568392e4",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v6.json": {
+      "committed_sha256": "158faca2e3e82fe72a1325a4124efa6a58a9b540d6faa6f68667212edd3d7b26",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v7.json": {
+      "committed_sha256": "95b23a5340e8e342337d8ec020ed1a40e67d96287bb998fc5fdc8e95c7c895cb",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v8.json": {
+      "committed_sha256": "656b0d8e004c834db59b6aa54f0dada75551604c8d9a75f5d606cf10c5d9418f",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/model_center/components/v9.json": {
+      "committed_sha256": "f06c7bc8c1b9568f8a815a1f6313b0f96e9e480a5825f96c003f91a4710992f7",
+      "working_tree_sha256": null
+    },
+    "src/mlgrowth_contracts/research/catalog/variables-growth-trend-v1.json": {
+      "committed_sha256": null,
+      "working_tree_sha256": "5a8daae600738be473dc3e323ee1c742fe5ba16d3baf42a62795d6bf3c9c25fc"
+    },
+    "src/mlgrowth_contracts/research/collection.py": {
+      "committed_sha256": "189bd9b6bba1cfc354c5e0f417a1e443f5cb98fb50efdecc67941946d5c84263",
+      "working_tree_sha256": "8bca0f68178096217fb08785049c73a4ac850d197c733c9a88209ed9978926f1"
+    },
+    "src/mlgrowth_contracts/research/drafts.py": {
+      "committed_sha256": "8a02cb76c8cb52e95e0d4808ce4d206595899381ea8d6acac99611ed449895a0",
+      "working_tree_sha256": "8a02cb76c8cb52e95e0d4808ce4d206595899381ea8d6acac99611ed449895a0"
+    },
+    "src/mlgrowth_contracts/research/field_selection.py": {
+      "committed_sha256": "566c900f3a90f38f31ff65fd7be34411c5662ba2a397af6fa07f37ceefc58493",
+      "working_tree_sha256": "94335ef8b77001f2674f603605c095436555e7bc1339a67c221358b4a4698d5b"
+    },
+    "src/mlgrowth_contracts/research/plans.py": {
+      "committed_sha256": "02243d4523ae81cb1197153824ebfeb7d45917e3fd9ba342d9004807bb2a4b49",
+      "working_tree_sha256": "1cf38e17d3af1ac0d3533dfb98e6e312c8f78c97bab17fb3339027254163e460"
+    },
+    "src/mlgrowth_enterprise/research_business.py": {
+      "committed_sha256": "36a055ac6c8aae6f90be077ea0b464c8ae4c4142f4bbeba5ab7ac9c4006de27b",
+      "working_tree_sha256": "36a055ac6c8aae6f90be077ea0b464c8ae4c4142f4bbeba5ab7ac9c4006de27b"
+    },
+    "src/mlgrowth_enterprise/research_field_selection.py": {
+      "committed_sha256": "da6641f1be2be6bab6d808c62f31d70a8fae081d80dd81d0b1d8346e10e5ccf7",
+      "working_tree_sha256": "da6641f1be2be6bab6d808c62f31d70a8fae081d80dd81d0b1d8346e10e5ccf7"
+    },
+    "src/pymlgrowth/research_models/logistic_growth_v2.py": {
+      "committed_sha256": "d5410e3ce0668d08c700932a045a86fdeb0b4e53aa13d2ddbb42f2af5830653e",
+      "working_tree_sha256": "d5410e3ce0668d08c700932a045a86fdeb0b4e53aa13d2ddbb42f2af5830653e"
+    },
+    "src/pymlgrowth/research_models/remote.py": {
+      "committed_sha256": "eed589ffc79fd66f99bd64b70151e4d91c9087369e0919283dd8754940ffcb0f",
+      "working_tree_sha256": "eed589ffc79fd66f99bd64b70151e4d91c9087369e0919283dd8754940ffcb0f"
+    },
+    "tests/model_center/research_http_fixture.py": {
+      "committed_sha256": "e9e685730a4c496df252a4972392d8c01b8b22235df6f1873b8830be8320cb77",
+      "working_tree_sha256": "e9e685730a4c496df252a4972392d8c01b8b22235df6f1873b8830be8320cb77"
+    },
+    "tests/model_center/test_logistic_growth.py": {
+      "committed_sha256": "4b76401a277c4175f4d21d93148bb4807962de7538ceb1c0b81d5f1af933d327",
+      "working_tree_sha256": "4b76401a277c4175f4d21d93148bb4807962de7538ceb1c0b81d5f1af933d327"
+    },
+    "tests/model_center/test_research_drafts.py": {
+      "committed_sha256": "5f43ad8e35f98cf56d8c208338d25ac1e73e2099bd4646037474ed6db83c8f08",
+      "working_tree_sha256": "6c4f9460be25b5c691acd5fc3bc5a81b3d6fbc46707e1604b9273a713644cc2e"
+    },
+    "tests/model_center/test_research_http_workflow.py": {
+      "committed_sha256": "c4e849dbe6465a9b8b6200c8b0d4a9949f84c5a93921b033458c74c5c5b9169c",
+      "working_tree_sha256": "0e91e6f7456d61a8e1aa1bad40f13f32b6555d3fe30fd9544090dad5c3da4355"
+    },
+    "tests/model_center/test_research_launch.py": {
+      "committed_sha256": "6cb97d583a5bc51c8511d28b41816100c77537946634a2a67434fab6037f0640",
+      "working_tree_sha256": "92c2a3d408c889690b54e66307003574abfdabdb96e31d1fe5454b8e76914526"
+    },
+    "tests/model_center/test_research_publications_http.py": {
+      "committed_sha256": "33d136886959e1ba253bb5e8772b12f09780b5714afa10b3d2f47512cea169ab",
+      "working_tree_sha256": "33d136886959e1ba253bb5e8772b12f09780b5714afa10b3d2f47512cea169ab"
+    },
+    "tests/model_center/test_research_recovery.py": {
+      "committed_sha256": "947f2786d457a43795127298d00dfbcbf9a2ecb7deebf535886cb5c3aa0a2730",
+      "working_tree_sha256": "947f2786d457a43795127298d00dfbcbf9a2ecb7deebf535886cb5c3aa0a2730"
+    },
+    "tests/model_center/test_research_run_database.py": {
+      "committed_sha256": "dec851b97a3061f3f032834beb057d9a30da410fc6610a8439fbbce6152b269f",
+      "working_tree_sha256": "dec851b97a3061f3f032834beb057d9a30da410fc6610a8439fbbce6152b269f"
+    },
+    "tests/model_center/test_research_study_database.py": {
+      "committed_sha256": "0b5cc70c05e4ff1c542d7e3e7838c58d5164e352f7bbc0c3c48274e6fee7620f",
+      "working_tree_sha256": "0b5cc70c05e4ff1c542d7e3e7838c58d5164e352f7bbc0c3c48274e6fee7620f"
+    }
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "method": "real DOM events with live third-party provider and DolphinScheduler",
+  "native_browser_visual_check": false,
+  "design_id": "01a1e403-3dd6-732c-bd85-60082c2fe57e",
+  "run_id": "01a1e403-5679-7b91-99e5-7058018e2fed",
+  "scheduler_id": "737",
+  "operation": "analyze",
+  "source_snapshot_ids": [
+    "01a1e403-4d99-73c4-b38b-b5691f7d93d6"
+  ],
+  "source_rows": 7,
+  "curve_points": 7,
+  "report_visible": true,
+  "model_save_hidden": true,
+  "http_error_count": 0,
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-rules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/report-tasks",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/study-templates",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/study-templates/crop-high-temperature",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/validate",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/workspace/plans/01a1e403-3dd6-732c-bd85-60082c2fe57e/input-acquisitions",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/input-acquisitions/01a1e403-40a8-7f87-a768-58956d5076c2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/input-acquisitions/01a1e403-40a8-7f87-a768-58956d5076c2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/input-acquisitions/01a1e403-40a8-7f87-a768-58956d5076c2",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/input-snapshots/01a1e403-4d99-73c4-b38b-b5691f7d93d6",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/workspace/plans/01a1e403-3dd6-732c-bd85-60082c2fe57e",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans/01a1e403-3dd6-732c-bd85-60082c2fe57e",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/validate",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/study-templates/crop-high-temperature",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/validate",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/workspace/check-execution",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/workspace/plans/01a1e403-3dd6-732c-bd85-60082c2fe57e",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs/01a1e403-5679-7b91-99e5-7058018e2fed/plan",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/study-templates/crop-high-temperature",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs/01a1e403-5679-7b91-99e5-7058018e2fed",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs/01a1e403-5679-7b91-99e5-7058018e2fed",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "manifest_version": "1.1",
+  "component": {
+    "code": "catalog_weather_conditions",
+    "revision": 1,
+    "name": "标准日值气象暴露分析",
+    "category": "assessment"
+  },
+  "contract": {
+    "summary": "按准确系统指标、日界和窗口分析高温、低温与降雨条件。",
+    "method": "版本化逐日窗口暴露规则",
+    "requirements": [
+      "输入为已对齐并封存的标准数值观测。"
+    ],
+    "limitations": [
+      "网格估计不等同田间实测，气象暴露不等于已发生灾损。",
+      "参考阈值没有分生育阶段，不宣称跨作物通用的灾害诊断精度。",
+      "缺日时保留覆盖不足，不能把不完整窗口判为筛查阴性。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "标准观测表",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "report",
+        "name": "条件分析结果",
+        "description": "条件信号、逐地块覆盖和解释范围",
+        "data_type": {
+          "semantic": "catalog_weather_conditions_report",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      },
+      {
+        "code": "series",
+        "name": "实际日值序列",
+        "description": "本次窗口中实际采用的准确指标日值",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "variables": {
+          "title": "统计指标",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,95}$"
+          },
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "covariate",
+              "driver",
+              "target",
+              "validation",
+              "parameter"
+            ]
+          },
+          "maxItems": 1
+        },
+        "rule": {
+          "title": "条件规则",
+          "type": "string",
+          "enum": [
+            "heat_exposure",
+            "frost_exposure",
+            "rainfall_excess",
+            "rainfall_deficit"
+          ]
+        },
+        "as_of": {
+          "title": "分析截止日期",
+          "type": "string",
+          "format": "date"
+        },
+        "window_days": {
+          "title": "窗口天数",
+          "type": "integer",
+          "enum": [
+            7,
+            30
+          ]
+        }
+      },
+      "required": [
+        "rule",
+        "as_of",
+        "window_days",
+        "variables"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "rule": {
+                "const": "heat_exposure"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variables": {
+                "const": [
+                  "temperature_maximum_daily"
+                ]
+              },
+              "window_days": {
+                "const": 7
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "rule": {
+                "const": "frost_exposure"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variables": {
+                "const": [
+                  "temperature_minimum_daily"
+                ]
+              },
+              "window_days": {
+                "const": 7
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "rule": {
+                "const": "rainfall_excess"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variables": {
+                "const": [
+                  "precipitation_daily"
+                ]
+              },
+              "window_days": {
+                "const": 7
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "rule": {
+                "const": "rainfall_deficit"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "variables": {
+                "const": [
+                  "precipitation_daily"
+                ]
+              },
+              "window_days": {
+                "const": 30
+              }
+            }
+          }
+        }
+      ]
+    },
+    "execution": {
+      "operations": [
+        "analyze"
+      ],
+      "input_uses": {
+        "variables": {
+          "role": "analysis",
+          "phases": [
+            "analysis"
+          ]
+        }
+      }
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:0dde5be2444edfb32cef1c67b232421031d511cb999974a56537ca9ef34765f8"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

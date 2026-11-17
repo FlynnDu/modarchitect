@@ -1,0 +1,56 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "method": "real DOM events with live HTTP and DolphinScheduler",
+  "native_browser_visual_check": false,
+  "engineering_fixture_only": true,
+  "events": [
+    "configure/calculation",
+    "configure/outputs",
+    "review/check",
+    "model/predict"
+  ],
+  "design_id": "01a1e461-877b-7ed6-9968-ecd8e5ee4de7",
+  "training_run_id": "01a1e461-b9eb-7269-99f9-36e73ff0b6d6",
+  "training_scheduler_id": "741",
+  "prediction_run_id": "01a1e461-e292-78de-ad00-465e8ccda1ff",
+  "prediction_scheduler_id": "743",
+  "model_id": "01a1e461-d69b-738d-8ac8-304642fb5305",
+  "model_sha256": "3ff987dfc7f760d9c062fe6560188219f3fd819ed967d76da806103e9aa2f1f1",
+  "training_method": "xgboost_training",
+  "metrics": [
+    {
+      "output": "predictions",
+      "target": "lai",
+      "unit": "m2_m2",
+      "rows": 20,
+      "coverage": 1,
+      "expected_rows": 20,
+      "status": "evaluated",
+      "mae": 0.22193818404651094,
+      "rmse": 0.23209628801768187,
+      "bias": -0.22193818404651094
+    },
+    {
+      "output": "predictions",
+      "target": "agb_kg_ha",
+      "unit": "kg_ha",
+      "rows": 20,
+      "coverage": 1,
+      "expected_rows": 20,
+      "status": "evaluated",
+      "mae": 824.7553580534681,
+      "rmse": 849.3939180732566,
+      "bias": -824.7553580534681
+    }
+  ],
+  "expected_prediction": null,
+  "actual_prediction": {
+    "lai": 2.139308452606201,
+    "agb_kg_ha": 2546.490234375
+  },
+  "state_unchanged": true,
+  "no_refit": true,
+  "reopened_plan": true,
+  "reopened_model": true,
+  "http_error_count": 0
+}

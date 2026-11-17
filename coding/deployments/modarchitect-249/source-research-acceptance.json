@@ -1,0 +1,115 @@
+{
+  "label_data": "constructed_engineering_labels_not_field_measurements",
+  "base": "http://192.168.3.249:18925",
+  "acquisitions": [
+    {
+      "acquisition_id": "01a1d04b-9894-76b9-9798-610ce2ee5847",
+      "snapshot_ids": [
+        "01a1d04b-d9a7-700d-8af7-e47efe545c1a",
+        "01a1d04b-d9aa-724b-82be-d305e1dbe719",
+        "01a1d04b-d9ab-7d88-95a1-5eed52e04d48",
+        "01a1d04b-d9ab-7225-8b6b-b2b7ef4962e6",
+        "01a1d04b-d9ac-7032-b48f-f84a5b581eaa",
+        "01a1d04b-d9ad-7972-bbfb-1d481527717c",
+        "01a1d04b-d9ad-702f-ac37-0ab2cf9e1f3d",
+        "01a1d04b-d9ae-7915-9d82-103c5fe54720",
+        "01a1d04b-d9ae-7fc4-a633-062281b0574b",
+        "01a1d04b-d9af-7421-ab99-1aad79a0cc00",
+        "01a1d04b-d9b0-75b5-80b7-4c9d26b5a9e1",
+        "01a1d04b-d9b0-7959-8cea-a7524671b7f8",
+        "01a1d04b-d9a8-723c-8746-ae9492b9fea2",
+        "01a1d04b-d9a6-7c00-9acd-0d8ed536af6c",
+        "01a1d04b-d9a7-7db6-b462-9d8aaef6a469",
+        "01a1d04b-d9a5-784a-a761-bc5c50542b05",
+        "01a1d04b-d9a9-7e24-b5c9-6d35585096e1",
+        "01a1d04b-d9a9-72f7-829e-95698b56b072"
+      ],
+      "columns": [
+        "precipitation_daily",
+        "soil_bdod",
+        "soil_cec",
+        "soil_cfvo",
+        "soil_clay",
+        "soil_phh2o",
+        "soil_sand",
+        "soil_silt",
+        "soil_soc",
+        "soil_wv0010",
+        "soil_wv0033",
+        "soil_wv1500",
+        "solar_radiation_daily",
+        "temperature_maximum_daily",
+        "temperature_mean_daily",
+        "temperature_minimum_daily",
+        "vapour_pressure_daily",
+        "wind_speed_2m_daily"
+      ]
+    },
+    {
+      "acquisition_id": "01a1d04b-dfa9-720f-a188-6670adcf816a",
+      "snapshot_ids": [
+        "01a1d04b-eb9e-7bea-837f-0dc6151438a2",
+        "01a1d04b-eb9c-740b-890e-3b6923ba4c3f"
+      ],
+      "columns": [
+        "solar_radiation_daily",
+        "temperature_mean_daily"
+      ]
+    },
+    {
+      "acquisition_id": "01a1d04b-fe7e-7d57-94be-2efe3c5dcb3b",
+      "snapshot_ids": [
+        "01a1d04c-0771-7d77-a722-9a39affce098",
+        "01a1d04c-076f-7134-90cc-66aac6569c2c"
+      ],
+      "columns": [
+        "solar_radiation_daily",
+        "temperature_mean_daily"
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "01a1d04b-f224-74f3-86d7-e752b9191ac8",
+      "kind": "train",
+      "status": "succeeded",
+      "scheduler_id": "158",
+      "result_sha256": "09172540c68772f0efe06bbf1aab9b8ffcca50052389fac0efdf4adcaae2960d"
+    },
+    {
+      "run_id": "01a1d04c-0b1e-7859-b108-d877bf44bdd0",
+      "kind": "predict",
+      "status": "succeeded",
+      "scheduler_id": "160",
+      "result_sha256": "80d41ff244c0b81b73e08edc787eef930fb07905a80a76fbc120bd7eb2be4454"
+    }
+  ],
+  "third_party_inputs_collected": 18,
+  "design_id": "01a1d04b-deb7-7821-ae8c-3d1b442b90f3",
+  "model_id": "01a1d04b-fe3d-79d2-a211-04030994908b",
+  "model_sha256": "44255f9a3cb16cae924e7326ed755b1aa67fdb674eeab5bc10b354e3193a5dee",
+  "training_source_ids": [
+    "01a1d04b-eb9e-7bea-837f-0dc6151438a2",
+    "01a1d04b-eb9c-740b-890e-3b6923ba4c3f"
+  ],
+  "prediction_source_ids": [
+    "01a1d04c-0771-7d77-a722-9a39affce098",
+    "01a1d04c-076f-7134-90cc-66aac6569c2c"
+  ],
+  "prediction_rows": 5,
+  "metrics": [
+    {
+      "output": "predictions",
+      "target": "lai",
+      "unit": "m2_m2",
+      "rows": 20,
+      "coverage": 1.0,
+      "expected_rows": 20,
+      "status": "evaluated",
+      "mae": 2.3714363805993343e-14,
+      "rmse": 2.439016212793931e-14,
+      "bias": -2.3714363805993343e-14
+    }
+  ],
+  "all_success": true
+}

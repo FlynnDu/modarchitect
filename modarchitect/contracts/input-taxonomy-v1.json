@@ -1,0 +1,145 @@
+{
+  "version": "1.0.0",
+  "categories": [
+    {
+      "code": "manual",
+      "name": "人工采集"
+    },
+    {
+      "code": "third_party",
+      "name": "第三方数据"
+    },
+    {
+      "code": "platform_analysis",
+      "name": "平台分析成果"
+    },
+    {
+      "code": "iot_platform",
+      "name": "物联网监测"
+    }
+  ],
+  "groups": [
+    {
+      "code": "manual_morphology",
+      "parent": "manual",
+      "name": "植株形态"
+    },
+    {
+      "code": "manual_leaf_cover",
+      "parent": "manual",
+      "name": "叶面积与冠层覆盖"
+    },
+    {
+      "code": "manual_biomass_yield",
+      "parent": "manual",
+      "name": "生物量与产量"
+    },
+    {
+      "code": "third_party_weather",
+      "parent": "third_party",
+      "name": "气象数据"
+    },
+    {
+      "code": "third_party_soil",
+      "parent": "third_party",
+      "name": "土壤数据"
+    },
+    {
+      "code": "third_party_satellite",
+      "parent": "third_party",
+      "name": "卫星观测"
+    },
+    {
+      "code": "analysis_growth",
+      "parent": "platform_analysis",
+      "name": "长势分析"
+    },
+    {
+      "code": "analysis_3d_phenotype",
+      "parent": "platform_analysis",
+      "name": "三维表型"
+    },
+    {
+      "code": "iot_greenhouse",
+      "parent": "iot_platform",
+      "name": "棚内环境监测"
+    },
+    {
+      "code": "iot_root_water",
+      "parent": "iot_platform",
+      "name": "根区水分监测"
+    },
+    {
+      "code": "iot_water_weighing",
+      "parent": "iot_platform",
+      "name": "水肥与称重监测"
+    }
+  ],
+  "assignments": {
+    "sampling_indicator:agb_kg_ha@1.0.0": "manual_biomass_yield",
+    "sampling_indicator:canopy_cover@1.0.0": "manual_leaf_cover",
+    "sampling_indicator:height_cm@1.0.0": "manual_morphology",
+    "sampling_indicator:lai@1.0.0": "manual_leaf_cover",
+    "sampling_indicator:tuber_dm_kg_ha@1.0.0": "manual_biomass_yield",
+    "research_variable:plant_height@1.0.0": "manual_morphology",
+    "research_variable:stem_diameter@1.0.0": "manual_morphology",
+    "research_variable:internode_length@1.0.0": "manual_morphology",
+    "research_variable:leaf_length@1.0.0": "manual_morphology",
+    "research_variable:leaf_width@1.0.0": "manual_morphology",
+    "research_variable:plant_leaf_area@1.0.0": "manual_leaf_cover",
+    "research_variable:leaf_fresh_mass@1.0.0": "manual_biomass_yield",
+    "research_variable:stem_fresh_mass@1.0.0": "manual_biomass_yield",
+    "research_variable:stem_leaf_fresh_mass@1.0.0": "manual_biomass_yield",
+    "research_variable:greenhouse_air_temperature@1.0.0": "iot_greenhouse",
+    "research_variable:greenhouse_relative_humidity@1.0.0": "iot_greenhouse",
+    "research_variable:greenhouse_par@1.0.0": "iot_greenhouse",
+    "research_variable:greenhouse_net_radiation_daily@1.0.0": "iot_greenhouse",
+    "research_variable:greenhouse_ground_heat_flux_daily@1.0.0": "iot_greenhouse",
+    "research_variable:greenhouse_root_zone_water_content@1.0.0": "iot_root_water",
+    "research_variable:greenhouse_inflow_mass@1.0.0": "iot_water_weighing",
+    "research_variable:greenhouse_drainage_mass@1.0.0": "iot_water_weighing",
+    "research_variable:greenhouse_platform_mass_change@1.0.0": "iot_water_weighing",
+    "research_variable:marketable_fruit_yield@1.0.0": "manual_biomass_yield",
+    "variable_source:temperature_minimum_daily@1.0.0": "third_party_weather",
+    "variable_source:temperature_maximum_daily@1.0.0": "third_party_weather",
+    "variable_source:temperature_mean_daily@1.0.0": "third_party_weather",
+    "variable_source:precipitation_daily@1.0.0": "third_party_weather",
+    "variable_source:solar_radiation_daily@1.0.0": "third_party_weather",
+    "variable_source:wind_speed_2m_daily@1.0.0": "third_party_weather",
+    "variable_source:vapour_pressure_daily@1.0.0": "third_party_weather",
+    "variable_source:soil_bdod@1.0.0": "third_party_soil",
+    "variable_source:soil_cec@1.0.0": "third_party_soil",
+    "variable_source:soil_cfvo@1.0.0": "third_party_soil",
+    "variable_source:soil_clay@1.0.0": "third_party_soil",
+    "variable_source:soil_phh2o@1.0.0": "third_party_soil",
+    "variable_source:soil_sand@1.0.0": "third_party_soil",
+    "variable_source:soil_silt@1.0.0": "third_party_soil",
+    "variable_source:soil_soc@1.0.0": "third_party_soil",
+    "variable_source:soil_wv0010@1.0.0": "third_party_soil",
+    "variable_source:soil_wv0033@1.0.0": "third_party_soil",
+    "variable_source:soil_wv1500@1.0.0": "third_party_soil",
+    "variable_source:sentinel2_red_reflectance@1.0.0": "third_party_satellite",
+    "variable_source:sentinel2_nir_reflectance@1.0.0": "third_party_satellite",
+    "research_variable:growth_report_ndvi_mean@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndvi_stddev@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndvi_min@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndvi_max@1.0.0": "analysis_growth",
+    "research_variable:growth_report_gndvi_mean@1.0.0": "analysis_growth",
+    "research_variable:growth_report_gndvi_stddev@1.0.0": "analysis_growth",
+    "research_variable:growth_report_gndvi_min@1.0.0": "analysis_growth",
+    "research_variable:growth_report_gndvi_max@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndre_mean@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndre_stddev@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndre_min@1.0.0": "analysis_growth",
+    "research_variable:growth_report_ndre_max@1.0.0": "analysis_growth",
+    "research_variable:growth_report_lci_mean@1.0.0": "analysis_growth",
+    "research_variable:growth_report_lci_stddev@1.0.0": "analysis_growth",
+    "research_variable:growth_report_lci_min@1.0.0": "analysis_growth",
+    "research_variable:growth_report_lci_max@1.0.0": "analysis_growth",
+    "research_variable:growth_report_osavi_mean@1.0.0": "analysis_growth",
+    "research_variable:growth_report_osavi_stddev@1.0.0": "analysis_growth",
+    "research_variable:growth_report_osavi_min@1.0.0": "analysis_growth",
+    "research_variable:growth_report_osavi_max@1.0.0": "analysis_growth",
+    "research_variable:growth_point_ndvi@1.0.0": "analysis_growth"
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "release": {
+    "image": "modarchitect:0.1.0-input-view-eb9971db6d9f",
+    "wheel_sha256": "eb9971db6d9f391bf32e59f8d0edd1216ad1c89ae62fa13abeda7b89598b4931",
+    "python_files_unchanged": 51,
+    "contract_files_unchanged": 31,
+    "image_id": "sha256:72c5d5a8c17c1e35ab47c6f21adb1cf44e53545bf6532b7d306b1b1a1e6adc43"
+  },
+  "installed_files_match": 94,
+  "ui_tests_passed": 26,
+  "compatibility": {
+    "models_unchanged": 29,
+    "versions_unchanged": 112,
+    "runtime_profiles_unchanged": true
+  },
+  "ui": {
+    "service": "http://192.168.3.249:18925",
+    "method": "real DOM events, live HTTP and DolphinScheduler",
+    "native_browser_visual_check": false,
+    "preview_did_not_save": true,
+    "adopted_and_reopened": true,
+    "workflow_visible_by_default": true,
+    "public_topics": 16,
+    "design_id": "01a1cfb1-4106-7c18-a7c0-8f60a4f69e18",
+    "run_id": "01a1cfb1-4503-732e-bb4b-af3ab3a45896",
+    "scheduler_id": "146",
+    "result_sha256": "233501dc8c25740e003e15c9cf63d3432304a0b67926fdaf1a0b6da11aa850ba",
+    "edited_date_reopened_and_executed": "2026-10-20",
+    "independent_analysis_component": true,
+    "researcher_language_verified": true,
+    "no_fake_predictive_model": true,
+    "card_stages": 5,
+    "server_preflight_passed": true,
+    "real_run_updates_cards": true,
+    "http_error_count": 0,
+    "page_error_count": 0,
+    "chain_flow": {
+      "design_id": "01a1cfb1-54ec-714c-bde3-58c0d1faa5b7",
+      "run_id": "01a1cfb1-57d3-7fa1-80ac-5f973901384d",
+      "scheduler_id": "147",
+      "prediction_run_id": "01a1cfb1-66f2-7b88-b132-2feabf0a01e1",
+      "prediction_scheduler_id": "148",
+      "model_id": "01a1cfb1-667e-7629-957f-5d4e5dcf8cba",
+      "indicators": [
+        "定植后天数",
+        "株高",
+        "NDVI",
+        "土壤体积含水率",
+        "气温"
+      ],
+      "data_rows": 90,
+      "history_rows": 45,
+      "training_rows": 25,
+      "holdout_rows": 20,
+      "edited_holdout_rows_reopened": 21,
+      "source": "dataset",
+      "target": "evaluation",
+      "matched_rows": 20,
+      "prediction_input_count": 4,
+      "same_indicator_list": true,
+      "no_refit": true,
+      "compact_content": true
+    }
+  },
+  "scheduler": {
+    "instances": [
+      {
+        "scheduler_id": "146",
+        "workflow_state": "SUCCESS",
+        "task_states": [
+          "SUCCESS"
+        ]
+      },
+      {
+        "scheduler_id": "147",
+        "workflow_state": "SUCCESS",
+        "task_states": [
+          "SUCCESS"
+        ]
+      },
+      {
+        "scheduler_id": "148",
+        "workflow_state": "SUCCESS",
+        "task_states": [
+          "SUCCESS"
+        ]
+      }
+    ],
+    "all_success": true
+  },
+  "diagram_visual": {
+    "checked": true,
+    "method": "isolated headless Chromium rendering of the live DOM snapshot",
+    "width": 2000,
+    "height": 1050,
+    "sha256": "aaa9c1b3431e3fdc98cf01c60b760d25693866be812ec1018fb9b55be055a54e"
+  }
+}

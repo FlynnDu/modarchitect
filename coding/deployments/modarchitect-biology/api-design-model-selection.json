@@ -1,0 +1,177 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "method": "real DOM selections with live validation",
+  "models_checked": 28,
+  "execution_implementation_required": false,
+  "native_browser_visual_check": false,
+  "items": [
+    {
+      "component": "logistic_growth_curve@4",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "multivariate_linear_regression@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "historical_logistic_forecast@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "research_forecast_feature_join@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "historical_logistic_training@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "historical_logistic_predict@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "multivariate_linear_predict@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "multivariate_linear_training@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "research_descriptive_statistics@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "convlstm@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "gaussian_process@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "greenhouse_crop_et_daily_comparison@2",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 3
+    },
+    {
+      "component": "greenhouse_reference_et_daily@3",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "greenhouse_weighing_water_balance@2",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "lstm@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "random_forest@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "survey_assessment@4",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "xgboost@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "research_weather_conditions@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "agronomic_indicator_analysis@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 2
+    },
+    {
+      "component": "catalog_weather_conditions@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "sentinel_ndvi_features@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "random_forest_training@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "random_forest_predict@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "xgboost_training@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "xgboost_predict@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "gaussian_process_training@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    },
+    {
+      "component": "gaussian_process_predict@1",
+      "selected": true,
+      "validated": true,
+      "deferred_inputs": 1
+    }
+  ]
+}

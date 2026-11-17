@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.5",
+  "name": "未命名研究方案",
+  "question": "",
+  "objective": "prediction",
+  "purpose": "train",
+  "variables": [],
+  "collection_requirements": [],
+  "composition": {"schema_version": "1.0", "object_scope": "field_crop_season", "inputs": [], "nodes": [], "outputs": []},
+  "input_recipes": {},
+  "evaluation": {"target_codes": [], "purpose": "exploratory", "split_unit": "time", "success_criteria": "按各目标分别评价", "update_policy": "manual_candidate"},
+  "layout": {}
+}

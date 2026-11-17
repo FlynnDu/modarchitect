@@ -1,0 +1,70 @@
+{
+  "schedules": [
+    {
+      "kind": "research",
+      "workflow": "189418908454624",
+      "verified": true,
+      "count": 0,
+      "schedules": []
+    },
+    {
+      "kind": "source",
+      "workflow": "189506532807392",
+      "verified": true,
+      "count": 0,
+      "schedules": []
+    }
+  ],
+  "latest_runs": [
+    {
+      "run_id": "01a1d04c-0b1e-7859-b108-d877bf44bdd0",
+      "kind": "predict",
+      "status": "succeeded",
+      "scheduler_id": "160",
+      "has_input": true,
+      "has_result": true,
+      "created_at": "2026-11-12T15:06:46.942934+00:00",
+      "updated_at": "2026-11-12T15:06:49.542868+00:00"
+    },
+    {
+      "run_id": "01a1d04b-f224-74f3-86d7-e752b9191ac8",
+      "kind": "train",
+      "status": "succeeded",
+      "scheduler_id": "158",
+      "has_input": true,
+      "has_result": true,
+      "created_at": "2026-11-12T15:06:40.548741+00:00",
+      "updated_at": "2026-11-12T15:06:43.563109+00:00"
+    },
+    {
+      "run_id": "01a1d043-a67d-7dcd-9192-8f33e1da1c63",
+      "kind": "predict",
+      "status": "succeeded",
+      "scheduler_id": "154",
+      "has_input": true,
+      "has_result": true,
+      "created_at": "2026-11-12T14:57:36.893592+00:00",
+      "updated_at": "2026-11-12T14:57:38.241063+00:00"
+    },
+    {
+      "run_id": "01a1d043-9474-7627-8b12-831bab141c4e",
+      "kind": "train",
+      "status": "succeeded",
+      "scheduler_id": "152",
+      "has_input": true,
+      "has_result": true,
+      "created_at": "2026-11-12T14:57:32.276535+00:00",
+      "updated_at": "2026-11-12T14:57:34.203698+00:00"
+    },
+    {
+      "run_id": "01a1cfb1-66f2-7b88-b132-2feabf0a01e1",
+      "kind": "predict",
+      "status": "succeeded",
+      "scheduler_id": "148",
+      "has_input": true,
+      "has_result": true,
+      "created_at": "2026-11-12T12:17:52.370701+00:00",
+      "updated_at": "2026-11-12T12:17:55.177629+00:00"
+    }
+  ]
+}

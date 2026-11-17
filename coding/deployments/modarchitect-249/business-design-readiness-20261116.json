@@ -1,0 +1,76 @@
+{
+  "date": "2026-11-16",
+  "method": "local actual HTTP handlers; no business database; no production credentials",
+  "routes": {
+    "/api/v1/model-center/research-inputs": [
+      "get"
+    ],
+    "/api/v1/model-center/research-inputs/configure": [
+      "post"
+    ],
+    "/api/v1/research/configurations/draft": [
+      "post"
+    ],
+    "/api/v1/research/configurations/check": [
+      "post"
+    ],
+    "/api/v1/research/configurations/import": [
+      "post"
+    ],
+    "/api/v1/research/design-drafts": [
+      "get",
+      "post"
+    ],
+    "/api/v1/research/design-drafts/{design_id}": [
+      "get",
+      "put"
+    ],
+    "/api/v1/research/design-drafts/{design_id}/check": [
+      "post"
+    ],
+    "/api/v1/research/design-drafts/{design_id}/publish": [
+      "post"
+    ],
+    "/api/v1/workspace/study-templates": [
+      "get"
+    ],
+    "/api/v1/workspace/study-templates/{template_id}": [
+      "get"
+    ],
+    "/api/v1/workspace/models": [
+      "get",
+      "post"
+    ],
+    "/api/v1/workspace/models/{model_id}": [
+      "get"
+    ]
+  },
+  "component_count": 22,
+  "input_count": 65,
+  "template_count": 20,
+  "template_detail_without_session": 401,
+  "configuration_file_roundtrip": true,
+  "configuration_keys": [
+    "format",
+    "definition",
+    "sha256"
+  ],
+  "enterprise_model_list_exists": false,
+  "enterprise_draft_create_exists": true,
+  "enterprise_draft_update_exists": true,
+  "business_headers_do_not_create_workspace_identity": true,
+  "configurable_inputs": 35,
+  "unbound_inputs_rejected": 30,
+  "python_tests": {
+    "passed": 32,
+    "skipped": 4
+  },
+  "javascript_tests": {
+    "passed": 34
+  },
+  "live_249_probe": {
+    "direct": "ConnectTimeout",
+    "system_proxy": "HTTPStatusError",
+    "current_online_state_verified": false
+  }
+}

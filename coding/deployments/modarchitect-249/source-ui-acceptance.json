@@ -1,0 +1,75 @@
+{
+  "all_success": true,
+  "source_snapshot_ids": [
+    "01a1d04b-a772-7210-8888-3e59b6b3d076"
+  ],
+  "design_id": "01a1d04b-9a1b-7d18-a04b-41728cc8da5b",
+  "rows": 30,
+  "real_provider_acquisition": true,
+  "manual_values_preserved": true,
+  "source_values_estimated": true,
+  "location_locked_while_pending": true,
+  "browser_scope": "JSDOM interactions with live HTTP; no native pixel acceptance",
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/examples/system",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/plans",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/plans/01a1d04b-9a1b-7d18-a04b-41728cc8da5b/input-acquisitions",
+      "status": 202
+    },
+    {
+      "method": "GET",
+      "path": "/input-acquisitions/01a1d04b-9a53-7653-9702-063a766666e7",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/input-acquisitions/01a1d04b-9a53-7653-9702-063a766666e7",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/input-acquisitions/01a1d04b-9a53-7653-9702-063a766666e7",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/input-snapshots/01a1d04b-a772-7210-8888-3e59b6b3d076",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/plans/01a1d04b-9a1b-7d18-a04b-41728cc8da5b",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/plans/01a1d04b-9a1b-7d18-a04b-41728cc8da5b",
+      "status": 200
+    }
+  ]
+}

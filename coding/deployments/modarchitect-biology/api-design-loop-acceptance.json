@@ -1,0 +1,828 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "verified_utc": "2026-11-16T13:49:21.901321+00:00",
+  "transport": "real curl",
+  "templates_checked": 20,
+  "indicators_configured": 65,
+  "models_listed": 28,
+  "invalid_save_rejected": true,
+  "invalid_save_did_not_persist": true,
+  "issue_paths_verified": true,
+  "cases": [
+    {
+      "case": "template",
+      "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "revision": 1,
+      "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+      "indicators": 4,
+      "nodes": 1,
+      "deferred_inputs": 0,
+      "reopened_exactly": true
+    },
+    {
+      "case": "custom",
+      "design_id": "01a1e494-6e10-7cc0-a428-cf7192588fb0",
+      "revision": 1,
+      "configuration_sha256": "2084222cb5bc8299b2c40455d57050123e23e817f57a3a8085385d77a1f27ac7",
+      "indicators": 65,
+      "nodes": 1,
+      "deferred_inputs": 0,
+      "reopened_exactly": true
+    },
+    {
+      "case": "future",
+      "design_id": "01a1e494-83f9-7d05-88cf-b715363ca217",
+      "revision": 1,
+      "configuration_sha256": "26671c2170c44ea634752fadd67b3c31a651a78570e7e3cb64f09c277c14fe37",
+      "indicators": 65,
+      "nodes": 1,
+      "deferred_inputs": 1,
+      "reopened_exactly": true
+    }
+  ],
+  "idempotent_receipts": true,
+  "business_database_tested": false,
+  "compute_or_acquisition_started": false,
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-growth-prediction",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/growth-trend-and-environment",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/field-indicator-summary",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/greenhouse-water-use",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/canopy-temperature-rf",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/canopy-temperature-forecast",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/canopy-temperature-spatial-forecast",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-low-temperature",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-high-temperature",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-rainfall-deficit",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-heavy-rainfall",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-disease-weather",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/soil-properties",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/vegetation-index-change",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/growth-water-response",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/yield-formation",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/soil-weather-lai",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/soil-weather-biomass",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/soil-weather-canopy",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/soil-weather-satellite-lai",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 422
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/67d4fe28-4a32-4386-a77d-1f2030138be5",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/aab76205-6c76-43f6-800d-10967ac59ded",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/6aa24c97-656f-4eb6-a1ac-333b8982cd6a",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-6e10-7cc0-a428-cf7192588fb0",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-6e10-7cc0-a428-cf7192588fb0",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/43e4ce74-9c60-4a41-9cbb-fb41c52c3c07",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-83f9-7d05-88cf-b715363ca217",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e494-83f9-7d05-88cf-b715363ca217",
+      "status": 404
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates",
+      "status": 401
+    }
+  ]
+}

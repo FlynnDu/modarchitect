@@ -1,0 +1,121 @@
+[
+  {
+    "code": "research_descriptive_statistics",
+    "revision": 1,
+    "name": "标准观测描述统计",
+    "category": "assessment",
+    "summary": "对选择的标准数值指标计算描述统计，不拟合或预测。",
+    "execution_mode": "external_cli",
+    "implementation": {
+      "module": "components.descriptive_statistics.component",
+      "symbol": "summarize",
+      "source_sha256": "0c746ca81cc940407aac68ed06ddcef0650fdf824b9ba8a2ddec2b7393b0dc12"
+    },
+    "algorithm": "计数、范围、算术均值与样本标准差",
+    "mechanism": "按准确列身份保留科学单位和值性质，计算有限数值描述。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "标准观测表",
+        "description": "准确来源与单位的数值观测",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "request",
+        "name": "统计指标设置",
+        "description": "选择需要统计的列",
+        "data_type": {
+          "semantic": "research_statistics_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "summary",
+        "name": "描述统计结果",
+        "description": "逐指标的记录数、范围、均值和样本标准差",
+        "data_type": {
+          "semantic": "research_descriptive_summary",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "requirements": [
+      "输入为已对齐并封存的标准数值观测。"
+    ],
+    "limitations": [
+      "多天观测不等于多个独立试验单位。",
+      "样本标准差至少需要两条记录；单条记录返回空值。"
+    ],
+    "configuration": {
+      "research_model": {
+        "request_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "variables": {
+              "title": "统计指标",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,95}$"
+              },
+              "x-research-variables": {
+                "table_port": "observations",
+                "roles": [
+                  "covariate",
+                  "driver",
+                  "target",
+                  "validation",
+                  "parameter"
+                ]
+              }
+            }
+          },
+          "required": [
+            "variables"
+          ]
+        },
+        "execution": {
+          "operations": [
+            "analyze"
+          ],
+          "input_uses": {
+            "variables": {
+              "role": "analysis",
+              "phases": [
+                "analysis"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "composable": true,
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true
+      },
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
+  }
+]

@@ -1,0 +1,213 @@
+{
+  "verified_utc": "2026-11-16T10:59:41.262353+00:00",
+  "service": "http://172.16.1.122:18925",
+  "design_id": "01a1e3ee-632b-75d9-b0f7-6b438979fa0b",
+  "revision": 2,
+  "configuration_sha256": "673bc2873b1e3c00bd43f3c68700b24fdfa4853a8cb3e4015b204c4038773e26",
+  "acquisition_id": "01a1e3ee-63d1-741f-905a-4fc221810c5e",
+  "snapshot_ids": [
+    "01a1e3ee-7277-7cfb-a2e3-c2ae41b9d08e"
+  ],
+  "snapshot_sha256": "b50a825a3303f7b177df5fb8858e90a8b75c7b86efe5c17a3445893d34245f1e",
+  "source_binding": {
+    "kind": "variable_source",
+    "code": "openmeteo_weather_temperature_maximum_daily",
+    "definition_version": "1.0.0",
+    "contract_sha256": "f5de7995fa906fa85b57046c0359765baa0dde30e41f18cf4c164e1198f6dcd8",
+    "value_nature": "estimated",
+    "source_system": "openmeteo_weather",
+    "selectors": {}
+  },
+  "source_adapter": {
+    "code": "openmeteo_archive",
+    "version": "1.0.0",
+    "sha256": "49ad70c569d253453a2d678d80605c66d4680f65f86570d0b8bac05ebef17d6f",
+    "runtime": {
+      "python": "3.12.13",
+      "dependencies": {
+        "httpx": "0.28.1",
+        "pydantic": "2.14.3",
+        "pyproj": "3.8.0",
+        "rasterio": "1.5.2"
+      }
+    }
+  },
+  "source_support": {
+    "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+    "unit_kind": "field_season",
+    "spatial_support": "native_grid_reference",
+    "temporal_support": "daily",
+    "time_basis": "asia_shanghai",
+    "requested_point": {
+      "latitude": 50.46,
+      "longitude": 119.85
+    },
+    "grid_coordinates": [
+      119.84127,
+      50.439365
+    ],
+    "elevation": 569.0,
+    "timezone": "Asia/Shanghai"
+  },
+  "source_quality": {
+    "complete": true,
+    "hourly_count_per_day": 24,
+    "information_time": "unknown",
+    "usage": "retrospective_or_given_factors",
+    "license": "CC BY 4.0; Open-Meteo"
+  },
+  "run": {
+    "run_id": "01a1e3ef-4309-725e-80e9-20bda7fe4133",
+    "kind": "analyze",
+    "status": "succeeded",
+    "scheduler_id": "731",
+    "input_sha256": "6abfee875b5c5a595229e8ca123ebaaa997a59bad0abb87b57859a815f4dedde",
+    "result_sha256": "5bac3ddca5d8faae35c676907c36c58a162266dfe775f1235a13102eb2ed1e3f"
+  },
+  "outputs": {
+    "report": {
+      "format": "catalog_weather_conditions_v1",
+      "as_of": "2026-07-07",
+      "rule": "heat_exposure",
+      "results": [
+        {
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "name": "作物高温暴露条件",
+          "result": "not_triggered",
+          "qualification": "complete",
+          "metric": 25.2,
+          "threshold": 35.0,
+          "unit": "celsius",
+          "window": {
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-07",
+            "expected_days": 7,
+            "valid_days": 7,
+            "missing_dates": []
+          }
+        }
+      ],
+      "interpretation": "气象条件信号不等于已发生灾损；网格估计不替代田间证据。"
+    },
+    "series": {
+      "columns": [
+        {
+          "code": "temperature_maximum_daily",
+          "name": "日最高气温",
+          "unit": "celsius",
+          "value_kind": "estimated"
+        }
+      ],
+      "rows": [
+        {
+          "business_date": "2026-07-01",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 24.9
+          }
+        },
+        {
+          "business_date": "2026-07-02",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 25.2
+          }
+        },
+        {
+          "business_date": "2026-07-03",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 24.4
+          }
+        },
+        {
+          "business_date": "2026-07-04",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 23.1
+          }
+        },
+        {
+          "business_date": "2026-07-05",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 22.4
+          }
+        },
+        {
+          "business_date": "2026-07-06",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 21.1
+          }
+        },
+        {
+          "business_date": "2026-07-07",
+          "object": {
+            "crop_code": "potato",
+            "field_ref": "weather-reference-plot",
+            "season_ref": "2026"
+          },
+          "values": {
+            "temperature_maximum_daily": 21.4
+          }
+        }
+      ],
+      "source_sha256": [
+        "7b4a3eae11ba54a6afdce484abb58b9de58d369e7167efef568628cfb8722eb8"
+      ]
+    }
+  },
+  "receipts": [
+    {
+      "node": "analysis",
+      "component": {
+        "code": "catalog_weather_conditions",
+        "revision": 1
+      },
+      "image": "sha256:0d64d6dd35cda97b29e3f690d5755ad2ad43931cee3e992285e201b2fde5ff1c",
+      "inputs": {
+        "observations": "9d934c62fe25e1ef1c6aeac893f3d7229bb7378ebe583c749755e886475696c5"
+      },
+      "outputs": {
+        "report": "0e95fd8803e204c71ea5344373269860a1737aa8b6666797e38b5ef6c421a89e",
+        "series": "9d934c62fe25e1ef1c6aeac893f3d7229bb7378ebe583c749755e886475696c5"
+      }
+    }
+  ],
+  "source_only": true,
+  "manually_fabricated_data": false,
+  "trained_prediction_model": false,
+  "missing_source_rejected": true,
+  "tampered_value_rejected": true,
+  "acquisition_replay_same_id": true,
+  "run_replay_same_id": true
+}

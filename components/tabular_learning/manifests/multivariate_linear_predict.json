@@ -1,0 +1,94 @@
+{
+  "manifest_version": "1.1",
+  "component": {
+    "code": "multivariate_linear_predict",
+    "revision": 1,
+    "name": "多变量线性模型预测",
+    "category": "learning"
+  },
+  "contract": {
+    "summary": "用多个已知因子预测一个或多个数值目标。",
+    "method": "只读已训练模型状态生成预测",
+    "requirements": [
+      "训练期每行应有完整的候选因子及实测目标。",
+      "预测期每行应提供同口径的候选因子。"
+    ],
+    "limitations": [
+      "用于线性基线，缺失值和不满秩的训练数据会被拒绝。",
+      "真实预测需独立评价，并核对各因子在预测时已可用。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "观测输入",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "包含已对齐的候选因子和目标。",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      },
+      {
+        "code": "model",
+        "name": "准确训练模型",
+        "data_type": {
+          "semantic": "multivariate_linear_model",
+          "version": 2,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "获准模型制品的状态及列定义",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      }
+    ],
+    "outputs": [
+      {
+        "code": "predictions",
+        "name": "预测结果表",
+        "data_type": {
+          "semantic": "research_prediction_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "按地块、业务日期和目标输出预测数值。",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "execution": {
+      "operations": [
+        "predict"
+      ],
+      "state_output": null,
+      "inference": null,
+      "input_uses": {}
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:ad41c3904f10c3e4cf0612065d41e0e3a5b62ebcb0714a11f0dd9f10ef3f1a2d"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

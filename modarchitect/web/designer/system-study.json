@@ -1,0 +1,1221 @@
+{
+  "definition": {
+    "schema_version": "1.4",
+    "name": "系统输入：叶面积指数与生物量双目标研究",
+    "question": "用冠层覆盖度和块茎干物质建立叶面积指数与地上生物量的预测关系（合成工程演示）",
+    "objective": "prediction",
+    "purpose": "train",
+    "variables": [
+      {
+        "code": "lai",
+        "name": "叶面积指数",
+        "definition_version": "1.0.0",
+        "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+        "value_type": "number",
+        "unit": "m2_m2",
+        "role": "target",
+        "minimum": 0.0,
+        "maximum": 15.0,
+        "categories": []
+      },
+      {
+        "code": "agb_kg_ha",
+        "name": "地上生物量",
+        "definition_version": "1.0.0",
+        "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+        "value_type": "number",
+        "unit": "kg_ha",
+        "role": "target",
+        "minimum": 0.0,
+        "maximum": null,
+        "categories": []
+      },
+      {
+        "code": "canopy_cover",
+        "name": "冠层覆盖度",
+        "definition_version": "1.0.0",
+        "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+        "value_type": "number",
+        "unit": "fraction",
+        "role": "covariate",
+        "minimum": 0.0,
+        "maximum": 1.0,
+        "categories": []
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "name": "块茎干物质",
+        "definition_version": "1.0.0",
+        "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+        "value_type": "number",
+        "unit": "kg_ha",
+        "role": "covariate",
+        "minimum": 0.0,
+        "maximum": null,
+        "categories": []
+      }
+    ],
+    "collection_requirements": [
+      {
+        "code": "lai",
+        "variable_code": "lai",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "lai",
+          "definition_version": "1.0.0",
+          "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "agb_kg_ha",
+        "variable_code": "agb_kg_ha",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "agb_kg_ha",
+          "definition_version": "1.0.0",
+          "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "canopy_cover",
+        "variable_code": "canopy_cover",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "canopy_cover",
+          "definition_version": "1.0.0",
+          "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "variable_code": "tuber_dm_kg_ha",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "tuber_dm_kg_ha",
+          "definition_version": "1.0.0",
+          "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      }
+    ],
+    "composition": {
+      "schema_version": "1.0",
+      "object_scope": "field_crop_season",
+      "inputs": [
+        {
+          "code": "observations",
+          "name": "系统标准人工记录",
+          "role": "context",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          }
+        },
+        {
+          "code": "regression_config",
+          "name": "多变量线性回归配置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "multivariate_regression_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "code": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": null,
+                "port": "observations"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "regression_config"
+              }
+            }
+          ],
+          "selections": {}
+        }
+      ],
+      "outputs": [
+        {
+          "code": "trained_model",
+          "source": {
+            "node": "regression",
+            "port": "trained_model"
+          }
+        },
+        {
+          "code": "predictions",
+          "source": {
+            "node": "regression",
+            "port": "predictions"
+          }
+        }
+      ]
+    },
+    "input_recipes": {
+      "observations": {
+        "kind": "observations",
+        "variable_codes": [
+          "lai",
+          "agb_kg_ha",
+          "canopy_cover",
+          "tuber_dm_kg_ha"
+        ]
+      },
+      "regression_config": {
+        "kind": "configuration",
+        "value": {
+          "features": [
+            "canopy_cover",
+            "tuber_dm_kg_ha"
+          ],
+          "targets": [
+            "lai",
+            "agb_kg_ha"
+          ],
+          "training_end": "2026-05-10"
+        },
+        "runtime_fields": {}
+      }
+    },
+    "evaluation": {
+      "target_codes": [
+        "lai",
+        "agb_kg_ha"
+      ],
+      "purpose": "exploratory",
+      "split_unit": "time",
+      "success_criteria": "按留出日期核对每个目标的误差、样本与覆盖；合成样例仅验证工程计算。",
+      "update_policy": "manual_candidate",
+      "numeric_gate": null
+    },
+    "layout": {}
+  },
+  "observations": {
+    "columns": [
+      {
+        "code": "lai",
+        "name": "叶面积指数",
+        "unit": "m2_m2",
+        "value_kind": "observed"
+      },
+      {
+        "code": "agb_kg_ha",
+        "name": "地上生物量",
+        "unit": "kg_ha",
+        "value_kind": "observed"
+      },
+      {
+        "code": "canopy_cover",
+        "name": "冠层覆盖度",
+        "unit": "fraction",
+        "value_kind": "observed"
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "name": "块茎干物质",
+        "unit": "kg_ha",
+        "value_kind": "observed"
+      }
+    ],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-01",
+        "values": {
+          "canopy_cover": 0.3,
+          "tuber_dm_kg_ha": 140.0,
+          "lai": 1.442,
+          "agb_kg_ha": 880.0
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-02",
+        "values": {
+          "canopy_cover": 0.3782646591108609,
+          "tuber_dm_kg_ha": 158.67603900649075,
+          "lai": 1.6823967890345297,
+          "agb_kg_ha": 995.6167371238423
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-03",
+        "values": {
+          "canopy_cover": 0.44925879013432624,
+          "tuber_dm_kg_ha": 166.70378015833433,
+          "lai": 1.8977875044504788,
+          "agb_kg_ha": 1082.666350450995
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-04",
+        "values": {
+          "canopy_cover": 0.5064049852209442,
+          "tuber_dm_kg_ha": 169.4498186019049,
+          "lai": 2.0700499012434044,
+          "agb_kg_ha": 1145.3046224247541
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-05",
+        "values": {
+          "canopy_cover": 0.5444459998623847,
+          "tuber_dm_kg_ha": 173.9508135788982,
+          "lai": 2.185523243660824,
+          "agb_kg_ha": 1192.347627020181
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-06",
+        "values": {
+          "canopy_cover": 0.5599459410473393,
+          "tuber_dm_kg_ha": 186.6885104978764,
+          "lai": 2.2358443762913804,
+          "agb_kg_ha": 1233.322962043092
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-07",
+        "values": {
+          "canopy_cover": 0.5516178207697285,
+          "tuber_dm_kg_ha": 211.54022567758804,
+          "lai": 2.218315530012462,
+          "agb_kg_ha": 1274.6982721249046
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-08",
+        "values": {
+          "canopy_cover": 0.5204462482764021,
+          "tuber_dm_kg_ha": 248.5528464890048,
+          "lai": 2.135904598775908,
+          "agb_kg_ha": 1317.5519412544118
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-09",
+        "values": {
+          "canopy_cover": 0.46959356445142797,
+          "tuber_dm_kg_ha": 293.92800566006576,
+          "lai": 1.9969590950523037,
+          "agb_kg_ha": 1357.4495757715595
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-10",
+        "values": {
+          "canopy_cover": 0.4040983668145975,
+          "tuber_dm_kg_ha": 341.22311759905443,
+          "lai": 1.8146620357235088,
+          "agb_kg_ha": 1386.5446020127065
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-11",
+        "values": {
+          "canopy_cover": 0.3303951656083226,
+          "tuber_dm_kg_ha": 383.3885113935664,
+          "lai": 1.6062020502430376,
+          "agb_kg_ha": 1397.1721883954554
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-12",
+        "values": {
+          "canopy_cover": 0.2557009635320567,
+          "tuber_dm_kg_ha": 414.9965230038657,
+          "lai": 1.3916018474973297,
+          "agb_kg_ha": 1385.694009539788
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-13",
+        "values": {
+          "canopy_cover": 0.18732723823267827,
+          "tuber_dm_kg_ha": 433.9577120465429,
+          "lai": 1.1921690283119977,
+          "agb_kg_ha": 1355.242662325764
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-14",
+        "values": {
+          "canopy_cover": 0.1319829182279169,
+          "tuber_dm_kg_ha": 442.1815387686623,
+          "lai": 1.0286032163143495,
+          "agb_kg_ha": 1316.3459957652415
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-15",
+        "values": {
+          "canopy_cover": 0.09513480156168935,
+          "tuber_dm_kg_ha": 444.9725964417073,
+          "lai": 0.9188961836175803,
+          "agb_kg_ha": 1285.079994445104
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-16",
+        "values": {
+          "canopy_cover": 0.08048639031028013,
+          "tuber_dm_kg_ha": 449.353309314816,
+          "lai": 0.8762651637252852,
+          "agb_kg_ha": 1279.193008939912
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-17",
+        "values": {
+          "canopy_cover": 0.08962482513654779,
+          "tuber_dm_kg_ha": 461.84345576320965,
+          "lai": 0.9074275121386063,
+          "agb_kg_ha": 1313.3117366629672
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-18",
+        "values": {
+          "canopy_cover": 0.12186957863094885,
+          "tuber_dm_kg_ha": 486.39862708163196,
+          "lai": 1.0115283240173363,
+          "agb_kg_ha": 1394.6668327942127
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-19",
+        "values": {
+          "canopy_cover": 0.17433733193595413,
+          "tuber_dm_kg_ha": 523.1594772316374,
+          "lai": 1.1799598389773536,
+          "agb_kg_ha": 1520.656286399229
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-20",
+        "values": {
+          "canopy_cover": 0.24221684977968716,
+          "tuber_dm_kg_ha": 568.407248333269,
+          "lai": 1.3971727238390423,
+          "agb_kg_ha": 1679.0313464462251
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-21",
+        "values": {
+          "canopy_cover": 0.31922764929562586,
+          "tuber_dm_kg_ha": 615.7396346539156,
+          "lai": 1.6424048382830523,
+          "agb_kg_ha": 1850.7069186034569
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-22",
+        "values": {
+          "canopy_cover": 0.3982187364178834,
+          "tuber_dm_kg_ha": 658.0951791943897,
+          "lai": 1.892084763011967,
+          "agb_kg_ha": 2014.4090948066628
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-23",
+        "values": {
+          "canopy_cover": 0.47185033059898807,
+          "tuber_dm_kg_ha": 689.9860926199378,
+          "lai": 2.1225468195829453,
+          "agb_kg_ha": 2151.8225158388636
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-24",
+        "values": {
+          "canopy_cover": 0.5332935870829224,
+          "tuber_dm_kg_ha": 709.2334815449193,
+          "lai": 2.3126508057122432,
+          "agb_kg_ha": 2251.760550172761
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-25",
+        "values": {
+          "canopy_cover": 0.5768816102077723,
+          "tuber_dm_kg_ha": 717.6563103717963,
+          "lai": 2.4459417237348555,
+          "agb_kg_ha": 2312.1942309513647
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-26",
+        "values": {
+          "canopy_cover": 0.5986496947777941,
+          "tuber_dm_kg_ha": 720.4962482946466,
+          "lai": 2.5120979588217764,
+          "agb_kg_ha": 2339.6421913670874
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-27",
+        "values": {
+          "canopy_cover": 0.5967132927496869,
+          "tuber_dm_kg_ha": 724.7602637229522,
+          "lai": 2.5075679573659464,
+          "agb_kg_ha": 2346.2338201955913
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-28",
+        "values": {
+          "canopy_cover": 0.5714476725878,
+          "tuber_dm_kg_ha": 737.0050345363834,
+          "lai": 2.435444528124315,
+          "agb_kg_ha": 2345.457741660567
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-29",
+        "values": {
+          "canopy_cover": 0.5254521438480717,
+          "tuber_dm_kg_ha": 761.2637393268967,
+          "lai": 2.304735553342284,
+          "agb_kg_ha": 2347.9796225018654
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-04-30",
+        "values": {
+          "canopy_cover": 0.463302257563443,
+          "tuber_dm_kg_ha": 797.7707741939655,
+          "lai": 2.1292380049485184,
+          "agb_kg_ha": 2358.8438059513737
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-01",
+        "values": {
+          "canopy_cover": 0.3911136058767654,
+          "tuber_dm_kg_ha": 842.8876371550753,
+          "lai": 1.9262071087768187,
+          "agb_kg_ha": 2376.888880186916
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-02",
+        "values": {
+          "canopy_cover": 0.31595880514983166,
+          "tuber_dm_kg_ha": 890.2534153763344,
+          "lai": 1.7149524400623952,
+          "agb_kg_ha": 2396.4656359025003
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-03",
+        "values": {
+          "canopy_cover": 0.24519324321630503,
+          "tuber_dm_kg_ha": 932.7960934047069,
+          "lai": 1.5154185576703272,
+          "agb_kg_ha": 2410.7854300257186
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-04",
+        "values": {
+          "canopy_cover": 0.18575386922144857,
+          "tuber_dm_kg_ha": 964.9687106615368,
+          "lai": 1.3467522208628067,
+          "agb_kg_ha": 2415.691290544522
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-05",
+        "values": {
+          "canopy_cover": 0.1434978744188451,
+          "tuber_dm_kg_ha": 984.5032995591458,
+          "lai": 1.225844613124279,
+          "agb_kg_ha": 2412.5044735371366
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-06",
+        "values": {
+          "canopy_cover": 0.12264430937528722,
+          "tuber_dm_kg_ha": 993.1280124287847,
+          "lai": 1.165871331854497,
+          "agb_kg_ha": 2408.9003342328565
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-07",
+        "values": {
+          "canopy_cover": 0.12537186981279738,
+          "tuber_dm_kg_ha": 996.0206831239493,
+          "lai": 1.174921814375577,
+          "agb_kg_ha": 2417.413236060696
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-08",
+        "values": {
+          "canopy_cover": 0.1516111953138785,
+          "tuber_dm_kg_ha": 1000.1716060543619,
+          "lai": 1.254885067757944,
+          "agb_kg_ha": 2451.9544074226023
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-09",
+        "values": {
+          "canopy_cover": 0.19905148164850095,
+          "tuber_dm_kg_ha": 1012.1732187269592,
+          "lai": 1.4008064105635907,
+          "agb_kg_ha": 2523.3979191024196
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-10",
+        "values": {
+          "canopy_cover": 0.26336077635078015,
+          "tuber_dm_kg_ha": 1036.1355858635923,
+          "lai": 1.600923004811418,
+          "agb_kg_ha": 2635.631948077965
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-11",
+        "values": {
+          "canopy_cover": 0.3385989561379226,
+          "tuber_dm_kg_ha": 1072.386804951937,
+          "lai": 1.837512909899349,
+          "agb_kg_ha": 2783.3725660417967
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-12",
+        "values": {
+          "canopy_cover": 0.41778401585288516,
+          "tuber_dm_kg_ha": 1117.3692624597873,
+          "lai": 2.0885628262965916,
+          "agb_kg_ha": 2952.5225407724597
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-13",
+        "values": {
+          "canopy_cover": 0.49355768298612795,
+          "tuber_dm_kg_ha": 1164.7645442954383,
+          "lai": 2.3301024122470153,
+          "agb_kg_ha": 3123.0867715770046
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-14",
+        "values": {
+          "canopy_cover": 0.5588869028402877,
+          "tuber_dm_kg_ha": 1207.4913060205247,
+          "lai": 2.5389081003270206,
+          "agb_kg_ha": 3273.869514881337
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-15",
+        "values": {
+          "canopy_cover": 0.6077343197506235,
+          "tuber_dm_kg_ha": 1239.9443801505124,
+          "lai": 2.695186273297024,
+          "agb_kg_ha": 3387.6230800516482
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-16",
+        "values": {
+          "canopy_cover": 0.6356338354687524,
+          "tuber_dm_kg_ha": 1259.7671191814131,
+          "lai": 2.784831642160681,
+          "agb_kg_ha": 3455.1680738315786
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-17",
+        "values": {
+          "canopy_cover": 0.6401163750827303,
+          "tuber_dm_kg_ha": 1268.5965629343164,
+          "lai": 2.800928094128486,
+          "agb_kg_ha": 3477.309500951363
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-18",
+        "values": {
+          "canopy_cover": 0.6209452709905261,
+          "tuber_dm_kg_ha": 1271.5458097567218,
+          "lai": 2.744299555898595,
+          "agb_kg_ha": 3464.0368905039695
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-19",
+        "values": {
+          "canopy_cover": 0.5801388250994466,
+          "tuber_dm_kg_ha": 1275.5872647972599,
+          "lai": 2.6230926547375177,
+          "agb_kg_ha": 3431.313354693966
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-20",
+        "values": {
+          "canopy_cover": 0.5217778983325077,
+          "tuber_dm_kg_ha": 1287.347979096148,
+          "lai": 2.4515380887263674,
+          "agb_kg_ha": 3396.4738565248035
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-21",
+        "values": {
+          "canopy_cover": 0.4516168704844491,
+          "tuber_dm_kg_ha": 1311.0141889711736,
+          "lai": 2.2481548681446997,
+          "agb_kg_ha": 3373.645248426796
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-22",
+        "values": {
+          "canopy_cover": 0.3765350587370603,
+          "tuber_dm_kg_ha": 1347.0076362585303,
+          "lai": 2.03370746708874,
+          "agb_kg_ha": 3370.550331254121
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-23",
+        "values": {
+          "canopy_cover": 0.30388089267582,
+          "tuber_dm_kg_ha": 1391.852214366746,
+          "lai": 1.8291983423374838,
+          "agb_kg_ha": 3387.585321409312
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-24",
+        "values": {
+          "canopy_cover": 0.2407713674793257,
+          "tuber_dm_kg_ha": 1439.2731064013701,
+          "lai": 1.6540960343583881,
+          "agb_kg_ha": 3419.317580282066
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-25",
+        "values": {
+          "canopy_cover": 0.19341356041268304,
+          "tuber_dm_kg_ha": 1482.1808700290708,
+          "lai": 1.5248949422467704,
+          "agb_kg_ha": 3457.7753004708247
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-26",
+        "values": {
+          "canopy_cover": 0.1665128923981648,
+          "tuber_dm_kg_ha": 1514.9131053167198,
+          "lai": 1.4540126087895104,
+          "agb_kg_ha": 3496.3391030316043
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-27",
+        "values": {
+          "canopy_cover": 0.1628245467801122,
+          "tuber_dm_kg_ha": 1535.0248945467304,
+          "lai": 1.4489811087043558,
+          "agb_kg_ha": 3532.874335873573
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-28",
+        "values": {
+          "canopy_cover": 0.18289080981626232,
+          "tuber_dm_kg_ha": 1544.0618804309765,
+          "lai": 1.51189099357808,
+          "agb_kg_ha": 3571.0145706782155
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-29",
+        "values": {
+          "canopy_cover": 0.22498937297773786,
+          "tuber_dm_kg_ha": 1547.0715368998008,
+          "lai": 1.6390895800031537,
+          "agb_kg_ha": 3619.1324467773393
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-30",
+        "values": {
+          "canopy_cover": 0.2852975255472983,
+          "tuber_dm_kg_ha": 1551.0071676894545,
+          "lai": 1.8211947269487312,
+          "agb_kg_ha": 3687.3118609262074
+        }
+      }
+    ]
+  },
+  "prediction_observations": {
+    "columns": [
+      {
+        "code": "canopy_cover",
+        "name": "冠层覆盖度",
+        "unit": "fraction",
+        "value_kind": "observed"
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "name": "块茎干物质",
+        "unit": "kg_ha",
+        "value_kind": "observed"
+      }
+    ],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-05-31",
+        "values": {
+          "canopy_cover": 0.35825658456584475,
+          "tuber_dm_kg_ha": 1562.5292852618934
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-06-01",
+        "values": {
+          "canopy_cover": 0.43710181997800945,
+          "tuber_dm_kg_ha": 1585.899569754467
+        }
+      },
+      {
+        "object": {
+          "field_ref": "acceptance-potato-field",
+          "crop_code": "potato",
+          "season_ref": "2026-synthetic"
+        },
+        "business_date": "2026-06-02",
+        "values": {
+          "canopy_cover": 0.5145073556970136,
+          "tuber_dm_kg_ha": 1621.6333340321498
+        }
+      }
+    ]
+  },
+  "data_kind": "synthetic",
+  "description": "四项指标均引用 mlgrowth 准确人工采样标准；数值是合成工程演示，不是业务取数或作物精度验证。"
+}

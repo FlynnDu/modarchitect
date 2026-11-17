@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlgrowth-logistic-growth"
+version = "1.0.0"
+description = "Standalone three-parameter logistic growth fitting"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy==2.5.3", "scipy==1.18.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

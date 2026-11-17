@@ -1,0 +1,110 @@
+{
+  "manifest_version": "1.0",
+  "component": {
+    "code": "historical_logistic_training",
+    "revision": 1,
+    "name": "历史曲线训练与预测",
+    "category": "mechanistic"
+  },
+  "contract": {
+    "summary": "用较早观测拟合，向后续日期提供独立预测因子。",
+    "method": "按对象拟合并冻结逻辑斯蒂参数",
+    "requirements": [
+      "使用有准确来源和摘要的按对象日期对齐输入。"
+    ],
+    "limitations": [
+      "每个对象须有覆盖有效生长阶段的历史观测。",
+      "预测为外推估计，保留预测值标记。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "实测观测表",
+        "description": "以地块、作物、种植季和业务日期对齐。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "forecast",
+        "name": "历史预测特征表",
+        "description": "上游只使用截止日期及之前的实测值训练，成果逐对象日期生成。",
+        "data_type": {
+          "semantic": "research_historical_feature_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "trained_model",
+        "name": "已训练的历史曲线",
+        "description": "按完整对象冻结的曲线参数",
+        "data_type": {
+          "semantic": "historical_logistic_model",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x_code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,95}$",
+          "title": "播种后天数",
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "driver"
+            ],
+            "observed": true,
+            "unit": "day"
+          }
+        },
+        "target_code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,95}$",
+          "title": "历史拟合目标",
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "target"
+            ],
+            "observed": true
+          }
+        },
+        "fit_through": {
+          "title": "基线训练截止日期",
+          "type": "string",
+          "format": "date",
+          "description": "只使用截至当天的实测值拟合，预测截止日之后的记录。"
+        }
+      },
+      "required": [
+        "x_code",
+        "target_code",
+        "fit_through"
+      ]
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:adeddd96b44f0b916dfae77d5f4002d66f2aba98f0e55a655ac59f83cc3df9f7"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

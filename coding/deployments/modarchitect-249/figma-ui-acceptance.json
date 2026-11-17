@@ -1,0 +1,154 @@
+{
+  "release": {
+    "image": "modarchitect:0.1.0-figma-ui-b62341979b81",
+    "wheel_sha256": "b62341979b818691cc5d6910d83a53240330a80a7826586309b8be29a0c996aa",
+    "package_files_verified": 79,
+    "python_and_scientific_contracts_unchanged": 54,
+    "database_migration": "0005 unchanged",
+    "archive_sha256": "45f6622810c2097193141797fb70181cc44e5d6dff7d14b3338eb187cfe4ee78",
+    "image_config_digest": "sha256:3a18c308ba5a356a584ffd373439c4d3606f38b02bc64a69d529a4573d907776"
+  },
+  "ui": {
+    "service": "http://192.168.3.249:18925",
+    "method": "real DOM events with live HTTP and DolphinScheduler",
+    "native_browser_visual_check": false,
+    "engineering_fixture_only": true,
+    "events": [
+      "select/model",
+      "configure/inputs",
+      "configure/sources",
+      "configure/calculation",
+      "configure/outputs",
+      "review/check",
+      "model/predict"
+    ],
+    "design_id": "01a1ce94-27d7-7f13-b769-9b8ab0713280",
+    "training_run_id": "01a1ce94-297d-7ada-85a5-92504134ba57",
+    "training_scheduler_id": "37",
+    "prediction_run_id": "01a1ce94-38cc-7bca-a65a-1ed6c3f6ca01",
+    "prediction_scheduler_id": "38",
+    "model_id": "01a1ce94-3814-789c-90ea-7e9c5492b6b5",
+    "model_sha256": "1e0b228da5d8a555d0c9572be2573cdd92b7f50bb9d53d447b6ecbfa93151b5a",
+    "metrics": [
+      {
+        "output": "predictions",
+        "target": "lai",
+        "unit": "m2_m2",
+        "rows": 20,
+        "coverage": 1,
+        "expected_rows": 20,
+        "status": "evaluated",
+        "mae": 8.522182959325165e-13,
+        "rmse": 8.607885225489571e-13,
+        "bias": -8.522182959325165e-13
+      },
+      {
+        "output": "predictions",
+        "target": "agb_kg_ha",
+        "unit": "kg_ha",
+        "rows": 20,
+        "coverage": 1,
+        "expected_rows": 20,
+        "status": "evaluated",
+        "mae": 2.801243681460619e-11,
+        "rmse": 2.921481876629612e-11,
+        "bias": 2.801243681460619e-11
+      }
+    ],
+    "expected_prediction": {
+      "lai": 2.48,
+      "agb_kg_ha": 4000
+    },
+    "actual_prediction": {
+      "lai": 2.479999999998981,
+      "agb_kg_ha": 4000.0000000000327
+    },
+    "state_unchanged": true,
+    "no_refit": true,
+    "reopened_plan": true,
+    "reopened_model": true,
+    "http_error_count": 0
+  },
+  "scheduler": [
+    {
+      "release": "initial",
+      "operation": "training",
+      "instance_id": "32",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 32,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "release": "initial",
+      "operation": "prediction",
+      "instance_id": "33",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 33,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "release": "reviewed",
+      "operation": "training",
+      "instance_id": "35",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 35,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "release": "reviewed",
+      "operation": "prediction",
+      "instance_id": "36",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 36,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "release": "final",
+      "operation": "training",
+      "instance_id": "37",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 37,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "release": "final",
+      "operation": "prediction",
+      "instance_id": "38",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 38,
+          "state": "SUCCESS"
+        }
+      ]
+    }
+  ],
+  "compatibility": {
+    "previous_models_unchanged": 12,
+    "previous_versions_unchanged": 15,
+    "migration": "0005 unchanged",
+    "execution_profiles_unchanged": true
+  },
+  "native_browser_visual_check": false,
+  "local_computer_use_stopped_by_escape": true
+}

@@ -1,0 +1,11 @@
+{
+  "workflow_code": "189581471223072",
+  "workflow_version": 1,
+  "schedule_id": 2,
+  "crontab": "0 0 2 * * ?",
+  "timezone": "Asia/Shanghai",
+  "state": "ONLINE",
+  "start": "2026-01-01 00:00:00",
+  "end": "2030-12-31 23:59:59",
+  "api_version_observed": "3.4.0"
+}

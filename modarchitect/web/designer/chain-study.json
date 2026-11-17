@@ -1,0 +1,1820 @@
+{
+  "definition": {
+    "schema_version": "1.1",
+    "name": "历史生长曲线与环境因子的串联研究",
+    "question": "先拟合历史生长曲线，再结合NDVI、土壤水分和气温修正株高，并复用整条模型预测。",
+    "objective": "prediction",
+    "purpose": "train",
+    "variables": [
+      {
+        "code": "day",
+        "name": "定植后天数",
+        "unit": "day",
+        "role": "driver",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "定植后天数"
+      },
+      {
+        "code": "height",
+        "name": "株高",
+        "unit": "cm",
+        "role": "target",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "株高"
+      },
+      {
+        "code": "ndvi",
+        "name": "NDVI",
+        "unit": "1",
+        "role": "covariate",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "NDVI"
+      },
+      {
+        "code": "soil_water",
+        "name": "土壤体积含水率",
+        "unit": "m3/m3",
+        "role": "covariate",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "土壤体积含水率"
+      },
+      {
+        "code": "temperature",
+        "name": "气温",
+        "unit": "deg_c",
+        "role": "covariate",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "气温"
+      },
+      {
+        "code": "prior_height",
+        "name": "历史株高趋势估计",
+        "unit": "cm",
+        "role": "covariate",
+        "definition_version": "1.0.0",
+        "value_type": "number",
+        "description": "串联样例变量"
+      }
+    ],
+    "collection_requirements": [
+      {
+        "code": "day",
+        "variable_code": "day",
+        "unit_kind": "field_season",
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "minimum_observations_per_unit": 8,
+        "minimum_independent_units": 1,
+        "method": {
+          "protocol_code": "synthetic_fixture",
+          "protocol_version": "1.0.0",
+          "method_code": "direct",
+          "instructions": "仅供合成数据验收。"
+        },
+        "requires_sampling_points": false
+      },
+      {
+        "code": "height",
+        "variable_code": "height",
+        "unit_kind": "field_season",
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "minimum_observations_per_unit": 8,
+        "minimum_independent_units": 1,
+        "method": {
+          "protocol_code": "synthetic_fixture",
+          "protocol_version": "1.0.0",
+          "method_code": "direct",
+          "instructions": "仅供合成数据验收。"
+        },
+        "requires_sampling_points": false
+      },
+      {
+        "code": "ndvi",
+        "variable_code": "ndvi",
+        "unit_kind": "field_season",
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "minimum_observations_per_unit": 8,
+        "minimum_independent_units": 1,
+        "method": {
+          "protocol_code": "synthetic_fixture",
+          "protocol_version": "1.0.0",
+          "method_code": "direct",
+          "instructions": "仅供合成数据验收。"
+        },
+        "requires_sampling_points": false
+      },
+      {
+        "code": "soil_water",
+        "variable_code": "soil_water",
+        "unit_kind": "field_season",
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "minimum_observations_per_unit": 8,
+        "minimum_independent_units": 1,
+        "method": {
+          "protocol_code": "synthetic_fixture",
+          "protocol_version": "1.0.0",
+          "method_code": "direct",
+          "instructions": "仅供合成数据验收。"
+        },
+        "requires_sampling_points": false
+      },
+      {
+        "code": "temperature",
+        "variable_code": "temperature",
+        "unit_kind": "field_season",
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "minimum_observations_per_unit": 8,
+        "minimum_independent_units": 1,
+        "method": {
+          "protocol_code": "synthetic_fixture",
+          "protocol_version": "1.0.0",
+          "method_code": "direct",
+          "instructions": "仅供合成数据验收。"
+        },
+        "requires_sampling_points": false
+      }
+    ],
+    "composition": {
+      "schema_version": "1.0",
+      "object_scope": "field_crop_season",
+      "inputs": [
+        {
+          "code": "observations",
+          "name": "实测株高与 NDVI",
+          "role": "context",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          }
+        },
+        {
+          "code": "baseline_config",
+          "name": "历史逻辑斯蒂预测配置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "historical_logistic_forecast_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        },
+        {
+          "code": "merge_config",
+          "name": "合并预测因子配置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "research_forecast_feature_join_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        },
+        {
+          "code": "regression_config",
+          "name": "多变量线性回归配置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "multivariate_regression_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "code": "baseline",
+          "component": {
+            "code": "historical_logistic_training",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": null,
+                "port": "observations"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "baseline_config"
+              }
+            }
+          ]
+        },
+        {
+          "code": "merge",
+          "component": {
+            "code": "research_forecast_feature_join",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": null,
+                "port": "observations"
+              }
+            },
+            {
+              "port": "forecast",
+              "source": {
+                "node": "baseline",
+                "port": "forecast"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "merge_config"
+              }
+            }
+          ]
+        },
+        {
+          "code": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": "merge",
+                "port": "table"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "regression_config"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "code": "trained_model",
+          "source": {
+            "node": "regression",
+            "port": "trained_model"
+          }
+        },
+        {
+          "code": "predictions",
+          "source": {
+            "node": "regression",
+            "port": "predictions"
+          }
+        }
+      ]
+    },
+    "input_recipes": {
+      "observations": {
+        "kind": "observations",
+        "variable_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ]
+      },
+      "baseline_config": {
+        "kind": "configuration",
+        "value": {
+          "x_code": "day",
+          "target_code": "height",
+          "fit_through": "2026-05-15"
+        },
+        "runtime_fields": {}
+      },
+      "merge_config": {
+        "kind": "configuration",
+        "value": {
+          "feature_code": "height",
+          "output_code": "prior_height"
+        }
+      },
+      "regression_config": {
+        "kind": "configuration",
+        "value": {
+          "features": [
+            "prior_height",
+            "ndvi",
+            "soil_water",
+            "temperature"
+          ],
+          "targets": [
+            "height"
+          ],
+          "training_end": "2026-06-09"
+        },
+        "runtime_fields": {}
+      }
+    },
+    "evaluation": {
+      "target_codes": [
+        "height"
+      ],
+      "purpose": "exploratory",
+      "split_unit": "time",
+      "success_criteria": "按留出日期核对每个目标的误差、样本与覆盖；合成样例仅验证工程计算。",
+      "update_policy": "manual_candidate",
+      "numeric_gate": null
+    },
+    "layout": {}
+  },
+  "observations": {
+    "columns": [
+      {
+        "code": "day",
+        "name": "定植后天数",
+        "unit": "day",
+        "value_kind": "observed"
+      },
+      {
+        "code": "height",
+        "name": "株高",
+        "unit": "cm",
+        "value_kind": "observed"
+      },
+      {
+        "code": "ndvi",
+        "name": "NDVI",
+        "unit": "1",
+        "value_kind": "observed"
+      },
+      {
+        "code": "soil_water",
+        "name": "土壤体积含水率",
+        "unit": "m3/m3",
+        "value_kind": "observed"
+      },
+      {
+        "code": "temperature",
+        "name": "气温",
+        "unit": "deg_c",
+        "value_kind": "observed"
+      }
+    ],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-01",
+        "values": {
+          "day": 1,
+          "ndvi": 0.4,
+          "soil_water": 0.31,
+          "temperature": 22.0,
+          "height": 5.3151136398063725
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-02",
+        "values": {
+          "day": 2,
+          "ndvi": 0.4977750656532305,
+          "soil_water": 0.30593964073636204,
+          "temperature": 22.911910094140755,
+          "height": 5.952436597650152
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-03",
+        "values": {
+          "day": 3,
+          "ndvi": 0.548297764427758,
+          "soil_water": 0.2943081135237753,
+          "temperature": 23.77579242786208,
+          "height": 6.660803557509069
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-04",
+        "values": {
+          "day": 4,
+          "ndvi": 0.5271516760200354,
+          "soil_water": 0.2766796910045024,
+          "temperature": 24.54614872888787,
+          "height": 7.4467945166028064
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-05",
+        "values": {
+          "day": 5,
+          "ndvi": 0.44455620269602486,
+          "soil_water": 0.25544029746785857,
+          "temperature": 25.182406480145463,
+          "height": 8.317269649392237
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-06",
+        "values": {
+          "day": 6,
+          "ndvi": 0.3404277749071061,
+          "soil_water": 0.23346458519052923,
+          "temperature": 25.651055761042084,
+          "height": 9.279295311715702
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-07",
+        "values": {
+          "day": 7,
+          "ndvi": 0.2650891885472234,
+          "soil_water": 0.21372686373652425,
+          "temperature": 25.927414121489438,
+          "height": 10.340045145824957
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-08",
+        "values": {
+          "day": 8,
+          "ndvi": 0.2549497929634351,
+          "soil_water": 0.19889854111080607,
+          "temperature": 25.99692653768556,
+          "height": 11.50667320455498
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-09",
+        "values": {
+          "day": 9,
+          "ndvi": 0.31490971721065475,
+          "soil_water": 0.19098656121795962,
+          "temperature": 25.855931984609793,
+          "height": 12.786156631908133
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-10",
+        "values": {
+          "day": 10,
+          "ndvi": 0.4159917540671834,
+          "soil_water": 0.1910617734197061,
+          "temperature": 25.511856251996313,
+          "height": 14.185106490048781
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-11",
+        "values": {
+          "day": 11,
+          "ndvi": 0.5093453560188814,
+          "soil_water": 0.1991139980973755,
+          "temperature": 24.98282084870688,
+          "height": 15.709546888545274
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-12",
+        "values": {
+          "day": 12,
+          "ndvi": 0.5498549445754743,
+          "soil_water": 0.21405340441553888,
+          "temperature": 24.29668859341829,
+          "height": 17.3646647019005
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-13",
+        "values": {
+          "day": 13,
+          "ndvi": 0.5179431977705394,
+          "soil_water": 0.233858013812956,
+          "temperature": 23.48959615770022,
+          "height": 19.15453485614675
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-14",
+        "values": {
+          "day": 14,
+          "ndvi": 0.42903230486769706,
+          "soil_water": 0.25584736531530916,
+          "temperature": 22.604050848345377,
+          "height": 21.081829347774715
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-15",
+        "values": {
+          "day": 15,
+          "ndvi": 0.326090788597051,
+          "soil_water": 0.27704530335346594,
+          "temperature": 21.68669186611654,
+          "height": 23.147521650098238
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-16",
+        "values": {
+          "day": 16,
+          "ndvi": 0.25886783870726393,
+          "soil_water": 0.2945827864579846,
+          "temperature": 20.785833949166282,
+          "height": 25.350601666233782
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-17",
+        "values": {
+          "day": 17,
+          "ndvi": 0.25985071020184036,
+          "soil_water": 0.30608619856272096,
+          "temperature": 19.948922770577106,
+          "height": 27.687819487561015
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-18",
+        "values": {
+          "day": 18,
+          "ndvi": 0.32856440463259673,
+          "soil_water": 0.30999860680424457,
+          "temperature": 19.220036107134113,
+          "height": 30.153478399746124
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-19",
+        "values": {
+          "day": 19,
+          "ndvi": 0.4318012255675139,
+          "soil_water": 0.3057904850810021,
+          "temperature": 18.63756238579922,
+          "height": 32.73929829322395
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-20",
+        "values": {
+          "day": 20,
+          "ndvi": 0.5196692695277576,
+          "soil_water": 0.2940313829270429,
+          "temperature": 18.232178872367196,
+          "height": 35.43436937742045
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-21",
+        "values": {
+          "day": 21,
+          "ndvi": 0.5497039979074543,
+          "soil_water": 0.2763128396544634,
+          "temperature": 18.025235985466143,
+          "height": 38.2252125230751
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-22",
+        "values": {
+          "day": 22,
+          "ndvi": 0.5073903398649945,
+          "soil_water": 0.2550329769737633,
+          "temperature": 18.02763282957626,
+          "height": 41.09595659413349
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-23",
+        "values": {
+          "day": 23,
+          "ndvi": 0.41317748129909687,
+          "soil_water": 0.2330719244704266,
+          "temperature": 18.239243169605487,
+          "height": 44.028635073280704
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-24",
+        "values": {
+          "day": 24,
+          "ndvi": 0.3125962590126314,
+          "soil_water": 0.2134020075768255,
+          "temperature": 18.64892207933961,
+          "height": 47.00359482354283
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-25",
+        "values": {
+          "day": 25,
+          "ndvi": 0.2542551887333643,
+          "soil_water": 0.1986854572687573,
+          "temperature": 19.235092913611496,
+          "height": 50.0
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-26",
+        "values": {
+          "day": 26,
+          "ndvi": 0.26634912401127203,
+          "soil_water": 0.1909140895919606,
+          "temperature": 19.966883690002966,
+          "height": 52.99640517645717
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-27",
+        "values": {
+          "day": 27,
+          "ndvi": 0.34303335318146283,
+          "soil_water": 0.19113972270435603,
+          "temperature": 20.805753030025627,
+          "height": 55.971364926719296
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-28",
+        "values": {
+          "day": 28,
+          "ndvi": 0.4472482096883384,
+          "soil_water": 0.19933181822267365,
+          "temperature": 21.70752002599495,
+          "height": 58.90404340586651
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-29",
+        "values": {
+          "day": 29,
+          "ndvi": 0.5286291286914201,
+          "soil_water": 0.21438161444936651,
+          "temperature": 22.62469112617285,
+          "height": 61.77478747692489
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-04-30",
+        "values": {
+          "day": 30,
+          "ndvi": 0.5478466449945611,
+          "soil_water": 0.23425219206693754,
+          "temperature": 23.508961487630177,
+          "height": 64.56563062257955
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-01",
+        "values": {
+          "day": 31,
+          "ndvi": 0.49561338942253624,
+          "soil_water": 0.2562541616119418,
+          "temperature": 24.3137590575528,
+          "height": 67.26070170677605
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-02",
+        "values": {
+          "day": 32,
+          "ndvi": 0.3971724537500099,
+          "soil_water": 0.2774096597223683,
+          "temperature": 24.99669739332676,
+          "height": 69.84652160025388
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-03",
+        "values": {
+          "day": 33,
+          "ndvi": 0.300098004020279,
+          "soil_water": 0.2948553889738987,
+          "temperature": 25.521808038212136,
+          "height": 72.31218051243899
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-04",
+        "values": {
+          "day": 34,
+          "ndvi": 0.2513038160772353,
+          "soil_water": 0.30623015175395396,
+          "temperature": 25.861434879607167,
+          "height": 74.64939833376621
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-05",
+        "values": {
+          "day": 35,
+          "ndvi": 0.27437096199512623,
+          "soil_water": 0.30999442728167814,
+          "temperature": 25.997690719338113,
+          "height": 76.85247834990176
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-06",
+        "values": {
+          "day": 36,
+          "ndvi": 0.35815163804224653,
+          "soil_water": 0.30563873852340856,
+          "temperature": 25.9233993424816,
+          "height": 78.91817065222529
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-07",
+        "values": {
+          "day": 37,
+          "ndvi": 0.46215663344205066,
+          "soil_water": 0.2937526075191172,
+          "temperature": 25.642473468582917,
+          "height": 80.84546514385326
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-08",
+        "values": {
+          "day": 38,
+          "ndvi": 0.5361228042424891,
+          "soil_water": 0.27594476633987386,
+          "temperature": 25.169708679634113,
+          "height": 82.63533529809949
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-09",
+        "values": {
+          "day": 39,
+          "ndvi": 0.5443040569387949,
+          "soil_water": 0.25462542274892946,
+          "temperature": 24.530004178050266,
+          "height": 84.29045311145474
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-10",
+        "values": {
+          "day": 40,
+          "ndvi": 0.4827465864238022,
+          "soil_water": 0.2326800498877566,
+          "temperature": 23.757051415147362,
+          "height": 85.81489350995123
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-11",
+        "values": {
+          "day": 41,
+          "ndvi": 0.38119965608553563,
+          "soil_water": 0.21307885102271676,
+          "temperature": 22.891559656400982,
+          "height": 87.21384336809187
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-12",
+        "values": {
+          "day": 42,
+          "ndvi": 0.288738485415718,
+          "soil_water": 0.19847475646681262,
+          "temperature": 21.979111938013,
+          "height": 88.49332679544501
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-13",
+        "values": {
+          "day": 43,
+          "ndvi": 0.25004736206310174,
+          "soil_water": 0.19084436190728107,
+          "temperature": 21.067764335571944,
+          "height": 89.65995485417504
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-14",
+        "values": {
+          "day": 44,
+          "ndvi": 0.2838247869531786,
+          "soil_water": 0.19122040545195565,
+          "temperature": 20.20551498462879,
+          "height": 90.7207046882843
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-15",
+        "values": {
+          "day": 45,
+          "ndvi": 0.3737469329173295,
+          "soil_water": 0.19955199137116472,
+          "temperature": 19.437776152812752,
+          "height": 91.68273035060777
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-16",
+        "values": {
+          "day": 46,
+          "ndvi": 0.47635656264018417,
+          "soil_water": 0.21471147859597958,
+          "temperature": 18.804982502395998,
+          "height": 93.29461469900882
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-17",
+        "values": {
+          "day": 47,
+          "ndvi": 0.5420648792586639,
+          "soil_water": 0.23464710164689126,
+          "temperature": 18.34046150944488,
+          "height": 94.85765884557914
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-18",
+        "values": {
+          "day": 48,
+          "ndvi": 0.5391166140537469,
+          "soil_water": 0.25666066746619415,
+          "temperature": 18.068678198639567,
+          "height": 95.59017057503218
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-19",
+        "values": {
+          "day": 49,
+          "ndvi": 0.46893659357182993,
+          "soil_water": 0.27777274319055106,
+          "temperature": 18.00394663868183,
+          "height": 95.48790928866842
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-20",
+        "values": {
+          "day": 50,
+          "ndvi": 0.3654411547973094,
+          "soil_water": 0.2951259084118952,
+          "temperature": 18.14967606023288,
+          "height": 94.93528893364007
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-21",
+        "values": {
+          "day": 51,
+          "ndvi": 0.27864718506821406,
+          "soil_water": 0.30637149362489535,
+          "temperature": 18.498191301246287,
+          "height": 94.51248881074392
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-22",
+        "values": {
+          "day": 52,
+          "ndvi": 0.2505001484258945,
+          "soil_water": 0.3099874616263972,
+          "temperature": 19.03113703633914,
+          "height": 94.70863311141103
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-23",
+        "values": {
+          "day": 53,
+          "ndvi": 0.29460283913170376,
+          "soil_water": 0.3054844081106701,
+          "temperature": 19.720444500568426,
+          "height": 95.68078307187483
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-24",
+        "values": {
+          "day": 54,
+          "ndvi": 0.38964147429379553,
+          "soil_water": 0.29347180024628877,
+          "temperature": 20.529809792968425,
+          "height": 97.17600986927303
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-25",
+        "values": {
+          "day": 55,
+          "ndvi": 0.4896861388941908,
+          "soil_water": 0.2755754881540062,
+          "temperature": 21.41660590172629,
+          "height": 98.654565274582
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-26",
+        "values": {
+          "day": 56,
+          "ndvi": 0.546387622790492,
+          "soil_water": 0.2542176537201175,
+          "temperature": 22.334127749964434,
+          "height": 99.55450441746576
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-27",
+        "values": {
+          "day": 57,
+          "ndvi": 0.5323434455881858,
+          "soil_water": 0.23228897964111922,
+          "temperature": 23.234052021831964,
+          "height": 99.569307051096
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-28",
+        "values": {
+          "day": 58,
+          "ndvi": 0.4543408245521165,
+          "soil_water": 0.21275740908154275,
+          "temperature": 24.06898221672801,
+          "height": 98.8034070826663
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-29",
+        "values": {
+          "day": 59,
+          "ndvi": 0.35007657371224243,
+          "soil_water": 0.1982664484898875,
+          "temperature": 24.794944890751612,
+          "height": 97.72933207842618
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-30",
+        "values": {
+          "day": 60,
+          "ndvi": 0.2699391290169682,
+          "soil_water": 0.19077738140206488,
+          "temperature": 25.373705615305624,
+          "height": 96.96599179135718
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-05-31",
+        "values": {
+          "day": 61,
+          "ndvi": 0.2526570140644546,
+          "soil_water": 0.19130381791560955,
+          "temperature": 25.774782677776418,
+          "height": 96.9842268248311
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-01",
+        "values": {
+          "day": 62,
+          "ndvi": 0.30658226452678494,
+          "soil_water": 0.19977450731803875,
+          "temperature": 25.977052468292978,
+          "height": 97.88117733399959
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-02",
+        "values": {
+          "day": 63,
+          "ndvi": 0.40565408768704064,
+          "soil_water": 0.215042981536534,
+          "temperature": 25.969862001323687,
+          "height": 99.33218357773177
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-03",
+        "values": {
+          "day": 64,
+          "ndvi": 0.501993424563933,
+          "soil_water": 0.23504272421327227,
+          "temperature": 25.753589978702333,
+          "height": 100.7436013764209
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-04",
+        "values": {
+          "day": 65,
+          "ndvi": 0.5490417618949605,
+          "soil_water": 0.2570668639999916,
+          "temperature": 25.33962684445912,
+          "height": 101.53327660361268
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-05",
+        "values": {
+          "day": 66,
+          "ndvi": 0.5240617557392526,
+          "soil_water": 0.27813453689646983,
+          "temperature": 24.749774881913037,
+          "height": 101.40411104857266
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-06",
+        "values": {
+          "day": 67,
+          "ndvi": 0.4391256497472309,
+          "soil_water": 0.2953943322090897,
+          "temperature": 24.015099948238074,
+          "height": 100.47974188901719
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-07",
+        "values": {
+          "day": 68,
+          "ndvi": 0.33528104654406254,
+          "soil_water": 0.30651021761164854,
+          "temperature": 23.17429532243994,
+          "height": 99.23807553308622
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-08",
+        "values": {
+          "day": 69,
+          "ndvi": 0.262713576342795,
+          "soil_water": 0.30997771016188563,
+          "temperature": 22.271643838305454,
+          "height": 98.27600529204886
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-09",
+        "values": {
+          "day": 70,
+          "ndvi": 0.25649337387052595,
+          "soil_water": 0.30532750100986916,
+          "temperature": 21.354685631096654,
+          "height": 98.01994940408433
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-10",
+        "values": {
+          "day": 71,
+          "ndvi": 0.3196265152399719,
+          "soil_water": 0.2931889741492075,
+          "temperature": 20.471714331263964,
+          "height": 98.52261225296003
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-11",
+        "values": {
+          "day": 72,
+          "ndvi": 0.4216022527644553,
+          "soil_water": 0.27520502224608734,
+          "temperature": 19.66923357367016,
+          "height": 99.44419930158791
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-12",
+        "values": {
+          "day": 73,
+          "ndvi": 0.513138134624175,
+          "soil_water": 0.2538096888240637,
+          "temperature": 18.98950778088776,
+          "height": 100.22665293069777
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-13",
+        "values": {
+          "day": 74,
+          "ndvi": 0.5499970432748567,
+          "soil_water": 0.23189873189176147,
+          "temperature": 18.468336213980358,
+          "height": 100.37572440239337
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-14",
+        "values": {
+          "day": 75,
+          "ndvi": 0.5143659436377243,
+          "soil_water": 0.2124376966810217,
+          "temperature": 18.133167525302678,
+          "height": 99.7132288272095
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-15",
+        "values": {
+          "day": 76,
+          "ndvi": 0.42346449985820184,
+          "soil_water": 0.198060543011775,
+          "temperature": 18.00165411456313,
+          "height": 98.47605141600854
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-16",
+        "values": {
+          "day": 77,
+          "ndvi": 0.3212232206255666,
+          "soil_water": 0.19071315118687715,
+          "temperature": 18.080722426181545,
+          "height": 97.2125394608796
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-17",
+        "values": {
+          "day": 78,
+          "ndvi": 0.25705288776002577,
+          "soil_water": 0.19138995622165478,
+          "temperature": 18.366208152786417,
+          "height": 96.52503344680646
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-18",
+        "values": {
+          "day": 79,
+          "ndvi": 0.2619654989629684,
+          "soil_water": 0.19999935572968672,
+          "temperature": 18.84307555766571,
+          "height": 96.78202041129033
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-19",
+        "values": {
+          "day": 80,
+          "ndvi": 0.3335869059242604,
+          "soil_water": 0.21537610787607975,
+          "temperature": 19.486209365069623,
+          "height": 97.9385716270794
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-20",
+        "values": {
+          "day": 81,
+          "ndvi": 0.4373041838098077,
+          "soil_water": 0.23543904139342478,
+          "temperature": 20.261737511712425,
+          "height": 99.55195596212322
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-21",
+        "values": {
+          "day": 82,
+          "ndvi": 0.5229932357083406,
+          "soil_water": 0.25747273234962487,
+          "temperature": 21.128815093842306,
+          "height": 100.98554761305722
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-22",
+        "values": {
+          "day": 83,
+          "ndvi": 0.549242578122032,
+          "soil_water": 0.2784950240384756,
+          "temperature": 22.041775554364246,
+          "height": 101.70361957395193
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-23",
+        "values": {
+          "day": 84,
+          "ndvi": 0.5033665273362277,
+          "soil_water": 0.2956606478999193,
+          "temperature": 22.952535812992082,
+          "height": 101.51602143083608
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-24",
+        "values": {
+          "day": 85,
+          "ndvi": 0.4075358890486193,
+          "soil_water": 0.3066463172718913,
+          "temperature": 23.81312866793478,
+          "height": 100.65610712401319
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-25",
+        "values": {
+          "day": 86,
+          "ndvi": 0.3080633345761078,
+          "soil_water": 0.3099651733410002,
+          "temperature": 24.57822909458583,
+          "height": 99.65581102362312
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-26",
+        "values": {
+          "day": 87,
+          "ndvi": 0.25302158682503056,
+          "soil_water": 0.30516802450774955,
+          "temperature": 25.207541388111927,
+          "height": 99.07955762243337
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-27",
+        "values": {
+          "day": 88,
+          "ndvi": 0.2690110151329367,
+          "soil_water": 0.29290414236227746,
+          "temperature": 25.667921425801126,
+          "height": 99.24650654407881
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-28",
+        "values": {
+          "day": 89,
+          "ndvi": 0.34830430857921274,
+          "soil_water": 0.2748333858205013,
+          "temperature": 25.935122275533583,
+          "height": 100.07576028225773
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-29",
+        "values": {
+          "day": 90,
+          "ndvi": 0.4525809018140741,
+          "soil_water": 0.2534015470065999,
+          "temperature": 25.995071214047137,
+          "height": 101.1291873256205
+        }
+      }
+    ]
+  },
+  "prediction_observations": {
+    "columns": [
+      {
+        "code": "day",
+        "name": "定植后天数",
+        "unit": "day",
+        "value_kind": "observed"
+      },
+      {
+        "code": "ndvi",
+        "name": "NDVI",
+        "unit": "1",
+        "value_kind": "observed"
+      },
+      {
+        "code": "soil_water",
+        "name": "土壤体积含水率",
+        "unit": "m3/m3",
+        "value_kind": "observed"
+      },
+      {
+        "code": "temperature",
+        "name": "气温",
+        "unit": "deg_c",
+        "value_kind": "observed"
+      }
+    ],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-06-30",
+        "values": {
+          "day": 91,
+          "ndvi": 0.5314463941027752,
+          "soil_water": 0.23150932476273356,
+          "temperature": 25.844610898008465
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-07-01",
+        "values": {
+          "day": 92,
+          "ndvi": 0.5467869662338621,
+          "soil_water": 0.21211972866855205,
+          "temperature": 25.49166565247742
+        }
+      },
+      {
+        "object": {
+          "field_ref": "demo-greenhouse",
+          "crop_code": "tomato",
+          "season_ref": "synthetic-2026"
+        },
+        "business_date": "2026-07-02",
+        "values": {
+          "day": 93,
+          "ndvi": 0.49118888406535977,
+          "soil_water": 0.1978570495946963,
+          "temperature": 24.95482411881509
+        }
+      }
+    ]
+  },
+  "data_kind": "synthetic",
+  "description": "内置合成观测，用于验证保存、运行、模型复用与预测；可上传自有数据。"
+}

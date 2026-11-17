@@ -1,0 +1,290 @@
+{
+  "acceptance_identity": {
+    "service": "http://192.168.3.249:18925",
+    "release_id": "sha256:d591403811242e3b3659932b4d6a566dede46ff062353ffcaa2883b40a2d9919"
+  },
+  "task": {
+    "name": "作物高温暴露条件分析 · 每日批次工程验收",
+    "task_id": "01a1d492-1a1a-7432-a0ec-774dfd638ccc",
+    "design_id": "01a1d492-19ac-77c7-907a-8718b47b4da6",
+    "design_version_id": "01a1d492-19cc-7575-8211-c404097450aa",
+    "observation_start": "2025-05-29",
+    "observation_end": "2025-05-31",
+    "status": "active",
+    "revision": 1
+  },
+  "task_body": {
+    "design_version_id": "01a1d492-19cc-7575-8211-c404097450aa",
+    "observation_start": "2025-05-29",
+    "observation_end": "2025-05-31",
+    "objects": [
+      {
+        "object": {
+          "field_ref": "daily-reference",
+          "crop_code": "potato",
+          "season_ref": "engineering-2025"
+        },
+        "reference_point": {
+          "latitude": 50.46,
+          "longitude": 119.85
+        }
+      }
+    ]
+  },
+  "launch_replay_verified": true,
+  "pause_resume_verified": true,
+  "failed_driver_attempts": [
+    {
+      "instance_id": 178,
+      "workflow_version": "v1",
+      "request": {
+        "command": "COMPLEMENT_DATA",
+        "logical_times": [
+          "2025-05-30 02:00:00",
+          "2025-05-31 02:00:00",
+          "2025-06-01 02:00:00"
+        ]
+      },
+      "outcome": "rejected_without_creating_batches"
+    },
+    {
+      "request": {
+        "command": "COMPLEMENT_DATA",
+        "logical_times": [
+          "2025-05-30 02:00:00",
+          "2025-05-31 02:00:00",
+          "2025-06-01 02:00:00"
+        ],
+        "submissions": {
+          "2025-05-30 02:00:00": {
+            "submitted": true,
+            "instances": [
+              186
+            ]
+          },
+          "2025-05-31 02:00:00": {
+            "submitted": true,
+            "instances": [
+              187
+            ]
+          },
+          "2025-06-01 02:00:00": {
+            "submitted": true,
+            "instances": [
+              188
+            ]
+          }
+        },
+        "instances": [
+          186,
+          187,
+          188
+        ]
+      },
+      "outcome": "private config not readable by exact tenant; no callback executed"
+    }
+  ],
+  "resumed_after_upgrade": true,
+  "first_backfill": {
+    "command": "COMPLEMENT_DATA",
+    "logical_times": [
+      "2025-05-30 02:00:00",
+      "2025-05-31 02:00:00",
+      "2025-06-01 02:00:00"
+    ],
+    "submissions": {
+      "2025-05-30 02:00:00": {
+        "submitted": true,
+        "instances": [
+          213
+        ]
+      },
+      "2025-05-31 02:00:00": {
+        "submitted": true,
+        "instances": [
+          214
+        ]
+      },
+      "2025-06-01 02:00:00": {
+        "submitted": true,
+        "instances": [
+          215
+        ]
+      }
+    },
+    "instances": [
+      213,
+      214,
+      215
+    ]
+  },
+  "batches": [
+    {
+      "batch_id": "01a1d4aa-aa69-7c7b-8e19-7e91d9520e42",
+      "observation_day": "2025-05-31",
+      "scheduled_at": "2025-05-31T18:00:00Z",
+      "status": "succeeded",
+      "dataset_id": "01a1d4aa-cbd0-701f-a4ce-f643bf3b54c2",
+      "run_id": "01a1d4aa-cbd2-759a-b0a8-3c3090a9567d",
+      "error": null,
+      "updated_at": "2026-11-13T11:28:51.821816Z"
+    },
+    {
+      "batch_id": "01a1d4aa-aa65-733c-90a1-90235ed8e8c0",
+      "observation_day": "2025-05-30",
+      "scheduled_at": "2025-05-30T18:00:00Z",
+      "status": "succeeded",
+      "dataset_id": "01a1d4aa-cb5e-76d4-9c48-3289b673e6db",
+      "run_id": "01a1d4aa-cb60-7eb4-948d-8139ca293ad4",
+      "error": null,
+      "updated_at": "2026-11-13T11:28:51.798205Z"
+    },
+    {
+      "batch_id": "01a1d4aa-aa62-77f5-9bc4-52d56f481026",
+      "observation_day": "2025-05-29",
+      "scheduled_at": "2025-05-29T18:00:00Z",
+      "status": "succeeded",
+      "dataset_id": "01a1d4aa-c967-79d4-ad33-68d5ec8f5068",
+      "run_id": "01a1d4aa-c96a-7b36-9781-41393f522d19",
+      "error": null,
+      "updated_at": "2026-11-13T11:28:51.774369Z"
+    }
+  ],
+  "series": {
+    "start": "2025-05-29",
+    "end": "2025-05-31",
+    "columns": [
+      {
+        "code": "temperature_maximum_daily",
+        "name": "日最高气温",
+        "unit": "celsius",
+        "value_kind": "estimated",
+        "output": "input"
+      },
+      {
+        "code": "temperature_maximum_daily",
+        "name": "日最高气温",
+        "unit": "celsius",
+        "value_kind": "estimated",
+        "output": "result:series"
+      }
+    ],
+    "rows": [
+      {
+        "batch_id": "01a1d4aa-aa62-77f5-9bc4-52d56f481026",
+        "output": "input",
+        "object": {
+          "field_ref": "daily-reference",
+          "crop_code": "potato",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-29",
+        "values": {
+          "temperature_maximum_daily": 22.9
+        }
+      },
+      {
+        "batch_id": "01a1d4aa-aa62-77f5-9bc4-52d56f481026",
+        "output": "result:series",
+        "object": {
+          "crop_code": "potato",
+          "field_ref": "daily-reference",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-29",
+        "values": {
+          "temperature_maximum_daily": 22.9
+        }
+      },
+      {
+        "batch_id": "01a1d4aa-aa65-733c-90a1-90235ed8e8c0",
+        "output": "input",
+        "object": {
+          "field_ref": "daily-reference",
+          "crop_code": "potato",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-30",
+        "values": {
+          "temperature_maximum_daily": 16.4
+        }
+      },
+      {
+        "batch_id": "01a1d4aa-aa65-733c-90a1-90235ed8e8c0",
+        "output": "result:series",
+        "object": {
+          "crop_code": "potato",
+          "field_ref": "daily-reference",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-30",
+        "values": {
+          "temperature_maximum_daily": 16.4
+        }
+      },
+      {
+        "batch_id": "01a1d4aa-aa69-7c7b-8e19-7e91d9520e42",
+        "output": "input",
+        "object": {
+          "field_ref": "daily-reference",
+          "crop_code": "potato",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-31",
+        "values": {
+          "temperature_maximum_daily": 14.9
+        }
+      },
+      {
+        "batch_id": "01a1d4aa-aa69-7c7b-8e19-7e91d9520e42",
+        "output": "result:series",
+        "object": {
+          "crop_code": "potato",
+          "field_ref": "daily-reference",
+          "season_ref": "engineering-2025"
+        },
+        "business_date": "2025-05-31",
+        "values": {
+          "temperature_maximum_daily": 14.9
+        }
+      }
+    ]
+  },
+  "duplicate_backfill": {
+    "command": "COMPLEMENT_DATA",
+    "logical_times": [
+      "2025-05-30 02:00:00",
+      "2025-05-31 02:00:00",
+      "2025-06-01 02:00:00"
+    ],
+    "submissions": {
+      "2025-05-30 02:00:00": {
+        "submitted": true,
+        "instances": [
+          222
+        ]
+      },
+      "2025-05-31 02:00:00": {
+        "submitted": true,
+        "instances": [
+          223
+        ]
+      },
+      "2025-06-01 02:00:00": {
+        "submitted": true,
+        "instances": [
+          224
+        ]
+      }
+    },
+    "instances": [
+      222,
+      223,
+      224
+    ]
+  },
+  "all_success": true,
+  "repeated_dates_deduplicated": true,
+  "actual_02_clock_observed": false,
+  "evidence_kind": "manual_complement_data"
+}

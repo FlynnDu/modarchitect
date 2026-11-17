@@ -1,0 +1,294 @@
+{
+  "schema_version": "1.1",
+  "name": "历史株高预测与多变量回归",
+  "question": "把历史曲线的预测株高与实测 NDVI 合并后，预测留出日期的株高。",
+  "objective": "prediction",
+  "purpose": "train",
+  "variables": [
+    {
+      "code": "day",
+      "name": "播种后天数",
+      "unit": "day",
+      "role": "driver",
+      "definition_version": "1.0.0",
+      "value_type": "number",
+      "description": "串联样例变量"
+    },
+    {
+      "code": "height",
+      "name": "实测株高",
+      "unit": "cm",
+      "role": "target",
+      "definition_version": "1.0.0",
+      "value_type": "number",
+      "description": "串联样例变量"
+    },
+    {
+      "code": "ndvi",
+      "name": "NDVI",
+      "unit": "1",
+      "role": "covariate",
+      "definition_version": "1.0.0",
+      "value_type": "number",
+      "description": "串联样例变量"
+    },
+    {
+      "code": "prior_height",
+      "name": "历史预测株高",
+      "unit": "cm",
+      "role": "covariate",
+      "definition_version": "1.0.0",
+      "value_type": "number",
+      "description": "串联样例变量"
+    }
+  ],
+  "collection_requirements": [
+    {
+      "code": "day",
+      "variable_code": "day",
+      "unit_kind": "field_season",
+      "required_for": [
+        "train"
+      ],
+      "source": "manual",
+      "minimum_observations_per_unit": 8,
+      "minimum_independent_units": 1,
+      "method": {
+        "protocol_code": "synthetic_fixture",
+        "protocol_version": "1.0.0",
+        "method_code": "direct",
+        "instructions": "仅供合成数据验收。"
+      }
+    },
+    {
+      "code": "height",
+      "variable_code": "height",
+      "unit_kind": "field_season",
+      "required_for": [
+        "train"
+      ],
+      "source": "manual",
+      "minimum_observations_per_unit": 8,
+      "minimum_independent_units": 1,
+      "method": {
+        "protocol_code": "synthetic_fixture",
+        "protocol_version": "1.0.0",
+        "method_code": "direct",
+        "instructions": "仅供合成数据验收。"
+      }
+    },
+    {
+      "code": "ndvi",
+      "variable_code": "ndvi",
+      "unit_kind": "field_season",
+      "required_for": [
+        "train"
+      ],
+      "source": "manual",
+      "minimum_observations_per_unit": 8,
+      "minimum_independent_units": 1,
+      "method": {
+        "protocol_code": "synthetic_fixture",
+        "protocol_version": "1.0.0",
+        "method_code": "direct",
+        "instructions": "仅供合成数据验收。"
+      }
+    }
+  ],
+  "composition": {
+    "schema_version": "1.0",
+    "object_scope": "field_crop_season",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "实测株高与 NDVI",
+        "role": "context",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "baseline_config",
+        "name": "历史逻辑斯蒂预测配置",
+        "role": "parameter",
+        "data_type": {
+          "semantic": "historical_logistic_forecast_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      },
+      {
+        "code": "merge_config",
+        "name": "合并预测因子配置",
+        "role": "parameter",
+        "data_type": {
+          "semantic": "research_forecast_feature_join_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      },
+      {
+        "code": "regression_config",
+        "name": "多变量线性回归配置",
+        "role": "parameter",
+        "data_type": {
+          "semantic": "multivariate_regression_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "code": "baseline",
+        "component": {
+          "code": "historical_logistic_forecast",
+          "revision": 1
+        },
+        "bindings": [
+          {
+            "port": "observations",
+            "source": {
+              "node": null,
+              "port": "observations"
+            }
+          },
+          {
+            "port": "request",
+            "source": {
+              "node": null,
+              "port": "baseline_config"
+            }
+          }
+        ]
+      },
+      {
+        "code": "merge",
+        "component": {
+          "code": "research_forecast_feature_join",
+          "revision": 1
+        },
+        "bindings": [
+          {
+            "port": "observations",
+            "source": {
+              "node": null,
+              "port": "observations"
+            }
+          },
+          {
+            "port": "forecast",
+            "source": {
+              "node": "baseline",
+              "port": "forecast"
+            }
+          },
+          {
+            "port": "request",
+            "source": {
+              "node": null,
+              "port": "merge_config"
+            }
+          }
+        ]
+      },
+      {
+        "code": "regression",
+        "component": {
+          "code": "multivariate_linear_regression",
+          "revision": 1
+        },
+        "bindings": [
+          {
+            "port": "observations",
+            "source": {
+              "node": "merge",
+              "port": "table"
+            }
+          },
+          {
+            "port": "request",
+            "source": {
+              "node": null,
+              "port": "regression_config"
+            }
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "code": "trained_model",
+        "source": {
+          "node": "regression",
+          "port": "trained_model"
+        }
+      },
+      {
+        "code": "predictions",
+        "source": {
+          "node": "regression",
+          "port": "predictions"
+        }
+      }
+    ]
+  },
+  "input_recipes": {
+    "observations": {
+      "kind": "observations",
+      "variable_codes": [
+        "day",
+        "height",
+        "ndvi"
+      ]
+    },
+    "baseline_config": {
+      "kind": "configuration",
+      "value": {
+        "x_code": "day",
+        "target_code": "height",
+        "fit_through": "2026-06-12"
+      }
+    },
+    "merge_config": {
+      "kind": "configuration",
+      "value": {
+        "feature_code": "height",
+        "output_code": "prior_height"
+      }
+    },
+    "regression_config": {
+      "kind": "configuration",
+      "value": {
+        "features": [
+          "ndvi",
+          "prior_height"
+        ],
+        "targets": [
+          "height"
+        ],
+        "training_end": "2026-06-16"
+      }
+    }
+  },
+  "evaluation": {
+    "target_codes": [
+      "height"
+    ],
+    "purpose": "exploratory",
+    "split_unit": "time",
+    "success_criteria": "用留出日期的实测株高验证。",
+    "update_policy": "manual_candidate"
+  },
+  "layout": {}
+}

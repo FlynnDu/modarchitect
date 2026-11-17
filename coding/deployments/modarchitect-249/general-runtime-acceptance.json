@@ -1,0 +1,320 @@
+{
+  "release": {
+    "wheel_sha256": "e02005883aaff5457271ec59a5de9a3c946201674827a640a36abdca9eab2bd0",
+    "image": "modarchitect:0.1.0-general-e02005883aaf",
+    "component_config_digest": "sha256:b35ebcecf49f6a2983ea3aa794d1b28265579f2d43718debbbf02a1afecb2fed",
+    "component_manifest_digest": "sha256:bdc43fbe09f07c5801ca8c927610d1abb43bd9e241b62e03d109442c09f2ea62",
+    "archive_sha256": "9abc461e0cfa580f2b4abbb89d637be0ab7e2cf20e062dcd6e870ff30eabb861",
+    "images": [
+      {
+        "tags": [
+          "modarchitect:0.1.0-general-e02005883aaf"
+        ],
+        "config_digest": "sha256:09e1215ca0585d1268d3fe3ef3d1ffabf0f6ae34442a7f7634b6e3f72f38b368"
+      },
+      {
+        "tags": [
+          "modarchitect-descriptive-statistics:1"
+        ],
+        "config_digest": "sha256:b35ebcecf49f6a2983ea3aa794d1b28265579f2d43718debbbf02a1afecb2fed"
+      }
+    ]
+  },
+  "http": {
+    "openapi_sha256": "b1b6cd01414083d5c9bf45351a6f1e9be497a936b899c59a7a15382707715906",
+    "paths": 40,
+    "operations": 48,
+    "typed_run_response": true,
+    "analysis_page_assets": true
+  },
+  "compatibility": {
+    "migration": "0005",
+    "previous_models_unchanged": 9,
+    "previous_versions_unchanged": 11,
+    "original_database_container_preserved": true
+  },
+  "scheduler": [
+    {
+      "case": "analysis",
+      "instance_id": "23",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 23,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "system",
+      "instance_id": "24",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 24,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "system",
+      "instance_id": "25",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 25,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "chain",
+      "instance_id": "26",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 26,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "chain",
+      "instance_id": "27",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 27,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "system_1.5",
+      "instance_id": "28",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 28,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "system_1.5",
+      "instance_id": "29",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 29,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "pre_upgrade_system",
+      "instance_id": "30",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 30,
+          "state": "SUCCESS"
+        }
+      ]
+    },
+    {
+      "case": "pre_upgrade_chain",
+      "instance_id": "31",
+      "state": "SUCCESS",
+      "tasks": [
+        {
+          "id": 31,
+          "state": "SUCCESS"
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "engineering_fixture_only": true,
+    "service": "http://192.168.3.249:18925",
+    "analysis": {
+      "design_id": "01a1ce26-845f-71c1-a7a8-5e5ba9359766",
+      "run_id": "01a1ce26-85a7-708a-931f-d1fbf04eda68",
+      "scheduler_id": "23",
+      "result_sha256": "104410885d872649784d12467fdf0b5c26e67aa8f88948baf4e0d1073e004130",
+      "summary": {
+        "format": "research_descriptive_summary_v1",
+        "row_count": 60,
+        "object_count": 1,
+        "business_date_start": "2026-04-01",
+        "business_date_end": "2026-05-30",
+        "variables": [
+          {
+            "code": "lai",
+            "name": "叶面积指数",
+            "unit": "m2_m2",
+            "value_kind": "observed",
+            "count": 60,
+            "minimum": 0.8762651637252852,
+            "maximum": 2.800928094128486,
+            "mean": 1.8313457952605472,
+            "sample_std": 0.5288113671499268
+          },
+          {
+            "code": "canopy_cover",
+            "name": "冠层覆盖度",
+            "unit": "fraction",
+            "value_kind": "observed",
+            "count": 60,
+            "minimum": 0.08048639031028013,
+            "maximum": 0.6401163750827303,
+            "mean": 0.3599275570668207,
+            "sample_std": 0.1737216219730112
+          }
+        ],
+        "source_sha256": [
+          "bc0fd1ad225c6d6106cd082a5751558da79497adfe9a3d00a23093eeac635ccb"
+        ]
+      },
+      "no_fake_model": true,
+      "wrong_operations_rejected": true,
+      "sources_sha256": "0e734ffd8b0e9c5cb3da11370d6311c752a94d17fe11724b2bdfd97c4c9028ec"
+    },
+    "legacy_scenarios": [
+      {
+        "kind": "system",
+        "data_kind": "user_supplied",
+        "contextual_usages": false,
+        "design_id": "01a1ce26-8e45-7b62-8b8f-61e31d6b62f9",
+        "training_run_id": "01a1ce26-8eae-7401-bc59-71f8740bffb4",
+        "training_scheduler_id": "24",
+        "prediction_run_id": "01a1ce26-973a-790e-a134-c02428f3eefa",
+        "prediction_scheduler_id": "25",
+        "model_id": "01a1ce26-96d5-74b2-a89c-84cfe763d14b",
+        "model_sha256": "d9a515d8203a75b8713bf4000f6db98475b84de98636895bc129a8203966580b",
+        "training_sources_sha256": "497bfabcfc59b69ce9144f6b7a92fcfc2f757bf18e6cf461ccce07c24fe65ae0",
+        "prediction_sources_sha256": "37b084f5c894051280e866fd6774c1fbf741c4680ff8df14e15de1697d86aaca",
+        "metrics": [
+          {
+            "output": "predictions",
+            "target": "lai",
+            "unit": "m2_m2",
+            "rows": 20,
+            "coverage": 1.0,
+            "expected_rows": 20,
+            "status": "evaluated",
+            "mae": 8.522182959325165e-13,
+            "rmse": 8.607885225489571e-13,
+            "bias": -8.522182959325165e-13
+          },
+          {
+            "output": "predictions",
+            "target": "agb_kg_ha",
+            "unit": "kg_ha",
+            "rows": 20,
+            "coverage": 1.0,
+            "expected_rows": 20,
+            "status": "evaluated",
+            "mae": 2.801243681460619e-11,
+            "rmse": 2.921481876629612e-11,
+            "bias": 2.801243681460619e-11
+          }
+        ],
+        "state_unchanged": true
+      },
+      {
+        "kind": "chain",
+        "data_kind": "synthetic",
+        "contextual_usages": false,
+        "design_id": "01a1ce26-a76a-7b07-9177-e662cb313291",
+        "training_run_id": "01a1ce26-a7e0-7641-b7de-512f7f57ebc9",
+        "training_scheduler_id": "26",
+        "prediction_run_id": "01a1ce26-c052-7284-97cf-be0332609bb7",
+        "prediction_scheduler_id": "27",
+        "model_id": "01a1ce26-c008-7264-bac3-138d9f111f08",
+        "model_sha256": "f227c108d4ca14005b8225040cdbdf8aa878947411c844f9b2845484a2bc2aac",
+        "training_sources_sha256": "56802bf22c9930fef94a335acd65fb54135544d7893499628c55d03fced47edf",
+        "prediction_sources_sha256": "363bf46f1d968308323e4be742506873de033776841f0896e07dc33a3d6dbbc2",
+        "metrics": [
+          {
+            "output": "predictions",
+            "target": "height",
+            "unit": "cm",
+            "rows": 20,
+            "coverage": 1.0,
+            "expected_rows": 20,
+            "status": "evaluated",
+            "mae": 6.394884621840902e-14,
+            "rmse": 6.57396043733364e-14,
+            "bias": 6.394884621840902e-14
+          }
+        ],
+        "state_unchanged": true
+      }
+    ],
+    "cross_workspace_rejected": true,
+    "node_usage_scenario": {
+      "kind": "system",
+      "data_kind": "user_supplied",
+      "contextual_usages": true,
+      "design_id": "01a1ce26-d116-79dc-98c8-9984db711d17",
+      "training_run_id": "01a1ce26-d1ac-7992-827a-137a8e836e74",
+      "training_scheduler_id": "28",
+      "prediction_run_id": "01a1ce26-e23a-705a-830b-9bcea062aab8",
+      "prediction_scheduler_id": "29",
+      "model_id": "01a1ce26-e1f5-7a8e-b1b1-9325aaba8538",
+      "model_sha256": "421e911d2a382a1f073daed676a96b7530df5a3d001450eb041906414f0ced1d",
+      "training_sources_sha256": "1bae533239bd7eb832f6f3d1f95b859fbb821682ea61a3a4f6454a177f2f0640",
+      "prediction_sources_sha256": "37b084f5c894051280e866fd6774c1fbf741c4680ff8df14e15de1697d86aaca",
+      "metrics": [
+        {
+          "output": "predictions",
+          "target": "lai",
+          "unit": "m2_m2",
+          "rows": 20,
+          "coverage": 1.0,
+          "expected_rows": 20,
+          "status": "evaluated",
+          "mae": 8.522182959325165e-13,
+          "rmse": 8.607885225489571e-13,
+          "bias": -8.522182959325165e-13
+        },
+        {
+          "output": "predictions",
+          "target": "agb_kg_ha",
+          "unit": "kg_ha",
+          "rows": 20,
+          "coverage": 1.0,
+          "expected_rows": 20,
+          "status": "evaluated",
+          "mae": 2.801243681460619e-11,
+          "rmse": 2.921481876629612e-11,
+          "bias": 2.801243681460619e-11
+        }
+      ],
+      "state_unchanged": true
+    }
+  },
+  "pre_upgrade_models": [
+    {
+      "kind": "system",
+      "pre_upgrade_model_id": "01a1cbb1-cf60-7646-b9c3-2125b18bd124",
+      "model_sha256": "23168c6e6a4d9e25bb7ec09b29f11a95e1516148d54024c1809ba0ef55822865",
+      "run_id": "01a1ce28-adc6-77c4-bdc1-1199512128ac",
+      "scheduler_id": "30",
+      "result_sha256": "6297153b4330def7da96011bc77b6d8c0c6bd667f45937e9fb2e92163402e087",
+      "state_unchanged": true,
+      "no_refit": true
+    },
+    {
+      "kind": "chain",
+      "pre_upgrade_model_id": "01a1cbb1-efdb-7e06-aa7a-9b94f7ff8294",
+      "model_sha256": "dbc0afe4538dae5cf72ebfcccdc41b6da997fe57a3966d161f9d63188693aff7",
+      "run_id": "01a1ce28-bd98-72e7-9bf8-4f9d52e64189",
+      "scheduler_id": "31",
+      "result_sha256": "e818258b113443c2638d867d1ec118bd34d2d1ecc9e5dd9895db60e2524e8d75",
+      "state_unchanged": true,
+      "no_refit": true
+    }
+  ]
+}

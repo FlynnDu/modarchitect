@@ -1,0 +1,24 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "method": "real DOM events and live server structure validation",
+  "native_browser_visual_check": false,
+  "engineering_demo_only": true,
+  "fresh_page": false,
+  "design_id": "01a1e436-5881-7d8d-ab27-11f40c579c63",
+  "revision": 2,
+  "selected_component": {
+    "code": "historical_logistic_training",
+    "revision": 1
+  },
+  "output_ports": [
+    "forecast",
+    "trained_model"
+  ],
+  "target_codes": [
+    "height"
+  ],
+  "runtime_enabled": false,
+  "run_started": false,
+  "configuration_sha256": "8fda3301292e80c9b1fc58af66f4e6a96ae04db1b20b47f812e2126c488db911",
+  "http_error_count": 0
+}

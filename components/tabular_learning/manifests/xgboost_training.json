@@ -1,0 +1,167 @@
+{
+  "manifest_version": "1.1",
+  "component": {
+    "code": "xgboost_training",
+    "revision": 1,
+    "name": "XGBoost回归训练",
+    "category": "training"
+  },
+  "contract": {
+    "summary": "使用固定系统指标训练并保存可复用回归模型。",
+    "method": "64轮CPU直方图树提升，深度4，学习率0.08",
+    "requirements": [
+      "训练标签须为实测，因素与目标不得重叠；输入按完整对象及业务日期对齐。",
+      "模型使用前须用独立资料验证适用性；因素在预测时必须已知。"
+    ],
+    "limitations": [
+      "本版本只处理完整有限数值，不自动补值或合成实测标签。",
+      "同一地块的多个日期不代表多个独立试验单位。",
+      "高斯过程每次最多1000个训练样本；树方法最多10000个，按资源预算执行。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "观测输入",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "包含已对齐的候选因子和目标。",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      }
+    ],
+    "outputs": [
+      {
+        "code": "trained_model",
+        "name": "训练后的模型",
+        "data_type": {
+          "semantic": "xgboost_regression_model",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        },
+        "required": true,
+        "description": "准确算法JSON状态、列定义、训练范围及来源；不使用pickle。",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      },
+      {
+        "code": "predictions",
+        "name": "预测结果表",
+        "data_type": {
+          "semantic": "research_prediction_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        },
+        "required": true,
+        "description": "按地块、业务日期和目标输出预测数值。",
+        "projection": "identity",
+        "allow_none": false,
+        "output_view": null
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "features": {
+          "title": "输入变量",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,95}$"
+          },
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "covariate",
+              "driver"
+            ]
+          }
+        },
+        "targets": {
+          "title": "预测目标",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,95}$"
+          },
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "target"
+            ],
+            "observed": true,
+            "evaluation_target": true
+          }
+        },
+        "training_end": {
+          "title": "训练截止日期",
+          "type": "string",
+          "format": "date",
+          "description": "使用截至当天的记录训练，对之后日期的已知因子计算预测值。"
+        },
+        "seed": {
+          "title": "复现种子",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647,
+          "default": 17
+        }
+      },
+      "required": [
+        "features",
+        "targets",
+        "training_end"
+      ]
+    },
+    "execution": {
+      "operations": [
+        "train"
+      ],
+      "state_output": "trained_model",
+      "inference": {
+        "code": "xgboost_predict",
+        "revision": 1
+      },
+      "input_uses": {
+        "features": {
+          "role": "feature",
+          "phases": [
+            "training",
+            "application"
+          ]
+        },
+        "targets": {
+          "role": "label",
+          "phases": [
+            "training",
+            "evaluation"
+          ]
+        }
+      }
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:70f057703ff67018608c7f9c2cddfb18ad0a66c353847672511e72222f83c4a9"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

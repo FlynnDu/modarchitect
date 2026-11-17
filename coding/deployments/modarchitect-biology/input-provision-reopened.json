@@ -1,0 +1,83 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "method": "real DOM events with live HTTP",
+  "native_browser_visual_check": false,
+  "design_id": "01a1e3ca-364b-742d-9cf1-be61957bb2ee",
+  "revision": 1,
+  "configuration_sha256": "3a4fd99daab127291172b9e3067bb4239eb778489e83daa52de7d2a7ddcd9c06",
+  "template_count": 0,
+  "fresh_page": true,
+  "events": [
+    "new-page/reopen",
+    "inputs/source-and-binding-preserved",
+    "configuration/export-and-import"
+  ],
+  "http_error_count": 0,
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/session",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-rules",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/runs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/report-tasks",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/plans/01a1e3ca-364b-742d-9cf1-be61957bb2ee",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/validate",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/workspace/study-templates/crop-growth-prediction",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/validate",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/designer/import",
+      "status": 200
+    }
+  ]
+}

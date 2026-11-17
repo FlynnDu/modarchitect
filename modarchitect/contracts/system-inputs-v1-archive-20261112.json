@@ -1,0 +1,5077 @@
+{
+  "payload": {
+    "format": "modarchitect_system_inputs_v1",
+    "version": "1.0.0",
+    "origin": "mlgrowth enterprise-model-services 53d86cb plus audited working tree",
+    "evidence": [
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/greenhouse-v1.json",
+        "sha256": "1a370ecc68357b11d4cfdcb8973dcc641b80c4648d05ad520d290451f67f0e55"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/source-policies-v1.json",
+        "sha256": "3f80dab60e96604bd64d9a205290329063fc463c284d2d0c2c094e99171f035b"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/sources-v1.json",
+        "sha256": "16460a39bd796d3f1dd7851a5d95ec42cd5c1dc650208c5250a175029c286636"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/sources-v2.json",
+        "sha256": "0fc52c49630053841d86a46d9010f6b30bcf279350b4f5194faade2c4aaac361"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/variables-growth-trend-v1.json",
+        "sha256": "5a8daae600738be473dc3e323ee1c742fe5ba16d3baf42a62795d6bf3c9c25fc"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/variables-v1.json",
+        "sha256": "26eb0a74dfc5ce8b7d9609a34438142d477b8f82538a1a42c7c25f152055f0ee"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/catalog/variables-v2.json",
+        "sha256": "9e348c4096b6bdfb9e7d3768813768246e5887adf20f798c18ac0b66c9a307bc"
+      },
+      {
+        "path": "src/mlgrowth_contracts/timeseries/platform.py",
+        "sha256": "765594b40e2e993aacc2f7f07bdf4edb3e4b4c2a424a2ac29a0b574633df39b9"
+      },
+      {
+        "path": "src/mlgrowth_contracts/timeseries/indicators.py",
+        "sha256": "1095166d870cb9f770553b77ef696eb297b73c5189791dc30c7fa13025f4f2e6"
+      },
+      {
+        "path": "src/mlgrowth_contracts/research/source_dictionary.py",
+        "sha256": "4c8f499dd20cffdafdaa07f89bcec0c1eb404e3d6fecec338f649300272d38ab"
+      }
+    ],
+    "variables": [
+      {
+        "code": "growth_report_ndvi_mean",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDVI 均值",
+        "description": "长势分析报告覆盖区的 NDVI 均值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_stddev",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDVI 标准差",
+        "description": "长势分析报告覆盖区的 NDVI 标准差，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_min",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDVI 最小值",
+        "description": "长势分析报告覆盖区的 NDVI 最小值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_max",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDVI 最大值",
+        "description": "长势分析报告覆盖区的 NDVI 最大值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_gndvi_mean",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 GNDVI 均值",
+        "description": "长势分析报告覆盖区的 GNDVI 均值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_gndvi_stddev",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 GNDVI 标准差",
+        "description": "长势分析报告覆盖区的 GNDVI 标准差，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_gndvi_min",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 GNDVI 最小值",
+        "description": "长势分析报告覆盖区的 GNDVI 最小值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_gndvi_max",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 GNDVI 最大值",
+        "description": "长势分析报告覆盖区的 GNDVI 最大值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndre_mean",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDRE 均值",
+        "description": "长势分析报告覆盖区的 NDRE 均值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndre_stddev",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDRE 标准差",
+        "description": "长势分析报告覆盖区的 NDRE 标准差，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndre_min",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDRE 最小值",
+        "description": "长势分析报告覆盖区的 NDRE 最小值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndre_max",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 NDRE 最大值",
+        "description": "长势分析报告覆盖区的 NDRE 最大值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_lci_mean",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 LCI 均值",
+        "description": "长势分析报告覆盖区的 LCI 均值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_lci_stddev",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 LCI 标准差",
+        "description": "长势分析报告覆盖区的 LCI 标准差，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_lci_min",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 LCI 最小值",
+        "description": "长势分析报告覆盖区的 LCI 最小值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_lci_max",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 LCI 最大值",
+        "description": "长势分析报告覆盖区的 LCI 最大值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_osavi_mean",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 OSAVI 均值",
+        "description": "长势分析报告覆盖区的 OSAVI 均值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_osavi_stddev",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 OSAVI 标准差",
+        "description": "长势分析报告覆盖区的 OSAVI 标准差，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_osavi_min",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 OSAVI 最小值",
+        "description": "长势分析报告覆盖区的 OSAVI 最小值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_osavi_max",
+        "definition_version": "1.0.0",
+        "name": "报告覆盖区 OSAVI 最大值",
+        "description": "长势分析报告覆盖区的 OSAVI 最大值，保留报告修订及原始统计范围。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_very_weak_area",
+        "definition_version": "1.0.0",
+        "name": "NDVI 很弱档面积",
+        "description": "长势分析新版 NDVI 很弱档的原始面积，按报告覆盖区解释。",
+        "unit": "mu",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_very_weak_percent",
+        "definition_version": "1.0.0",
+        "name": "NDVI 很弱档占比",
+        "description": "长势分析新版 NDVI 很弱档占总统计像元的百分比，保留原分母。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 100.0
+        }
+      },
+      {
+        "code": "growth_report_ndvi_weak_area",
+        "definition_version": "1.0.0",
+        "name": "NDVI 较弱档面积",
+        "description": "长势分析新版 NDVI 较弱档的原始面积，按报告覆盖区解释。",
+        "unit": "mu",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_weak_percent",
+        "definition_version": "1.0.0",
+        "name": "NDVI 较弱档占比",
+        "description": "长势分析新版 NDVI 较弱档占总统计像元的百分比，保留原分母。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 100.0
+        }
+      },
+      {
+        "code": "growth_report_ndvi_average_area",
+        "definition_version": "1.0.0",
+        "name": "NDVI 一般档面积",
+        "description": "长势分析新版 NDVI 一般档的原始面积，按报告覆盖区解释。",
+        "unit": "mu",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_average_percent",
+        "definition_version": "1.0.0",
+        "name": "NDVI 一般档占比",
+        "description": "长势分析新版 NDVI 一般档占总统计像元的百分比，保留原分母。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 100.0
+        }
+      },
+      {
+        "code": "growth_report_ndvi_strong_area",
+        "definition_version": "1.0.0",
+        "name": "NDVI 较好档面积",
+        "description": "长势分析新版 NDVI 较好档的原始面积，按报告覆盖区解释。",
+        "unit": "mu",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_strong_percent",
+        "definition_version": "1.0.0",
+        "name": "NDVI 较好档占比",
+        "description": "长势分析新版 NDVI 较好档占总统计像元的百分比，保留原分母。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 100.0
+        }
+      },
+      {
+        "code": "growth_report_ndvi_very_strong_area",
+        "definition_version": "1.0.0",
+        "name": "NDVI 很好档面积",
+        "description": "长势分析新版 NDVI 很好档的原始面积，按报告覆盖区解释。",
+        "unit": "mu",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "growth_report_ndvi_very_strong_percent",
+        "definition_version": "1.0.0",
+        "name": "NDVI 很好档占比",
+        "description": "长势分析新版 NDVI 很好档占总统计像元的百分比，保留原分母。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "growth_trend_report",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 100.0
+        }
+      },
+      {
+        "code": "growth_point_ndvi",
+        "definition_version": "1.0.0",
+        "name": "采样点局部 NDVI",
+        "description": "对授权采样点，在匹配的同日 NDVI 栅格上按冻结的像元或样方范围提取；等待授权影像与点位联验。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "growth_trend_point",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "temperature_minimum_daily",
+        "definition_version": "1.0.0",
+        "name": "日最低气温",
+        "description": "研究变量：日最低气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "temperature_maximum_daily",
+        "definition_version": "1.0.0",
+        "name": "日最高气温",
+        "description": "研究变量：日最高气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "name": "日平均气温",
+        "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "precipitation_daily",
+        "definition_version": "1.0.0",
+        "name": "日降水量",
+        "description": "研究变量：日降水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "mm",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "solar_radiation_daily",
+        "definition_version": "1.0.0",
+        "name": "日太阳辐射",
+        "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "kj_m2",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "wind_speed_2m_daily",
+        "definition_version": "1.0.0",
+        "name": "2米日风速",
+        "description": "研究变量：2米日风速。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "m_s",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "vapour_pressure_daily",
+        "definition_version": "1.0.0",
+        "name": "日露点换算水汽压",
+        "description": "研究变量：日露点换算水汽压。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "kpa",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_bdod",
+        "definition_version": "1.0.0",
+        "name": "土壤容重",
+        "description": "研究变量：土壤容重。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "kg_dm3",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_cec",
+        "definition_version": "1.0.0",
+        "name": "土壤阳离子交换量",
+        "description": "研究变量：土壤阳离子交换量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "cmol_kg",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_cfvo",
+        "definition_version": "1.0.0",
+        "name": "土壤粗碎片体积分数",
+        "description": "研究变量：土壤粗碎片体积分数。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_clay",
+        "definition_version": "1.0.0",
+        "name": "土壤黏粒含量",
+        "description": "研究变量：土壤黏粒含量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_phh2o",
+        "definition_version": "1.0.0",
+        "name": "土壤pH（水提）",
+        "description": "研究变量：土壤pH（水提）。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_sand",
+        "definition_version": "1.0.0",
+        "name": "土壤砂粒含量",
+        "description": "研究变量：土壤砂粒含量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_silt",
+        "definition_version": "1.0.0",
+        "name": "土壤粉粒含量",
+        "description": "研究变量：土壤粉粒含量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "percent",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_soc",
+        "definition_version": "1.0.0",
+        "name": "土壤有机碳",
+        "description": "研究变量：土壤有机碳。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "g_kg",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_wv0010",
+        "definition_version": "1.0.0",
+        "name": "土壤10kPa持水量",
+        "description": "研究变量：土壤10kPa持水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_wv0033",
+        "definition_version": "1.0.0",
+        "name": "土壤33kPa持水量",
+        "description": "研究变量：土壤33kPa持水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "soil_wv1500",
+        "definition_version": "1.0.0",
+        "name": "土壤1500kPa持水量",
+        "description": "研究变量：土壤1500kPa持水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "soil",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "temperature_hourly_sample_mean_daily",
+        "definition_version": "1.0.0",
+        "name": "日内小时气温均值",
+        "description": "北京时间日期内24个UTC小时标记气温样本的算术均值；不等于原生日最低/最高值，也不冒充连续时段的积分均温。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "weather",
+        "bounds": {
+          "minimum": -95.0,
+          "maximum": 65.0
+        }
+      },
+      {
+        "code": "plant_height",
+        "definition_version": "1.0.0",
+        "name": "单株株高",
+        "description": "固定样株，自基部到最高生长点；记录量测方法。",
+        "unit": "cm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "stem_diameter",
+        "definition_version": "1.0.0",
+        "name": "单株茎粗",
+        "description": "固定测量节位和量具。",
+        "unit": "mm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "internode_length",
+        "definition_version": "1.0.0",
+        "name": "单株节间长",
+        "description": "记录上、下节位及同一测量口径。",
+        "unit": "cm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "leaf_length",
+        "definition_version": "1.0.0",
+        "name": "叶片长度",
+        "description": "记录样株、叶位和叶片身份。",
+        "unit": "cm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "leaf_width",
+        "definition_version": "1.0.0",
+        "name": "叶片宽度",
+        "description": "记录样株、叶位和最宽部位。",
+        "unit": "cm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "plant_leaf_area",
+        "definition_version": "1.0.0",
+        "name": "单株总叶面积",
+        "description": "叶面积仪或直接量测；区别于投影覆盖和 LAI。",
+        "unit": "cm2_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "leaf_fresh_mass",
+        "definition_version": "1.0.0",
+        "name": "叶鲜重",
+        "description": "直接称量分离的叶片；记录采后时间。",
+        "unit": "g_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "stem_fresh_mass",
+        "definition_version": "1.0.0",
+        "name": "茎鲜重",
+        "description": "直接称量茎；排除根、叶和果实。",
+        "unit": "g_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "stem_leaf_fresh_mass",
+        "definition_version": "1.0.0",
+        "name": "茎叶总鲜重实测",
+        "description": "直接称量茎叶或由同次两项直接称量相加。",
+        "unit": "g_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "stem_leaf_fresh_mass_allometric",
+        "definition_version": "1.0.0",
+        "name": "茎叶鲜重异速估计",
+        "description": "需冻结异速方程、拟合样本和量测来源。",
+        "unit": "g_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "stem_leaf_fresh_mass_image",
+        "definition_version": "1.0.0",
+        "name": "影像茎叶鲜重估计",
+        "description": "需冻结模型、样株 ROI 和各影像来源。",
+        "unit": "g_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "plant_height_image",
+        "definition_version": "1.0.0",
+        "name": "影像株高估计",
+        "description": "需冻结相机标定、几何尺度及有效样株掩膜。",
+        "unit": "cm",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_cover_image",
+        "definition_version": "1.0.0",
+        "name": "影像冠层覆盖度",
+        "description": "固定有效视域与植株掩膜的面积占比。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "plant_projected_area",
+        "definition_version": "1.0.0",
+        "name": "单株投影面积",
+        "description": "需已标定比例尺、影像视角和有效 ROI。",
+        "unit": "cm2_plant",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "plant_lai",
+        "definition_version": "1.0.0",
+        "name": "温室样方面积口径 LAI",
+        "description": "总叶面积除以明确的地面面积，记录样方。",
+        "unit": "m2_m2",
+        "value_type": "number",
+        "group": "greenhouse_phenotype",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_air_temperature",
+        "definition_version": "1.0.0",
+        "name": "棚内空气温度",
+        "description": "校准设备、位置、采样时刻与窗覆盖。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_relative_humidity",
+        "definition_version": "1.0.0",
+        "name": "棚内相对湿度",
+        "description": "设备百分数需显式换算，记录温度与湿度时刻。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "greenhouse_par",
+        "definition_version": "1.0.0",
+        "name": "棚内光合有效辐射",
+        "description": "光量子通量密度，不能换名作净辐射。",
+        "unit": "umol_m2_s",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_net_radiation_daily",
+        "definition_version": "1.0.0",
+        "name": "棚内日净辐射",
+        "description": "按本地日积分净辐射，保留有符号能量。",
+        "unit": "mj_m2_d",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_ground_heat_flux_daily",
+        "definition_version": "1.0.0",
+        "name": "棚内日地表热通量",
+        "description": "按温室日积分，采用声明的通量正方向。",
+        "unit": "mj_m2_d",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_vapor_pressure_deficit",
+        "definition_version": "1.0.0",
+        "name": "棚内水汽压亏缺",
+        "description": "同点同时温湿度计算，冻结算法及聚合方式。",
+        "unit": "kpa",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_root_zone_water_content",
+        "definition_version": "1.0.0",
+        "name": "温室根区含水率",
+        "description": "保留基质或土层深度、体积口径和校准。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "greenhouse_root_zone_water_decline",
+        "definition_version": "1.0.0",
+        "name": "根区含水率衰减速率",
+        "description": "固定窗口和方向定义，仅是外部迁移代理。",
+        "unit": "fraction_h",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_canopy_temperature",
+        "definition_version": "1.0.0",
+        "name": "冠层温度",
+        "description": "热红外经辐射校准，记录发射率及掩膜。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_canopy_air_temperature_difference",
+        "definition_version": "1.0.0",
+        "name": "冠气温差",
+        "description": "冠层温度减同步棚内空气温度，保留配对差。",
+        "unit": "delta_celsius",
+        "value_type": "number",
+        "group": "greenhouse_climate",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_red_reflectance",
+        "definition_version": "1.0.0",
+        "name": "冠层红光反射率",
+        "description": "保存辐射校准、红光波段和有效像元。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_green_reflectance",
+        "definition_version": "1.0.0",
+        "name": "冠层绿光反射率",
+        "description": "保存辐射校准、绿光波段和有效像元。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_blue_reflectance",
+        "definition_version": "1.0.0",
+        "name": "冠层蓝光反射率",
+        "description": "保存辐射校准、蓝光波段和有效像元。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_red_edge_reflectance",
+        "definition_version": "1.0.0",
+        "name": "冠层红边反射率",
+        "description": "保存红边波长和传感器来源。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_nir_reflectance",
+        "definition_version": "1.0.0",
+        "name": "冠层近红外反射率",
+        "description": "保存近红外波长和传感器来源。",
+        "unit": "fraction",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_image_ndvi",
+        "definition_version": "1.0.0",
+        "name": "影像冠层 NDVI",
+        "description": "同掩膜红光与近红外；缺波段和零分母须报缺。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": -1.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_image_ndre",
+        "definition_version": "1.0.0",
+        "name": "影像冠层 NDRE",
+        "description": "同掩膜红边与近红外；不复用地理栅格结果。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": -1.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_image_gndvi",
+        "definition_version": "1.0.0",
+        "name": "影像冠层 GNDVI",
+        "description": "同掩膜绿光与近红外；记录波段及配准。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": -1.0,
+          "maximum": 1.0
+        }
+      },
+      {
+        "code": "canopy_rgb_texture",
+        "definition_version": "1.0.0",
+        "name": "冠层 RGB 纹理特征",
+        "description": "按确切特征代码、量化和窗口拆分绑定，不可混用。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_inflow_mass",
+        "definition_version": "1.0.0",
+        "name": "小时进液质量",
+        "description": "称重栽培单元完整小时，换算需记录液体密度。",
+        "unit": "g_h",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_drainage_mass",
+        "definition_version": "1.0.0",
+        "name": "小时排液质量",
+        "description": "称重栽培单元完整小时，防止排液跨窗遗漏。",
+        "unit": "g_h",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_platform_mass_change",
+        "definition_version": "1.0.0",
+        "name": "小时称重平台质量变化",
+        "description": "期末减期初，另记采收、修剪及设备扰动。",
+        "unit": "g_h",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_substrate_evaporation",
+        "definition_version": "1.0.0",
+        "name": "基质小时蒸发",
+        "description": "同支撑、同时窗的独立蒸发参照与证据。",
+        "unit": "g_h",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_crop_transpiration_hourly",
+        "definition_version": "1.0.0",
+        "name": "小时作物蒸腾估算",
+        "description": "称重估算扣除独立基质蒸发后才能产生。",
+        "unit": "g_h",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_reference_et_daily_value",
+        "definition_version": "1.0.0",
+        "name": "日参考蒸散 ET₀",
+        "description": "勘误式参考蒸散，保留温室日、气象和公式版本。",
+        "unit": "mm_d",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_crop_et_daily_value",
+        "definition_version": "1.0.0",
+        "name": "作物日蒸散 ETc",
+        "description": "按同地面面积与日界，保留机理或称重来源。",
+        "unit": "mm_d",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_crop_et_daily_bias",
+        "definition_version": "1.0.0",
+        "name": "作物日蒸散偏差",
+        "description": "同口径模型估计减称重估计，允许有符号值。",
+        "unit": "mm_d",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "irrigation_applied_depth",
+        "definition_version": "1.0.0",
+        "name": "实际灌溉深度",
+        "description": "实际流量换算到指定处理面积，记录执行时间。",
+        "unit": "mm",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "marketable_fruit_yield",
+        "definition_version": "1.0.0",
+        "name": "商品果产量",
+        "description": "直接称量合格果，固定商品等级、面积与统计期。",
+        "unit": "kg_m2",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "irrigation_water_productivity",
+        "definition_version": "1.0.0",
+        "name": "灌溉水生产率",
+        "description": "同期商品果产量除以实际灌溉体积。",
+        "unit": "kg_m3",
+        "value_type": "number",
+        "group": "greenhouse_water",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "days_after_transplanting",
+        "definition_version": "1.0.0",
+        "name": "定植后天数",
+        "description": "按真实定植日期计算，与播种后天数分开。",
+        "unit": "day",
+        "value_type": "number",
+        "group": "greenhouse_context",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "greenhouse_cultivation_area",
+        "definition_version": "1.0.0",
+        "name": "栽培支撑面积",
+        "description": "栽培单元地面面积，固定称重和产量共同分母。",
+        "unit": "m2",
+        "value_type": "number",
+        "group": "greenhouse_context",
+        "bounds": {
+          "minimum": 0.0,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_con",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵对比度",
+        "description": "稿件表 1 的 CON。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_cor",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵相关性",
+        "description": "稿件表 1 的 COR。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_dis",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵相异性",
+        "description": "稿件表 1 的 DIS。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_ene",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵能量",
+        "description": "稿件表 1 的 ENE。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_ent",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵熵",
+        "description": "稿件表 1 的 ENT。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_hom",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵同质性",
+        "description": "稿件表 1 的 HOM。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_mean",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵均值",
+        "description": "稿件表 1 的 MEAN。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_glcm_var",
+        "definition_version": "1.0.0",
+        "name": "灰度共生矩阵方差",
+        "description": "稿件表 1 的 VAR。冻结有效 ROI、灰度量化、方向与距离。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_cive",
+        "definition_version": "1.0.0",
+        "name": "可见光植被提取指数",
+        "description": "稿件表 1 与表 S5 的 CIVE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_brvi",
+        "definition_version": "1.0.0",
+        "name": "蓝红植被指数",
+        "description": "稿件表 1 与表 S5 的 BRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_exgi",
+        "definition_version": "1.0.0",
+        "name": "超绿指数",
+        "description": "稿件表 1 与表 S5 的 EXGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_exgr",
+        "definition_version": "1.0.0",
+        "name": "超绿减超红指数",
+        "description": "稿件表 1 与表 S5 的 EXGR。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gli",
+        "definition_version": "1.0.0",
+        "name": "绿叶指数",
+        "description": "稿件表 1 与表 S5 的 GLI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_savi",
+        "definition_version": "1.0.0",
+        "name": "稿件可见光土壤调整植被指数",
+        "description": "稿件表 1 与表 S5 的 SAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_ndi",
+        "definition_version": "1.0.0",
+        "name": "绿红归一化差异指数",
+        "description": "稿件表 1 与表 S5 的 NDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_ngi",
+        "definition_version": "1.0.0",
+        "name": "稿件归一化绿度指数",
+        "description": "稿件表 1 与表 S5 的 NGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_sri",
+        "definition_version": "1.0.0",
+        "name": "可见光简单比值指数",
+        "description": "稿件表 1 与表 S5 的 SRI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_vari",
+        "definition_version": "1.0.0",
+        "name": "可见光抗大气植被指数",
+        "description": "稿件表 1 与表 S5 的 VARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_cire_1",
+        "definition_version": "1.0.0",
+        "name": "红边叶绿素指数一",
+        "description": "稿件表 1 与表 S5 的 CIRE_1。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_cire_2",
+        "definition_version": "1.0.0",
+        "name": "红边叶绿素指数二",
+        "description": "稿件表 1 与表 S5 的 CIRE_2。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gdrvi",
+        "definition_version": "1.0.0",
+        "name": "稿件通用动态范围指数",
+        "description": "稿件表 1 与表 S5 的 GDRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gci",
+        "definition_version": "1.0.0",
+        "name": "绿色叶绿素指数",
+        "description": "稿件表 1 与表 S5 的 GCI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gni",
+        "definition_version": "1.0.0",
+        "name": "绿色归一化指数",
+        "description": "稿件表 1 与表 S5 的 GNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gndre",
+        "definition_version": "1.0.0",
+        "name": "绿色归一化红边差异指数",
+        "description": "稿件表 1 与表 S5 的 GNDRE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gsavi",
+        "definition_version": "1.0.0",
+        "name": "绿光土壤调整植被指数",
+        "description": "稿件表 1 与表 S5 的 GSAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_evi",
+        "definition_version": "1.0.0",
+        "name": "稿件增强植被指数",
+        "description": "稿件表 1 与表 S5 的 EVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_mddi",
+        "definition_version": "1.0.0",
+        "name": "改进双差指数",
+        "description": "稿件表 1 与表 S5 的 MDDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_mni",
+        "definition_version": "1.0.0",
+        "name": "改进氮指数",
+        "description": "稿件表 1 与表 S5 的 MNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_rervi",
+        "definition_version": "1.0.0",
+        "name": "红边比值指数",
+        "description": "稿件表 1 与表 S5 的 RERVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_regrvi",
+        "definition_version": "1.0.0",
+        "name": "红边绿光植被指数",
+        "description": "稿件表 1 与表 S5 的 REGRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_gdvi",
+        "definition_version": "1.0.0",
+        "name": "绿光差值植被指数",
+        "description": "稿件表 1 与表 S5 的 GDVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_image_revari",
+        "definition_version": "1.0.0",
+        "name": "红边抗大气植被指数",
+        "description": "稿件表 1 与表 S5 的 REVARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_thermal_ncrt",
+        "definition_version": "1.0.0",
+        "name": "归一化冠层相对温度",
+        "description": "与环境参考温度同窗匹配，核对归一化口径。",
+        "unit": "dimensionless",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_thermal_mean",
+        "definition_version": "1.0.0",
+        "name": "冠层平均温度",
+        "description": "同一配准植株掩膜、异常像元剔除后的算术平均。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_thermal_max",
+        "definition_version": "1.0.0",
+        "name": "冠层最高温度",
+        "description": "同一配准植株掩膜、异常像元剔除后的最大值。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      },
+      {
+        "code": "canopy_thermal_min",
+        "definition_version": "1.0.0",
+        "name": "冠层最低温度",
+        "description": "同一配准植株掩膜、异常像元剔除后的最小值。",
+        "unit": "celsius",
+        "value_type": "number",
+        "group": "greenhouse_image",
+        "bounds": {
+          "minimum": null,
+          "maximum": null
+        }
+      }
+    ],
+    "sources": [
+      {
+        "code": "nasa_power_weather_temperature_minimum_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_minimum_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "TMIN",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的TMIN字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_temperature_maximum_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_maximum_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "TMAX",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的TMAX字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_mean_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "TEMP",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的TEMP字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_precipitation_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "precipitation_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "RAIN",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的RAIN字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_solar_radiation_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "solar_radiation_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "IRRAD",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的IRRAD字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_wind_speed_2m_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "wind_speed_2m_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "WIND",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的WIND字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "nasa_power_weather_vapour_pressure_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "vapour_pressure_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_power_weather",
+          "revision": 4
+        },
+        "field_code": "VAP",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；NASA POWER原生LST或UTC；不能默认为北京时间",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "nasa_native_day"
+        },
+        "selectors": {
+          "time_standard": [
+            "LST",
+            "UTC"
+          ]
+        },
+        "description": "来自当前转换器的VAP字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/nasa_weather/conversion.py",
+            "sha256": "3675b3e2cfcfc91adfc3e710821d1c69bea3b170efc9c0991dbb72cbf3d43603"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_temperature_minimum_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_minimum_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "TMIN",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的TMIN字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_temperature_maximum_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_maximum_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "TMAX",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的TMAX字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_mean_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "TEMP",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的TEMP字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_precipitation_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "precipitation_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "RAIN",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的RAIN字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_solar_radiation_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "solar_radiation_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "IRRAD",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的IRRAD字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_wind_speed_2m_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "wind_speed_2m_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "WIND",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的WIND字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "openmeteo_weather_vapour_pressure_daily",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "vapour_pressure_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "openmeteo_weather",
+          "revision": 4
+        },
+        "field_code": "VAP",
+        "value_nature": "estimated",
+        "support": {
+          "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "来自当前转换器的VAP字段；不得充当人工实测目标。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+            "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_bdod",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_bdod",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "bdod",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_cec",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_cec",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "cec",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_cfvo",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_cfvo",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "cfvo",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_clay",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_clay",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "clay",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_phh2o",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_phh2o",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "phh2o",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_sand",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_sand",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "sand",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_silt",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_silt",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "silt",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_soc",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_soc",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "soc",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv0010",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_wv0010",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "wv0010",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv0033",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_wv0033",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "wv0033",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv1500",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "soil_wv1500",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference",
+          "revision": 4
+        },
+        "field_code": "wv1500",
+        "value_nature": "estimated",
+        "support": {
+          "description": "250m分层静态估计；不是当天实测土壤水分",
+          "unit_kind": "soil_layer",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "当前地块剖面适配器仅返回此属性的mean及原生映射值/d_factor。进入研究变量单位前仍需显式标准化适配；不能把静态剖面当作当天实测。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/field_surveys/soil.py",
+            "sha256": "a9cacde35e6dbc3d2167cd4d8dcfff56f7045bf484ed979f019f3d10f85215a5"
+          },
+          {
+            "path": "src/pymlgrowth/isric_soilgrids/profile.py",
+            "sha256": "42896b89ed4cbef0681228bc4260c4158ace006c33bf07240b7a8352b17bcabd"
+          }
+        ]
+      },
+      {
+        "code": "nasa_hourly_temperature_daily_mean",
+        "definition_version": "1.0.0",
+        "variable": {
+          "code": "temperature_hourly_sample_mean_daily",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "nasa_hourly_temperature_daily",
+          "revision": 1
+        },
+        "field_code": "T2M",
+        "value_nature": "estimated",
+        "support": {
+          "description": "原始UTC小时标记按Asia/Shanghai分组，完整24项才求均值；原生网格参考不等于实测地块均值。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "daily",
+          "time_basis": "asia_shanghai"
+        },
+        "selectors": {},
+        "description": "仅接收UTC小时原文；需调用准确预处理方法，保留原文及处理选择摘要。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_bdod",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_bdod",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "bdod",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_cec",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_cec",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "cec",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_cfvo",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_cfvo",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "cfvo",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_clay",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_clay",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "clay",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_phh2o",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_phh2o",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "phh2o",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_sand",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_sand",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "sand",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_silt",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_silt",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "silt",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_soc",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_soc",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "soc",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv0010",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_wv0010",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "wv0010",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv0033",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_wv0033",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "wv0033",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      },
+      {
+        "code": "soilgrids_reference_soil_wv1500",
+        "definition_version": "2.0.0",
+        "variable": {
+          "code": "soil_wv1500",
+          "definition_version": "1.0.0"
+        },
+        "component": {
+          "code": "soilgrids_reference_normalization",
+          "revision": 1
+        },
+        "field_code": "wv1500",
+        "value_nature": "estimated",
+        "support": {
+          "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+          "unit_kind": "field_season",
+          "spatial_support": "native_grid_reference",
+          "temporal_support": "static",
+          "time_basis": "not_applicable"
+        },
+        "selectors": {
+          "depth": [
+            "0-5cm",
+            "5-15cm",
+            "15-30cm",
+            "30-60cm",
+            "60-100cm",
+            "100-200cm"
+          ],
+          "statistic": [
+            "mean"
+          ]
+        },
+        "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+        "evidence": [
+          {
+            "path": "src/pymlgrowth/research_models/source_normalization.py",
+            "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+          },
+          {
+            "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+            "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+          }
+        ]
+      }
+    ],
+    "policies": [
+      {
+        "code": "temperature_minimum_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_temperature_minimum_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "temperature_maximum_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_temperature_maximum_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_temperature_mean_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "precipitation_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_precipitation_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "solar_radiation_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_solar_radiation_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "wind_speed_2m_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_wind_speed_2m_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "vapour_pressure_daily",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "openmeteo_weather_vapour_pressure_daily",
+          "definition_version": "1.0.0"
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_bdod",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_bdod",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_cec",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_cec",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_cfvo",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_cfvo",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_clay",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_clay",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_phh2o",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_phh2o",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_sand",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_sand",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_silt",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_silt",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_soc",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_soc",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_wv0010",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_wv0010",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_wv0033",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_wv0033",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      {
+        "code": "soil_wv1500",
+        "definition_version": "1.0.0",
+        "source": {
+          "code": "soilgrids_reference_soil_wv1500",
+          "definition_version": "2.0.0"
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      }
+    ],
+    "profiles": [
+      {
+        "variable": {
+          "code": "plant_height",
+          "definition_version": "1.0.0",
+          "name": "单株株高",
+          "description": "固定样株，自基部到最高生长点；记录量测方法。",
+          "unit": "cm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "固定样株，自基部到最高生长点；记录量测方法。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "stem_diameter",
+          "definition_version": "1.0.0",
+          "name": "单株茎粗",
+          "description": "固定测量节位和量具。",
+          "unit": "mm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "固定测量节位和量具。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "internode_length",
+          "definition_version": "1.0.0",
+          "name": "单株节间长",
+          "description": "记录上、下节位及同一测量口径。",
+          "unit": "cm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "记录上、下节位及同一测量口径。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "leaf_length",
+          "definition_version": "1.0.0",
+          "name": "叶片长度",
+          "description": "记录样株、叶位和叶片身份。",
+          "unit": "cm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "记录样株、叶位和叶片身份。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "leaf_width",
+          "definition_version": "1.0.0",
+          "name": "叶片宽度",
+          "description": "记录样株、叶位和最宽部位。",
+          "unit": "cm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "记录样株、叶位和最宽部位。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "plant_leaf_area",
+          "definition_version": "1.0.0",
+          "name": "单株总叶面积",
+          "description": "叶面积仪或直接量测；区别于投影覆盖和 LAI。",
+          "unit": "cm2_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "叶面积仪或直接量测；区别于投影覆盖和 LAI。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "leaf_fresh_mass",
+          "definition_version": "1.0.0",
+          "name": "叶鲜重",
+          "description": "直接称量分离的叶片；记录采后时间。",
+          "unit": "g_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "直接称量分离的叶片；记录采后时间。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "stem_fresh_mass",
+          "definition_version": "1.0.0",
+          "name": "茎鲜重",
+          "description": "直接称量茎；排除根、叶和果实。",
+          "unit": "g_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "直接称量茎；排除根、叶和果实。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "stem_leaf_fresh_mass",
+          "definition_version": "1.0.0",
+          "name": "茎叶总鲜重实测",
+          "description": "直接称量茎叶或由同次两项直接称量相加。",
+          "unit": "g_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "直接称量茎叶或由同次两项直接称量相加。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "stem_leaf_fresh_mass_allometric",
+          "definition_version": "1.0.0",
+          "name": "茎叶鲜重异速估计",
+          "description": "需冻结异速方程、拟合样本和量测来源。",
+          "unit": "g_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "需冻结异速方程、拟合样本和量测来源。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "stem_leaf_fresh_mass_image",
+          "definition_version": "1.0.0",
+          "name": "影像茎叶鲜重估计",
+          "description": "需冻结模型、样株 ROI 和各影像来源。",
+          "unit": "g_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "需冻结模型、样株 ROI 和各影像来源。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "plant_height_image",
+          "definition_version": "1.0.0",
+          "name": "影像株高估计",
+          "description": "需冻结相机标定、几何尺度及有效样株掩膜。",
+          "unit": "cm",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "需冻结相机标定、几何尺度及有效样株掩膜。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_cover_image",
+          "definition_version": "1.0.0",
+          "name": "影像冠层覆盖度",
+          "description": "固定有效视域与植株掩膜的面积占比。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "固定有效视域与植株掩膜的面积占比。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "plant_projected_area",
+          "definition_version": "1.0.0",
+          "name": "单株投影面积",
+          "description": "需已标定比例尺、影像视角和有效 ROI。",
+          "unit": "cm2_plant",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "需已标定比例尺、影像视角和有效 ROI。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "plant_lai",
+          "definition_version": "1.0.0",
+          "name": "温室样方面积口径 LAI",
+          "description": "总叶面积除以明确的地面面积，记录样方。",
+          "unit": "m2_m2",
+          "value_type": "number",
+          "group": "greenhouse_phenotype",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "总叶面积除以明确的地面面积，记录样方。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_air_temperature",
+          "definition_version": "1.0.0",
+          "name": "棚内空气温度",
+          "description": "校准设备、位置、采样时刻与窗覆盖。",
+          "unit": "celsius",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "校准设备、位置、采样时刻与窗覆盖。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_relative_humidity",
+          "definition_version": "1.0.0",
+          "name": "棚内相对湿度",
+          "description": "设备百分数需显式换算，记录温度与湿度时刻。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "point",
+        "support": "设备百分数需显式换算，记录温度与湿度时刻。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_par",
+          "definition_version": "1.0.0",
+          "name": "棚内光合有效辐射",
+          "description": "光量子通量密度，不能换名作净辐射。",
+          "unit": "umol_m2_s",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "光量子通量密度，不能换名作净辐射。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_net_radiation_daily",
+          "definition_version": "1.0.0",
+          "name": "棚内日净辐射",
+          "description": "按本地日积分净辐射，保留有符号能量。",
+          "unit": "mj_m2_d",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "按本地日积分净辐射，保留有符号能量。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_ground_heat_flux_daily",
+          "definition_version": "1.0.0",
+          "name": "棚内日地表热通量",
+          "description": "按温室日积分，采用声明的通量正方向。",
+          "unit": "mj_m2_d",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "按温室日积分，采用声明的通量正方向。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_vapor_pressure_deficit",
+          "definition_version": "1.0.0",
+          "name": "棚内水汽压亏缺",
+          "description": "同点同时温湿度计算，冻结算法及聚合方式。",
+          "unit": "kpa",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "同点同时温湿度计算，冻结算法及聚合方式。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_root_zone_water_content",
+          "definition_version": "1.0.0",
+          "name": "温室根区含水率",
+          "description": "保留基质或土层深度、体积口径和校准。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "soil_layer",
+        "support": "保留基质或土层深度、体积口径和校准。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_root_zone_water_decline",
+          "definition_version": "1.0.0",
+          "name": "根区含水率衰减速率",
+          "description": "固定窗口和方向定义，仅是外部迁移代理。",
+          "unit": "fraction_h",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "soil_layer",
+        "support": "固定窗口和方向定义，仅是外部迁移代理。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_canopy_temperature",
+          "definition_version": "1.0.0",
+          "name": "冠层温度",
+          "description": "热红外经辐射校准，记录发射率及掩膜。",
+          "unit": "celsius",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "热红外经辐射校准，记录发射率及掩膜。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_canopy_air_temperature_difference",
+          "definition_version": "1.0.0",
+          "name": "冠气温差",
+          "description": "冠层温度减同步棚内空气温度，保留配对差。",
+          "unit": "delta_celsius",
+          "value_type": "number",
+          "group": "greenhouse_climate",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "冠层温度减同步棚内空气温度，保留配对差。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_red_reflectance",
+          "definition_version": "1.0.0",
+          "name": "冠层红光反射率",
+          "description": "保存辐射校准、红光波段和有效像元。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "保存辐射校准、红光波段和有效像元。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_green_reflectance",
+          "definition_version": "1.0.0",
+          "name": "冠层绿光反射率",
+          "description": "保存辐射校准、绿光波段和有效像元。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "保存辐射校准、绿光波段和有效像元。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_blue_reflectance",
+          "definition_version": "1.0.0",
+          "name": "冠层蓝光反射率",
+          "description": "保存辐射校准、蓝光波段和有效像元。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "保存辐射校准、蓝光波段和有效像元。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_red_edge_reflectance",
+          "definition_version": "1.0.0",
+          "name": "冠层红边反射率",
+          "description": "保存红边波长和传感器来源。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "保存红边波长和传感器来源。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_nir_reflectance",
+          "definition_version": "1.0.0",
+          "name": "冠层近红外反射率",
+          "description": "保存近红外波长和传感器来源。",
+          "unit": "fraction",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "保存近红外波长和传感器来源。",
+        "source": "image"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_ndvi",
+          "definition_version": "1.0.0",
+          "name": "影像冠层 NDVI",
+          "description": "同掩膜红光与近红外；缺波段和零分母须报缺。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": -1.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同掩膜红光与近红外；缺波段和零分母须报缺。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_ndre",
+          "definition_version": "1.0.0",
+          "name": "影像冠层 NDRE",
+          "description": "同掩膜红边与近红外；不复用地理栅格结果。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": -1.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同掩膜红边与近红外；不复用地理栅格结果。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gndvi",
+          "definition_version": "1.0.0",
+          "name": "影像冠层 GNDVI",
+          "description": "同掩膜绿光与近红外；记录波段及配准。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": -1.0,
+            "maximum": 1.0
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同掩膜绿光与近红外；记录波段及配准。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_rgb_texture",
+          "definition_version": "1.0.0",
+          "name": "冠层 RGB 纹理特征",
+          "description": "按确切特征代码、量化和窗口拆分绑定，不可混用。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "按确切特征代码、量化和窗口拆分绑定，不可混用。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_inflow_mass",
+          "definition_version": "1.0.0",
+          "name": "小时进液质量",
+          "description": "称重栽培单元完整小时，换算需记录液体密度。",
+          "unit": "g_h",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "称重栽培单元完整小时，换算需记录液体密度。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_drainage_mass",
+          "definition_version": "1.0.0",
+          "name": "小时排液质量",
+          "description": "称重栽培单元完整小时，防止排液跨窗遗漏。",
+          "unit": "g_h",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "称重栽培单元完整小时，防止排液跨窗遗漏。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_platform_mass_change",
+          "definition_version": "1.0.0",
+          "name": "小时称重平台质量变化",
+          "description": "期末减期初，另记采收、修剪及设备扰动。",
+          "unit": "g_h",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "期末减期初，另记采收、修剪及设备扰动。",
+        "source": "instrument"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_substrate_evaporation",
+          "definition_version": "1.0.0",
+          "name": "基质小时蒸发",
+          "description": "同支撑、同时窗的独立蒸发参照与证据。",
+          "unit": "g_h",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "同支撑、同时窗的独立蒸发参照与证据。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_crop_transpiration_hourly",
+          "definition_version": "1.0.0",
+          "name": "小时作物蒸腾估算",
+          "description": "称重估算扣除独立基质蒸发后才能产生。",
+          "unit": "g_h",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "称重估算扣除独立基质蒸发后才能产生。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_reference_et_daily_value",
+          "definition_version": "1.0.0",
+          "name": "日参考蒸散 ET₀",
+          "description": "勘误式参考蒸散，保留温室日、气象和公式版本。",
+          "unit": "mm_d",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "勘误式参考蒸散，保留温室日、气象和公式版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_crop_et_daily_value",
+          "definition_version": "1.0.0",
+          "name": "作物日蒸散 ETc",
+          "description": "按同地面面积与日界，保留机理或称重来源。",
+          "unit": "mm_d",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "按同地面面积与日界，保留机理或称重来源。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_crop_et_daily_bias",
+          "definition_version": "1.0.0",
+          "name": "作物日蒸散偏差",
+          "description": "同口径模型估计减称重估计，允许有符号值。",
+          "unit": "mm_d",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "point",
+        "support": "同口径模型估计减称重估计，允许有符号值。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "irrigation_applied_depth",
+          "definition_version": "1.0.0",
+          "name": "实际灌溉深度",
+          "description": "实际流量换算到指定处理面积，记录执行时间。",
+          "unit": "mm",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "实际流量换算到指定处理面积，记录执行时间。",
+        "source": "context"
+      },
+      {
+        "variable": {
+          "code": "marketable_fruit_yield",
+          "definition_version": "1.0.0",
+          "name": "商品果产量",
+          "description": "直接称量合格果，固定商品等级、面积与统计期。",
+          "unit": "kg_m2",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "直接称量合格果，固定商品等级、面积与统计期。",
+        "source": "manual"
+      },
+      {
+        "variable": {
+          "code": "irrigation_water_productivity",
+          "definition_version": "1.0.0",
+          "name": "灌溉水生产率",
+          "description": "同期商品果产量除以实际灌溉体积。",
+          "unit": "kg_m3",
+          "value_type": "number",
+          "group": "greenhouse_water",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同期商品果产量除以实际灌溉体积。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "days_after_transplanting",
+          "definition_version": "1.0.0",
+          "name": "定植后天数",
+          "description": "按真实定植日期计算，与播种后天数分开。",
+          "unit": "day",
+          "value_type": "number",
+          "group": "greenhouse_context",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "plant",
+        "support": "按真实定植日期计算，与播种后天数分开。",
+        "source": "context"
+      },
+      {
+        "variable": {
+          "code": "greenhouse_cultivation_area",
+          "definition_version": "1.0.0",
+          "name": "栽培支撑面积",
+          "description": "栽培单元地面面积，固定称重和产量共同分母。",
+          "unit": "m2",
+          "value_type": "number",
+          "group": "greenhouse_context",
+          "bounds": {
+            "minimum": 0.0,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "栽培单元地面面积，固定称重和产量共同分母。",
+        "source": "context"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_con",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵对比度",
+          "description": "稿件表 1 的 CON。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 CON。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_cor",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵相关性",
+          "description": "稿件表 1 的 COR。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 COR。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_dis",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵相异性",
+          "description": "稿件表 1 的 DIS。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 DIS。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_ene",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵能量",
+          "description": "稿件表 1 的 ENE。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 ENE。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_ent",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵熵",
+          "description": "稿件表 1 的 ENT。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 ENT。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_hom",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵同质性",
+          "description": "稿件表 1 的 HOM。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 HOM。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_mean",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵均值",
+          "description": "稿件表 1 的 MEAN。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 MEAN。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_glcm_var",
+          "definition_version": "1.0.0",
+          "name": "灰度共生矩阵方差",
+          "description": "稿件表 1 的 VAR。冻结有效 ROI、灰度量化、方向与距离。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 的 VAR。冻结有效 ROI、灰度量化、方向与距离。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_cive",
+          "definition_version": "1.0.0",
+          "name": "可见光植被提取指数",
+          "description": "稿件表 1 与表 S5 的 CIVE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 CIVE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_brvi",
+          "definition_version": "1.0.0",
+          "name": "蓝红植被指数",
+          "description": "稿件表 1 与表 S5 的 BRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 BRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_exgi",
+          "definition_version": "1.0.0",
+          "name": "超绿指数",
+          "description": "稿件表 1 与表 S5 的 EXGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 EXGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_exgr",
+          "definition_version": "1.0.0",
+          "name": "超绿减超红指数",
+          "description": "稿件表 1 与表 S5 的 EXGR。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 EXGR。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gli",
+          "definition_version": "1.0.0",
+          "name": "绿叶指数",
+          "description": "稿件表 1 与表 S5 的 GLI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GLI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_savi",
+          "definition_version": "1.0.0",
+          "name": "稿件可见光土壤调整植被指数",
+          "description": "稿件表 1 与表 S5 的 SAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 SAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_ndi",
+          "definition_version": "1.0.0",
+          "name": "绿红归一化差异指数",
+          "description": "稿件表 1 与表 S5 的 NDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 NDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_ngi",
+          "definition_version": "1.0.0",
+          "name": "稿件归一化绿度指数",
+          "description": "稿件表 1 与表 S5 的 NGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 NGI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_sri",
+          "definition_version": "1.0.0",
+          "name": "可见光简单比值指数",
+          "description": "稿件表 1 与表 S5 的 SRI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 SRI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_vari",
+          "definition_version": "1.0.0",
+          "name": "可见光抗大气植被指数",
+          "description": "稿件表 1 与表 S5 的 VARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 VARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_cire_1",
+          "definition_version": "1.0.0",
+          "name": "红边叶绿素指数一",
+          "description": "稿件表 1 与表 S5 的 CIRE_1。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 CIRE_1。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_cire_2",
+          "definition_version": "1.0.0",
+          "name": "红边叶绿素指数二",
+          "description": "稿件表 1 与表 S5 的 CIRE_2。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 CIRE_2。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gdrvi",
+          "definition_version": "1.0.0",
+          "name": "稿件通用动态范围指数",
+          "description": "稿件表 1 与表 S5 的 GDRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GDRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gci",
+          "definition_version": "1.0.0",
+          "name": "绿色叶绿素指数",
+          "description": "稿件表 1 与表 S5 的 GCI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GCI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gni",
+          "definition_version": "1.0.0",
+          "name": "绿色归一化指数",
+          "description": "稿件表 1 与表 S5 的 GNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gndre",
+          "definition_version": "1.0.0",
+          "name": "绿色归一化红边差异指数",
+          "description": "稿件表 1 与表 S5 的 GNDRE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GNDRE。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gsavi",
+          "definition_version": "1.0.0",
+          "name": "绿光土壤调整植被指数",
+          "description": "稿件表 1 与表 S5 的 GSAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GSAVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_evi",
+          "definition_version": "1.0.0",
+          "name": "稿件增强植被指数",
+          "description": "稿件表 1 与表 S5 的 EVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 EVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_mddi",
+          "definition_version": "1.0.0",
+          "name": "改进双差指数",
+          "description": "稿件表 1 与表 S5 的 MDDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 MDDI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_mni",
+          "definition_version": "1.0.0",
+          "name": "改进氮指数",
+          "description": "稿件表 1 与表 S5 的 MNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 MNI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_rervi",
+          "definition_version": "1.0.0",
+          "name": "红边比值指数",
+          "description": "稿件表 1 与表 S5 的 RERVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 RERVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_regrvi",
+          "definition_version": "1.0.0",
+          "name": "红边绿光植被指数",
+          "description": "稿件表 1 与表 S5 的 REGRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 REGRVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_gdvi",
+          "definition_version": "1.0.0",
+          "name": "绿光差值植被指数",
+          "description": "稿件表 1 与表 S5 的 GDVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 GDVI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_image_revari",
+          "definition_version": "1.0.0",
+          "name": "红边抗大气植被指数",
+          "description": "稿件表 1 与表 S5 的 REVARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "稿件表 1 与表 S5 的 REVARI。采用前核对原始公式、波段和分母，保留准确实现版本。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_thermal_ncrt",
+          "definition_version": "1.0.0",
+          "name": "归一化冠层相对温度",
+          "description": "与环境参考温度同窗匹配，核对归一化口径。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "与环境参考温度同窗匹配，核对归一化口径。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_thermal_mean",
+          "definition_version": "1.0.0",
+          "name": "冠层平均温度",
+          "description": "同一配准植株掩膜、异常像元剔除后的算术平均。",
+          "unit": "celsius",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同一配准植株掩膜、异常像元剔除后的算术平均。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_thermal_max",
+          "definition_version": "1.0.0",
+          "name": "冠层最高温度",
+          "description": "同一配准植株掩膜、异常像元剔除后的最大值。",
+          "unit": "celsius",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同一配准植株掩膜、异常像元剔除后的最大值。",
+        "source": "derived"
+      },
+      {
+        "variable": {
+          "code": "canopy_thermal_min",
+          "definition_version": "1.0.0",
+          "name": "冠层最低温度",
+          "description": "同一配准植株掩膜、异常像元剔除后的最小值。",
+          "unit": "celsius",
+          "value_type": "number",
+          "group": "greenhouse_image",
+          "bounds": {
+            "minimum": null,
+            "maximum": null
+          }
+        },
+        "unit_kind": "quadrat",
+        "support": "同一配准植株掩膜、异常像元剔除后的最小值。",
+        "source": "derived"
+      }
+    ],
+    "sampling": [
+      {
+        "kind": "sampling_indicator",
+        "code": "agb_kg_ha",
+        "definition_version": "1.0.0",
+        "category_code": "biophysical_growth",
+        "name_zh": "地上生物量",
+        "description_zh": "地上部分干物质生物量，仅使用有效地面实测校准。",
+        "value_type": "continuous",
+        "unit_code": "kg_ha",
+        "valid_min": 0.0,
+        "valid_max": null
+      },
+      {
+        "kind": "sampling_indicator",
+        "code": "canopy_cover",
+        "definition_version": "1.0.0",
+        "category_code": "biophysical_growth",
+        "name_zh": "冠层覆盖度",
+        "description_zh": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+        "value_type": "continuous",
+        "unit_code": "fraction",
+        "valid_min": 0.0,
+        "valid_max": 1.0
+      },
+      {
+        "kind": "sampling_indicator",
+        "code": "height_cm",
+        "definition_version": "1.0.0",
+        "category_code": "biophysical_growth",
+        "name_zh": "株高",
+        "description_zh": "按标准采样方法测得的植株高度，仅使用有效地面实测校准。",
+        "value_type": "continuous",
+        "unit_code": "cm",
+        "valid_min": 0.0,
+        "valid_max": 500.0
+      },
+      {
+        "kind": "sampling_indicator",
+        "code": "lai",
+        "definition_version": "1.0.0",
+        "category_code": "biophysical_growth",
+        "name_zh": "叶面积指数",
+        "description_zh": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+        "value_type": "continuous",
+        "unit_code": "m2_m2",
+        "valid_min": 0.0,
+        "valid_max": 15.0
+      },
+      {
+        "kind": "sampling_indicator",
+        "code": "tuber_dm_kg_ha",
+        "definition_version": "1.0.0",
+        "category_code": "storage_organ_growth",
+        "name_zh": "块茎干物质",
+        "description_zh": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+        "value_type": "continuous",
+        "unit_code": "kg_ha",
+        "valid_min": 0.0,
+        "valid_max": null
+      }
+    ]
+  },
+  "sha256": "e4affbc231caafb4a89c60e61fa950d573c62e2b90cec93db990c55ce03d97a0"
+}

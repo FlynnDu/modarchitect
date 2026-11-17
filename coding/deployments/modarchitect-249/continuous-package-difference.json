@@ -1,0 +1,8 @@
+{
+  "previous": "sha256:a8005c88722520c4b3538a9203fc0726719f65fb991dcc080bd705dd4d730f39",
+  "candidate": "sha256:d591403811242e3b3659932b4d6a566dede46ff062353ffcaa2883b40a2d9919",
+  "changed_package_files": [
+    "report_tasks/scheduler.py"
+  ],
+  "scientific_and_ui_files_unchanged": true
+}

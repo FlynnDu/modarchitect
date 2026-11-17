@@ -1,0 +1,14 @@
+{
+  "defaults": {
+    "MODARCHITECT_OPENMETEO_ARCHIVE_URL": "https://archive-api.open-meteo.com/v1/archive",
+    "MODARCHITECT_OPENMETEO_CUSTOMER_ARCHIVE_URL": "https://customer-archive-api.open-meteo.com/v1/archive",
+    "MODARCHITECT_SOIL_WCS_BASE_URL": "https://maps.isric.org/mapserv"
+  },
+  "endpoints": {
+    "MODARCHITECT_OPENMETEO_ARCHIVE_URL": ["https://archive-api.open-meteo.com/v1/archive"],
+    "MODARCHITECT_OPENMETEO_CUSTOMER_ARCHIVE_URL": ["https://customer-archive-api.open-meteo.com/v1/archive"],
+    "MODARCHITECT_SOIL_WCS_BASE_URL": ["https://maps.isric.org/mapserv"],
+    "SH_BASE_URL": ["https://sh.dataspace.copernicus.eu"],
+    "SH_TOKEN_URL": ["https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"]
+  }
+}

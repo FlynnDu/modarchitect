@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modarchitect"
+version = "0.1.1"
+description = "Model design and research workflow service"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "alembic>=1.13,<2",
+    "fastapi>=0.136,<1",
+    "httpx>=0.28,<1",
+    "jsonschema>=4.23,<5",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic>=2,<3",
+    "pyproj>=3.7,<4",
+    "rasterio>=1.4,<2",
+    "shapely>=2,<3",
+    "SQLAlchemy>=2,<3",
+    "uvicorn>=0.34,<1",
+]
+
+[project.optional-dependencies]
+ops = ["paramiko==3.5.1; sys_platform == 'win32'"]
+learning-test = ["scikit-learn==1.7.2", "xgboost==3.1.2", "joblib==1.5.2", "threadpoolctl==3.6.0"]
+test = [
+    "pytest>=8,<10",
+    "numpy>=2,<3",
+    "scipy>=1.14,<2",
+    "ruff>=0.12,<1",
+]
+
+[project.scripts]
+modarchitect-db = "modarchitect.persistence.migrate:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["modarchitect", "modarchitect.*"]
+
+[tool.setuptools.package-data]
+"modarchitect" = ["web/designer/*.html", "web/designer/*.css", "web/designer/*.js", "web/designer/*.json"]
+"modarchitect.contracts" = ["*.json"]
+"modarchitect.persistence.migrations" = ["script.py.mako"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["provider_live: explicit real third-party acquisition checks"]
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

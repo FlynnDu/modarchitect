@@ -1,0 +1,64 @@
+.modeling-workspace { margin-bottom: 20px; padding: 24px; }
+.modeling-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
+.modeling-heading h2 { font-size: 21px; line-height: 1.5; }
+.modeling-eyebrow, .modeling-small-label { color: var(--muted); font-size: 11px; letter-spacing: .04em; }
+.modeling-heading p { margin: 6px 0 0; }
+.modeling-muted { color: var(--muted); font-size: 12px; line-height: 1.8; }
+.modeling-starters { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px; }
+.modeling-starter { text-align: left; padding: 20px; background: var(--green-wash); border: 1px solid #b6d4c1; border-radius: 10px; }
+.modeling-starter:last-child { background: var(--gold-wash); border-color: #dfc6a3; }
+.modeling-starter strong { display: block; font-size: 17px; margin: 6px 0 10px; }
+.modeling-starter p { line-height: 1.9; font-size: 13px; }
+.modeling-starter small { display: block; color: var(--muted); margin-top: 12px; }
+.modeling-journey { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 14px 0; margin: 16px 0 0; border-block: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.modeling-journey li + li::before { content: "→"; margin-right: 20px; }
+.modeling-current { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr); gap: 28px; margin-top: 22px; }
+.modeling-flow { list-style: none; padding: 0; margin: 20px 0; }
+.modeling-step { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 10px; position: relative; }
+.modeling-step-number { display: grid; place-items: center; border-radius: 50%; width: 28px; height: 28px; background: var(--green); color: #fff; font-size: 12px; margin-top: 18px; }
+.modeling-step-card { border: 1px solid var(--line); border-left: 3px solid #51906e; background: var(--paper); border-radius: 8px; padding: 18px 20px; }
+.modeling-method { color: var(--green); font-size: 11px; margin-bottom: 6px; }
+.modeling-step-card h3 { font-size: 17px; margin-bottom: 14px; }
+.modeling-step-input { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.modeling-chip { background: var(--green-wash); border-radius: 4px; padding: 5px 8px; font-size: 12px; }
+.modeling-formula { font-family: "Cambria Math", "Noto Sans SC", "Microsoft YaHei", sans-serif; padding: 14px 0 10px; font-size: 17px; line-height: 1.9; overflow-wrap: anywhere; }
+.modeling-step-output { font-weight: 650; line-height: 1.8; font-size: 13px; margin: 5px 0 10px; }
+.modeling-transfer { grid-column: 2; margin: 0; padding: 13px 2px; color: var(--green-dark); font-size: 12px; line-height: 1.8; }
+.modeling-settings { border-left: 1px solid var(--line); padding-left: 24px; outline-offset: 5px; }
+.modeling-settings h3 { font-size: 15px; margin-bottom: 8px; }
+.modeling-fieldset { border: 0; padding: 0; margin: 20px 0; min-width: 0; }
+.modeling-fieldset legend { font-size: 13px; font-weight: 650; padding: 0; margin-bottom: 9px; }
+.modeling-variable-choices { display: flex; flex-wrap: wrap; gap: 7px; max-height: 240px; overflow: auto; }
+.modeling-variable { display: flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 9px; font-size: 12px; cursor: pointer; }
+.modeling-variable:has(input:checked) { border-color: #83b396; background: var(--green-wash); }
+.modeling-variable input { accent-color: var(--green); }
+.modeling-date { display: grid; gap: 8px; margin-top: 17px; font-size: 12px; }
+.modeling-date input, .modeling-date textarea { border: 1px solid var(--line); border-radius: 5px; padding: 9px; width: 100%; background: var(--paper); color: var(--ink); }
+.modeling-date textarea { min-height: 70px; resize: vertical; }
+.modeling-derived { color: var(--green-dark); padding: 10px; background: var(--green-wash); font-size: 12px; line-height: 1.8; margin-bottom: 13px; }
+.modeling-alignment { margin-top: 16px; font-size: 12px; color: var(--muted); line-height: 1.9; }
+.modeling-alignment summary { cursor: pointer; color: var(--green); }
+.modeling-alignment p { margin-top: 9px; }
+.modeling-periods { border-top: 1px solid var(--line); padding-top: 15px; }
+.modeling-data-range { color: var(--muted); font-size: 12px; line-height: 1.8; }
+.modeling-period-list { display: flex; flex-wrap: wrap; gap: 12px; padding: 0; margin: 12px 0; list-style: none; }
+.modeling-period-list li { min-width: 100px; padding-right: 16px; border-right: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+.modeling-period-list strong { display: block; color: var(--ink); font-size: 19px; margin-top: 5px; font-weight: 600; }
+.modeling-warning { color: var(--error); line-height: 1.9; font-size: 13px; }
+#modeling-run-state { color: var(--green); }
+.technical-intro { margin: 16px 0; color: var(--muted); font-size: 12px; }
+.technical-intro h2 { color: var(--ink); font-size: 17px; margin-bottom: 7px; }
+.graph-settings { margin: 0 12px 10px; padding: 5px 8px; text-align: left; font-size: 11px; }
+.board-stage { overflow: auto; }
+.graph { transform-origin: top left; min-width: max-content; gap: 44px; padding: 18px 28px 38px; }
+.graph .lane { width: 230px; }
+.graph .lane-nodes { align-content: start; grid-template-columns: 1fr; justify-items: stretch; gap: 15px; min-height: 157px; }
+.graph .lane .graph-item { width: 100%; }
+.graph .node-port { top: calc(50% - 3.5px); bottom: auto; }
+.graph .node-port.in { left: -4px; right: auto; }
+.graph .node-port.out { right: -4px; left: auto; }
+.graph .node-port.pin { top: calc(50% - 11px); bottom: auto; }
+.graph .node-port.pin.in { left: -11px; right: auto; }
+.graph .node-port.pin.out { right: -11px; left: auto; }
+@media (max-width: 1000px) { .modeling-current { grid-template-columns: 1fr; } .modeling-settings { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; } }
+@media (max-width: 600px) { .modeling-workspace { padding: 17px; } .modeling-heading { flex-direction: column; gap: 12px; } .modeling-starters { grid-template-columns: 1fr; } .modeling-step-card { padding: 15px; } .modeling-formula { font-size: 15px; } .modeling-journey { gap: 9px; } .modeling-journey li + li::before { margin-right: 9px; } }

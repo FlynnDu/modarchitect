@@ -1,0 +1,23 @@
+{
+  "format": "research_descriptive_summary_v1",
+  "row_count": 3,
+  "object_count": 1,
+  "business_date_start": "2026-04-01",
+  "business_date_end": "2026-04-03",
+  "variables": [
+    {
+      "code": "lai",
+      "name": "叶面积指数",
+      "unit": "m2_m2",
+      "value_kind": "observed",
+      "count": 3,
+      "minimum": 1.0,
+      "maximum": 3.0,
+      "mean": 2.0,
+      "sample_std": 1.0
+    }
+  ],
+  "source_sha256": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ]
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "method": "random-forest",
+    "operation": "training",
+    "run_id": "01a1e460-3363-7956-a218-f15279f4ca52",
+    "scheduler_id": "738",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1763,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "random-forest",
+    "operation": "prediction",
+    "run_id": "01a1e460-648c-7b61-9589-02c6f4c2048e",
+    "scheduler_id": "739",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1764,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "xgboost",
+    "operation": "training",
+    "run_id": "01a1e461-b9eb-7269-99f9-36e73ff0b6d6",
+    "scheduler_id": "741",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1766,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "xgboost",
+    "operation": "prediction",
+    "run_id": "01a1e461-e292-78de-ad00-465e8ccda1ff",
+    "scheduler_id": "743",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1768,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "gaussian",
+    "operation": "training",
+    "run_id": "01a1e461-b98d-7655-996a-27dbd039744d",
+    "scheduler_id": "740",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1765,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "gaussian",
+    "operation": "prediction",
+    "run_id": "01a1e461-d722-7429-820a-fce326720165",
+    "scheduler_id": "742",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1767,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "linear",
+    "operation": "training",
+    "run_id": "01a1e463-f50b-78d6-ab70-ccf4463fc4fe",
+    "scheduler_id": "744",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1769,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  },
+  {
+    "method": "linear",
+    "operation": "prediction",
+    "run_id": "01a1e464-001a-73cd-8ebb-a9a6b8bf171e",
+    "scheduler_id": "745",
+    "workflow_state": "SUCCESS",
+    "tasks": [
+      {
+        "id": 1770,
+        "name": "modarchitect-research",
+        "state": "SUCCESS",
+        "host": "172.16.1.133:1234"
+      }
+    ]
+  }
+]

@@ -1,0 +1,57 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "image": "172.16.1.122/sumfen/modarchitect-api:0.1.1-20261116-d78b1bff68c0@sha256:160b2b8792fc72d44a80fe70272c6ffdeb7e4976e2bf723c2e2d8656a1fdb576",
+  "wheel_sha256": "d78b1bff68c06a3322d0db42d863034511722e3f826600887b968140d5920413",
+  "jobs": [
+    {
+      "job": "modarchitect-api",
+      "version": 9,
+      "deployment": "successful",
+      "allocations": [
+        "b6c53ff4-53a1-4fd9-45a9-a14681676265"
+      ],
+      "consul_passing": 1
+    },
+    {
+      "job": "modarchitect-execution",
+      "version": 3,
+      "deployment": "successful",
+      "allocations": [
+        "68a7833a-e51f-6e50-49e6-8d26b17add04"
+      ],
+      "consul_passing": 1
+    }
+  ],
+  "keys_and_environment_preserved": {
+    "modarchitect-api": true,
+    "modarchitect-execution": true
+  },
+  "legacy_worker_version": 36,
+  "registry_components": [
+    "catalog_weather_conditions@1",
+    "random_forest_training@1",
+    "random_forest_predict@1",
+    "xgboost_training@1",
+    "xgboost_predict@1",
+    "gaussian_process_training@1",
+    "gaussian_process_predict@1",
+    "multivariate_linear_training@1",
+    "multivariate_linear_predict@1"
+  ],
+  "database_revision": "0011",
+  "existing_contracts_preserved": 25,
+  "new_contracts": 6,
+  "schema_changes": false,
+  "package_files_verified_per_task": 139,
+  "package_tasks": [
+    "api",
+    "worker",
+    "dispatcher"
+  ],
+  "package_mismatches": 0,
+  "isolated_database_tests_passed": 132,
+  "frontend_tests_passed": 41,
+  "native_browser_visual_check": false,
+  "database_backup_sha256": "b9f887ff34d89c8e0dad6f3e51bf3c0eae2e797222bc4d24d5f5c6dec1c827cd",
+  "engineering_fixtures_only": true
+}

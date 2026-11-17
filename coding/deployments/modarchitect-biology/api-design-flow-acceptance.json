@@ -1,0 +1,36 @@
+{
+  "method": "actual renderer with saved API configurations",
+  "native_browser_visual_check": false,
+  "cases": [
+    {
+      "case": "template",
+      "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+      "source": "requeried saved configuration",
+      "graph_nodes": 4,
+      "graph_edges": 3,
+      "stages": 5,
+      "rendered": true
+    },
+    {
+      "case": "custom",
+      "design_id": "01a1e494-6e10-7cc0-a428-cf7192588fb0",
+      "configuration_sha256": "2084222cb5bc8299b2c40455d57050123e23e817f57a3a8085385d77a1f27ac7",
+      "source": "requeried saved configuration",
+      "graph_nodes": 4,
+      "graph_edges": 3,
+      "stages": 5,
+      "rendered": true
+    },
+    {
+      "case": "future",
+      "design_id": "01a1e494-83f9-7d05-88cf-b715363ca217",
+      "configuration_sha256": "26671c2170c44ea634752fadd67b3c31a651a78570e7e3cb64f09c277c14fe37",
+      "source": "requeried saved configuration",
+      "graph_nodes": 3,
+      "graph_edges": 2,
+      "stages": 5,
+      "rendered": true
+    }
+  ]
+}

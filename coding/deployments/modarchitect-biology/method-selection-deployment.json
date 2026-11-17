@@ -1,0 +1,38 @@
+{
+  "service": "http://172.16.1.122:18925",
+  "job_version": 8,
+  "deployment": "successful",
+  "allocation_ids": [
+    "bc78895d-9a96-b3a3-1db1-07b6db4f7eff"
+  ],
+  "consul_passing": 1,
+  "health": {
+    "status": "ok"
+  },
+  "template_matches": true,
+  "keys_preserved": true,
+  "database_migration": false,
+  "execution_job_version": 2,
+  "legacy_worker_job_version": 36,
+  "image": "172.16.1.122/sumfen/modarchitect-api:0.1.1-20261116-2915dbd8c52c@sha256:10bbe8060e7aad2011b487a0519d42c582f9a3ec1903781b2084f9839ac85202",
+  "wheel_sha256": "2915dbd8c52c38f77de0cd2b4a6c0f51587da8a947cd934dd1f14b14fc46503a",
+  "package_files_verified": 137,
+  "package_mismatches": 0,
+  "changed_package_files": [
+    "modarchitect/web/designer/index.html",
+    "modarchitect/web/designer/method-picker.js",
+    "modarchitect/web/designer/methods.js",
+    "modarchitect/web/designer/schema-fields.js",
+    "modarchitect/web/designer/studio.js",
+    "modarchitect/web/designer/system-inputs.js",
+    "modarchitect/web/designer/wizard.css",
+    "modarchitect/web/designer/wizard.js"
+  ],
+  "non_ui_code_unchanged": true,
+  "runtime_enabled_components": [
+    "catalog_weather_conditions@1"
+  ],
+  "frontend_tests_passed": 40,
+  "ops_python_header_files": 1,
+  "native_browser_visual_check": false
+}

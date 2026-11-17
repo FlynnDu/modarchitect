@@ -1,0 +1,104 @@
+{
+  "manifest_version": "1.0",
+  "component": {
+    "code": "research_forecast_feature_join",
+    "revision": 1,
+    "name": "合并预测因子",
+    "category": "transform"
+  },
+  "contract": {
+    "summary": "将上游预测按完整对象和业务日期追加为观测表的新列。",
+    "method": "对齐截止日之后的所有对象日，保持实测列及单位。",
+    "requirements": [
+      "使用有准确来源和摘要的按对象日期对齐输入。"
+    ],
+    "limitations": [
+      "只保留历史预测截点之后的记录。",
+      "缺配、重复键与列冲突会拒绝。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "实测观测表",
+        "description": "以地块、作物、种植季和业务日期对齐。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "forecast",
+        "name": "历史预测特征表",
+        "description": "上游只使用截止日期及之前的实测值训练，成果逐对象日期生成。",
+        "data_type": {
+          "semantic": "research_historical_feature_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "table",
+        "name": "含预测因子的观测表",
+        "description": "保留实测数据和标签，同时增加预测因子。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "feature_code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,95}$",
+          "title": "上游预测变量",
+          "x-research-variables": {
+            "table_port": "forecast",
+            "roles": [
+              "target",
+              "covariate",
+              "driver"
+            ]
+          }
+        },
+        "output_code": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,95}$",
+          "title": "写入的预测因子",
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "covariate"
+            ],
+            "new_column": true,
+            "source_field": "feature_code"
+          }
+        }
+      },
+      "required": [
+        "feature_code",
+        "output_code"
+      ]
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:cf7e092061ebadedeca53c726377c316caa29099a5b09030d1fedaa16c9bcd6d"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

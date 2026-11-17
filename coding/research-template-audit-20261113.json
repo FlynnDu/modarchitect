@@ -1,0 +1,5583 @@
+{
+  "captured_at": "2026-11-12T16:13:18.546887+00:00",
+  "base": "http://192.168.3.249:18925",
+  "scope": "all current 16 themes, 2 alternate method configurations, 4 workspace examples, 138 saved drafts and 116 published scheme versions; old exact identities retained",
+  "listed_themes": 16,
+  "current_configurations": 18,
+  "fully_catalog_bound_current": [
+    "crop-growth-prediction",
+    "field-indicator-summary"
+  ],
+  "artifact_configurations": 15,
+  "configurations": [
+    {
+      "id": "crop-growth-prediction",
+      "title": "多因素作物生长指标预测",
+      "listed": true,
+      "revision": 1,
+      "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f",
+      "operation": "train",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "user_observations",
+        "editable": [
+          "records",
+          "inputs",
+          "factors",
+          "targets"
+        ]
+      },
+      "variable_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "collection_requirement_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "catalog_bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "readiness_count": 4,
+      "artifact_ports": [],
+      "observation_ports": [
+        "observations"
+      ],
+      "nodes": [
+        {
+          "code": "multivariate_linear_training",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "growth-trend-and-environment",
+      "title": "生长趋势与环境因素联合预测",
+      "listed": true,
+      "revision": 1,
+      "sha256": "6515600a4c80c4886ec860b56716f1cf15e1287abb0b8074641f3f9b322d2ca5",
+      "operation": "train",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "synthetic_demo_only",
+        "editable": [
+          "records",
+          "inputs",
+          "factors",
+          "targets"
+        ]
+      },
+      "variable_codes": [
+        "day",
+        "height",
+        "ndvi",
+        "soil_water",
+        "temperature",
+        "prior_height"
+      ],
+      "collection_requirement_codes": [
+        "day",
+        "height",
+        "ndvi",
+        "soil_water",
+        "temperature"
+      ],
+      "catalog_bound_codes": [],
+      "readiness_count": 5,
+      "artifact_ports": [],
+      "observation_ports": [
+        "observations"
+      ],
+      "nodes": [
+        {
+          "code": "historical_logistic_training",
+          "revision": 1
+        },
+        {
+          "code": "research_forecast_feature_join",
+          "revision": 1
+        },
+        {
+          "code": "multivariate_linear_training",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "field-indicator-summary",
+      "title": "田间观测指标汇总与比较",
+      "listed": true,
+      "revision": 1,
+      "sha256": "543e26164b1877471c131f572e6e229eb086b13251e09530e3637303cdb8cd3d",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "user_observations",
+        "editable": [
+          "records",
+          "inputs",
+          "factors",
+          "targets"
+        ]
+      },
+      "variable_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "collection_requirement_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "catalog_bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "readiness_count": 4,
+      "artifact_ports": [],
+      "observation_ports": [
+        "observations"
+      ],
+      "nodes": [
+        {
+          "code": "research_descriptive_statistics",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "greenhouse-water-use",
+      "title": "温室作物耗水估算与称重对照",
+      "listed": true,
+      "revision": 1,
+      "sha256": "6f6d60012d6f2c879f0fc6339fd9d0f06a120adb27182ac9cdc10a25d073d1d9",
+      "operation": "simulate",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [
+        "net_radiation",
+        "daily_crop_et"
+      ],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "node_1_request",
+        "node_2_request",
+        "node_3_request"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "greenhouse_reference_et_daily",
+          "revision": 3
+        },
+        {
+          "code": "greenhouse_weighing_water_balance",
+          "revision": 2
+        },
+        {
+          "code": "greenhouse_crop_et_daily_comparison",
+          "revision": 2
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "canopy-temperature-rf",
+      "title": "冠层温度与环境因素关系研究",
+      "listed": true,
+      "revision": 1,
+      "sha256": "7d201da4e2001b2fea73a281f61b5c13d59051a8e5d67e094a28dad004afe4cd",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "random_forest",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "canopy-temperature-xgboost",
+      "title": "冠层温度与环境因素关系研究",
+      "listed": false,
+      "revision": 1,
+      "sha256": "3a247d5f208d09dd9728a1a8d951bc2cd282d13e2fe0e67daf259d99f9ac7526",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "xgboost",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "canopy-temperature-gp",
+      "title": "冠层温度与环境因素关系研究",
+      "listed": false,
+      "revision": 1,
+      "sha256": "f2723d198b6384614c7867be7b734185c6f4d08912a306c115681d2598a7bab2",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "gaussian_process",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "canopy-temperature-forecast",
+      "title": "冠层温度短期预测研究",
+      "listed": true,
+      "revision": 1,
+      "sha256": "4cc813b7d8339b66490a8c7217656409a1b28f2a0b53f9009cf0f55ed1fb361b",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "lstm",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "canopy-temperature-spatial-forecast",
+      "title": "冠层温度空间分布预测研究",
+      "listed": true,
+      "revision": 1,
+      "sha256": "8b4ee5dae033fa6e68ac4e97c94f496dd3526936482cbf6e3aa16a705853e96f",
+      "operation": "analyze",
+      "data_kind": "synthetic",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "convlstm",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {},
+      "live_matches_local": true
+    },
+    {
+      "id": "crop-low-temperature",
+      "title": "生育期低温与霜冻条件分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "abb56e5ee27c59653271deac7833c56c1f038ede73c68c21923f73fa6764d30a",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "weather"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "research_weather_conditions",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "as_of",
+          "crop_code"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "crop-high-temperature",
+      "title": "生育期高温条件分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "a35fb0bcd3795d6c73e243cff56f993e28827cad07c56aa618e520fd0495bbd0",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "weather"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "research_weather_conditions",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "as_of",
+          "crop_code"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "crop-rainfall-deficit",
+      "title": "降雨不足与水分供应条件分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "a1c6c84f901cb2939ba08093187f9405cd3c380324b9aa0179c6efe221aca4da",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "weather"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "research_weather_conditions",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "as_of",
+          "crop_code"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "crop-heavy-rainfall",
+      "title": "强降雨与积水条件分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "d95dba8ab48bebd3aaef67047ecee4c4280636be6a8dfe49507ca8c8f018e908",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "weather"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "research_weather_conditions",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "as_of",
+          "crop_code"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "crop-disease-weather",
+      "title": "温湿条件与病害风险分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "345398425e061352dff63662571db0615f4e3f6e5cefd17eae98b03a965a3eac",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": []
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "weather"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "research_weather_conditions",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "as_of",
+          "crop_code"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "soil-properties",
+      "title": "耕层土壤理化特征分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "12cd1ef15b819326cd26d5ddf536c81e0a9160b80ce259d8de82ed1bf6465d88",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": [
+          "indicators"
+        ]
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "series"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "agronomic_indicator_analysis",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "variables",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "vegetation-index-change",
+      "title": "植被指数时序变化分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "6601aae26fbdef066cfe5520208abf6ae4093945412d1e0405a1fe2bfbb4d5ea",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": [
+          "indicators"
+        ]
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "series"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "agronomic_indicator_analysis",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "variables",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "growth-water-response",
+      "title": "作物生长与水分限制分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "90e643ed29ced0feef1db3fb6046c4431b350511c3ab7d472549fe1795d932b1",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": [
+          "indicators"
+        ]
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "series"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "agronomic_indicator_analysis",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "variables",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "live_matches_local": true
+    },
+    {
+      "id": "yield-formation",
+      "title": "产量形成与干物质积累分析",
+      "listed": true,
+      "revision": 1,
+      "sha256": "63f5d9dfbbcb3a987d3c45fa6ff4609f2fabe7c22bbcd80c42f9b4c5ddaed28e",
+      "operation": "analyze",
+      "data_kind": "frozen_archive",
+      "input_policy": {
+        "mode": "approved_dataset",
+        "editable": [
+          "indicators"
+        ]
+      },
+      "variable_codes": [],
+      "collection_requirement_codes": [],
+      "catalog_bound_codes": [],
+      "readiness_count": 0,
+      "artifact_ports": [
+        "series"
+      ],
+      "observation_ports": [],
+      "nodes": [
+        {
+          "code": "agronomic_indicator_analysis",
+          "revision": 1
+        }
+      ],
+      "editable_parameters": {
+        "settings": [
+          "variables",
+          "start_date",
+          "end_date"
+        ]
+      },
+      "live_matches_local": true
+    }
+  ],
+  "examples": [
+    {
+      "kind": "system",
+      "keys": [
+        "definition",
+        "observations",
+        "prediction_observations",
+        "data_kind",
+        "description"
+      ],
+      "variable_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "live_matches_local": true
+    },
+    {
+      "kind": "multivariable",
+      "keys": [
+        "definition",
+        "observations",
+        "prediction_observations",
+        "data_kind",
+        "description"
+      ],
+      "variable_codes": [
+        "day",
+        "height",
+        "ndvi",
+        "soil_water",
+        "temperature",
+        "leaf_area"
+      ],
+      "bound_codes": [],
+      "live_matches_local": true
+    },
+    {
+      "kind": "chain",
+      "keys": [
+        "definition",
+        "observations",
+        "prediction_observations",
+        "data_kind",
+        "description"
+      ],
+      "variable_codes": [
+        "day",
+        "height",
+        "ndvi",
+        "soil_water",
+        "temperature",
+        "prior_height"
+      ],
+      "bound_codes": [],
+      "live_matches_local": true
+    },
+    {
+      "kind": "analysis",
+      "keys": [
+        "definition",
+        "observations",
+        "prediction_observations",
+        "data_kind",
+        "description"
+      ],
+      "variable_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ],
+      "live_matches_local": true
+    }
+  ],
+  "history_archives": {
+    "study-templates-archive-v1.json": 10,
+    "study-templates-archive-v2.json": 10
+  },
+  "saved_research_summary": {
+    "drafts": {
+      "count": 138,
+      "categories": {
+        "unbound_observations": 30,
+        "catalog_bound_observations": 36,
+        "artifact_dataset": 72
+      },
+      "binding_check_rejections": 30,
+      "distinct_scientific_definitions": 47
+    },
+    "versions": {
+      "count": 116,
+      "categories": {
+        "unbound_observations": 16,
+        "catalog_bound_observations": 25,
+        "artifact_dataset": 75
+      },
+      "binding_check_rejections": 16,
+      "distinct_scientific_definitions": 44
+    }
+  },
+  "saved_research_records": {
+    "drafts": [
+      {
+        "design_id": "01a1cb1b-3000-75d2-9fcf-bae4ec46cc88",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1cb1b-e867-7365-891e-b70e6c421ee3",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1cb1f-4b5d-7b3e-a4c2-b6ac6aa1a50f",
+        "revision": 2,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1cb1f-4bbf-7696-b0c2-21a7a8e18709",
+        "revision": 2,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f297dcef16ef009118e48348d45a755b46285662538774970d11d28e95608f98"
+      },
+      {
+        "design_id": "01a1cb29-4c7f-77f7-9b16-088ab59c2b34",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1cb29-6522-7745-b8ff-0e4836a4bc46",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f297dcef16ef009118e48348d45a755b46285662538774970d11d28e95608f98"
+      },
+      {
+        "design_id": "01a1cb4c-c2dc-7634-87b6-a073676892c1",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f297dcef16ef009118e48348d45a755b46285662538774970d11d28e95608f98"
+      },
+      {
+        "design_id": "01a1cb4c-d974-78a2-a54f-7b350b49a830",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f297dcef16ef009118e48348d45a755b46285662538774970d11d28e95608f98"
+      },
+      {
+        "design_id": "01a1cb4d-5c84-7eaf-9f1a-5afb1c52957d",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f297dcef16ef009118e48348d45a755b46285662538774970d11d28e95608f98"
+      },
+      {
+        "design_id": "01a1cb79-0882-7b4f-a55c-e4ec83d444a7",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "d7a80e48eeeecb1605e4cb9a5e268c9407e126692d93d239d57ec13df9594eb7"
+      },
+      {
+        "design_id": "01a1cb79-28b7-7a7d-add2-71bab3eafb93",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "2fb327725720f40b4bd3be9af911aa4bffa92be8f90a39a206083105603df0d0"
+      },
+      {
+        "design_id": "01a1cb7a-3c19-778f-9357-5df3f79575ce",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "909fb100ceb5682236f09f00a8d22650f3beac797b7057efa9a2a91c3da9b3d6"
+      },
+      {
+        "design_id": "01a1cbab-a2c8-7749-87a3-063431ce94ff",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "91c441fafc4ef12f6429c2d1e510721c3f7686b6f9d64521ffb812dfeece9caf"
+      },
+      {
+        "design_id": "01a1cbab-c39d-775e-923e-967c8a4b3c30",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cbab-e468-7201-8c35-c6774c1f3acd",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "temperature_mean_daily",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "temperature_mean_daily",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "99f553749e33a3d70627f51bb512a224971434e92f55b71a937a508e99217b21"
+      },
+      {
+        "design_id": "01a1cbb1-bf03-7794-9c3d-092b8e8271a9",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "91c441fafc4ef12f6429c2d1e510721c3f7686b6f9d64521ffb812dfeece9caf"
+      },
+      {
+        "design_id": "01a1cbb1-dfb7-706a-a892-e671893342f1",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cbb2-00a3-7333-a438-97e8d5db4b92",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "temperature_mean_daily",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "temperature_mean_daily",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "99f553749e33a3d70627f51bb512a224971434e92f55b71a937a508e99217b21"
+      },
+      {
+        "design_id": "01a1cdd1-cc26-781e-b164-18f59c81d01c",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cdd1-cff5-7562-a682-c7bd46395ce0",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cdd1-d1eb-7939-b44d-73a1583c01a5",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cddc-91f1-7c8b-9d3d-9fe6e6a6aed8",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1ce26-845f-71c1-a7a8-5e5ba9359766",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81dd8602ce1512c2973e5bd1b4beb693d6d59b90eee97809fce4ac231f43ec73"
+      },
+      {
+        "design_id": "01a1ce26-8e45-7b62-8b8f-61e31d6b62f9",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "91c441fafc4ef12f6429c2d1e510721c3f7686b6f9d64521ffb812dfeece9caf"
+      },
+      {
+        "design_id": "01a1ce26-a76a-7b07-9177-e662cb313291",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1ce26-d116-79dc-98c8-9984db711d17",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a4a0bf975d6de4bc5e69505e65b89644cd4cf158be9e50e11418f64a8928d848"
+      },
+      {
+        "design_id": "01a1ce57-0ad2-7a64-9f7e-a7ec8527b406",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ed9fcf3c86b19df0d8cf4ec2a8e7d9eebcfbad9ea7c895c8f5e5dc35478eb9df"
+      },
+      {
+        "design_id": "01a1ce61-684f-7194-9d62-6da867815e09",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ed9fcf3c86b19df0d8cf4ec2a8e7d9eebcfbad9ea7c895c8f5e5dc35478eb9df"
+      },
+      {
+        "design_id": "01a1ce84-bc8a-734e-a3f6-e1875d7700ac",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1ce87-c315-730e-8a07-192712393e9e",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "276519c3e901955ab33d0d0456a0cd39640842a8a572e74bc80e6f920c31d7c2"
+      },
+      {
+        "design_id": "01a1ce87-c567-7b4a-8bbb-8ebec3359411",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1ce87-c70c-7846-a34a-1798377e7ecc",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ed9fcf3c86b19df0d8cf4ec2a8e7d9eebcfbad9ea7c895c8f5e5dc35478eb9df"
+      },
+      {
+        "design_id": "01a1ce8a-2f59-78bb-8064-d15f290de62c",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1ce94-27d7-7f13-b769-9b8ab0713280",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1cee5-6501-7ac1-a227-3f49024492b6",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cee5-7785-7141-a66b-bb7f4bbeb960",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d6eecd31772bf2e27baaf9ae66565657c4e7f5fc2ad3414fac9651f6b5855ade"
+      },
+      {
+        "design_id": "01a1cee5-8877-7a7e-9b69-75f239d06c65",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "91c441fafc4ef12f6429c2d1e510721c3f7686b6f9d64521ffb812dfeece9caf"
+      },
+      {
+        "design_id": "01a1cee5-9a10-72d7-8e8e-fde777ccb95d",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cee5-bb51-7dea-a3a9-55b46e45c0a5",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81dd8602ce1512c2973e5bd1b4beb693d6d59b90eee97809fce4ac231f43ec73"
+      },
+      {
+        "design_id": "01a1cee5-ccca-78e9-a7d1-e094e080479a",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ce3800326bafcb0ff3900f1ca659e0edded95ce133aa5c8bd4f00565617ed476"
+      },
+      {
+        "design_id": "01a1cee5-dd72-70d3-bfae-ab38a65cedae",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c927ef4052664bf0c8a14865a4cb3ca4aa369f5d9f5ddbbc3a431f19b5d5c207"
+      },
+      {
+        "design_id": "01a1cee5-eecd-761b-91f2-944b1d223610",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "1df133efc4afb41753a9f633887076540a937258302603c1609f8372f35fe148"
+      },
+      {
+        "design_id": "01a1cee5-ff70-777e-9b9e-18b8187e1788",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ae7615a6399c8fa75a802bda2b8438d99db89e85453806b4251f901a0a8daec4"
+      },
+      {
+        "design_id": "01a1cee6-0fdd-7c1d-ac4c-4588b1851cc2",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "bdd0679e12ceb1b9edc5be450aa728d44df589ef9b6452660784e67e31b89f4b"
+      },
+      {
+        "design_id": "01a1cee7-db4f-75dc-97e2-09198d271b45",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cef5-c1f3-7986-8fde-ea30fe079809",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "73025f821a71e8cc86b62ecbfec648f034824723f00d3b11643ecdf82110f70a"
+      },
+      {
+        "design_id": "01a1cef5-cb96-7db1-82c1-d072c94e0109",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d6eecd31772bf2e27baaf9ae66565657c4e7f5fc2ad3414fac9651f6b5855ade"
+      },
+      {
+        "design_id": "01a1cef5-dc81-7714-bd9d-81b988cbdd58",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "91c441fafc4ef12f6429c2d1e510721c3f7686b6f9d64521ffb812dfeece9caf"
+      },
+      {
+        "design_id": "01a1cef5-eebb-74b0-8004-727b21bd4d10",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "73025f821a71e8cc86b62ecbfec648f034824723f00d3b11643ecdf82110f70a"
+      },
+      {
+        "design_id": "01a1cef5-fdf8-7ae2-befe-bf9d42826e33",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "03398f3badf618069983fe96e8898762ae66c4c4fb4b373db8c5361f29c063d8"
+      },
+      {
+        "design_id": "01a1cef6-1f3f-7ba8-b21e-ad06db216708",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81dd8602ce1512c2973e5bd1b4beb693d6d59b90eee97809fce4ac231f43ec73"
+      },
+      {
+        "design_id": "01a1cef6-2fd9-7d81-a1a7-e5ed1d9b61d1",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "5a452408ee132e35be083c124b7bd5c782825e763f50e2e1128802dffc41febf"
+      },
+      {
+        "design_id": "01a1cef6-4852-7cda-8bc5-fb0b171629e3",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "bbaf4acd62b263e98fc4a4a34339cc92122551ff933d1409568b582d8cd31d09"
+      },
+      {
+        "design_id": "01a1cef6-58f7-7f74-9547-e6bc841e78ce",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "2440e3fc4c299ec80fd15f8783a2a267426ea370f6ba41f5f2b0c25c4a77aa95"
+      },
+      {
+        "design_id": "01a1cef6-6980-758e-afaf-2e8cba6a52e6",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "5ee49d4c215f98999f8f8258ca4ce8e20dfb87315f957046259feef61afba164"
+      },
+      {
+        "design_id": "01a1cef6-8224-7768-8a85-b983e0cc15bc",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "0bf2c9c9f8e489d150d8e3ee4ba4aa2587575ba5120f4f305eeefc97db519129"
+      },
+      {
+        "design_id": "01a1cef6-92cc-7dbc-9569-b942c193ea12",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cef6-f6a0-7eb7-b29d-81a5bf34390b",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1cf34-2e4e-7137-8389-c7badaf8cb94",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "186088777b4e8cdc34bf33adf9a02c7ccd5ca18da825e11d593bb90afbecf33a"
+      },
+      {
+        "design_id": "01a1cf34-4f8a-7146-af17-3691ca57c74a",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cf34-5c10-746c-9ba0-b9e555af5707",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf34-7092-7f11-b9d5-3e86f8e77afd",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "561777b2fa2885d00af2cc1bed4385ad4093c82a8ba26d3ceb9a30ecad2d93e9"
+      },
+      {
+        "design_id": "01a1cf36-9f75-7924-9a0f-a6f513a0be46",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1cf34-7962-78ce-a7ce-6fb987025b25",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "657f4eaf8968b02fc4da2da3e58f2c3d4abd8fa04441e0003b8d3b1f3b30b506"
+      },
+      {
+        "design_id": "01a1cf34-8a46-763b-9db3-c7a8cde2cb83",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68f23966db688b0f82476dd347185d1faea57986403d4cf33ca8c8def5a6c5c2"
+      },
+      {
+        "design_id": "01a1cf34-a2d4-74a3-8846-e9297690a6c0",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e72e0d3cbce54f4b541acb6be7801a64fe0119d77f841cda3102e63629ae0440"
+      },
+      {
+        "design_id": "01a1cf34-bb5a-779c-8752-f3712ce76d9f",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3880ef95dde66ff4cd18d946af171af7472cca8353b8dd2512aec923f7a9000f"
+      },
+      {
+        "design_id": "01a1cf34-dfa1-720b-a488-9fe028ddd592",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b33b25e4a38fa76d7d899aba2943df66b8c6f82f0065d2bc1039f455e54e56d7"
+      },
+      {
+        "design_id": "01a1cf34-e8ce-7f33-b1c1-58123d52f8e5",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef6b9ba3eaef110ed9648a6583d804e4d08c87f62b87cb05114f80de35c37607"
+      },
+      {
+        "design_id": "01a1cf34-d3f8-7236-a727-a519e4ff34b2",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf35-262e-7296-a016-80084791a3ea",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "58313b02b3deac881f4488dea9452f2cb9bbec30256b6816965cfd57d6a202bf"
+      },
+      {
+        "design_id": "01a1cf35-830d-7fc9-8251-22d3077cfdf1",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cf34-fa7f-7cfe-b907-5973d737f709",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "1d31365486f2ad2b234dc6e236af88548a175a01672f7ace1368c51118aaa743"
+      },
+      {
+        "design_id": "01a1cf35-0b6a-7f89-be9b-afd3ca686214",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ded0fb54a6c9fc277d3ba68716e07ff0eb88c956705963285e196022c9c4d824"
+      },
+      {
+        "design_id": "01a1cf35-1463-7e01-8800-f9282cc3e039",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "6ea3b07d9e1867e4c5fb4b4a70847a069bf0f249eeb73bdd58e7a891582642db"
+      },
+      {
+        "design_id": "01a1cf35-1d37-703b-9d5f-6f3a7a8b3f97",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "705b9d15703fc49ce6ca76e19a79630227a5b154408eda74a248aa720413b3d7"
+      },
+      {
+        "design_id": "01a1cf35-2f02-7ac1-860c-9a4616096a18",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cbcc762ee6b7cd3dd4f5516f187900fe81c9434431f51f313eadd76a02835df"
+      },
+      {
+        "design_id": "01a1cf35-37b2-77a3-9e75-a84fc3de85ec",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "7ed3e9abdf559508bf4254833cdc9dcd6437ad16d68e6a826dc7994a481c7d8d"
+      },
+      {
+        "design_id": "01a1cf35-4854-7a92-a4f0-e667dad90792",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "106fa6882d45aae42b386ca3df01a5fedadb5921fc164e5d7bac6f74aba349bf"
+      },
+      {
+        "design_id": "01a1cf48-a954-71ea-94a7-fe684412178b",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f2527f597602857cf8d6e7564888d5c01721443ed7289d5fca47d4251ef308b7"
+      },
+      {
+        "design_id": "01a1cf49-56e4-7df7-bc2d-d17bac884c45",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f2527f597602857cf8d6e7564888d5c01721443ed7289d5fca47d4251ef308b7"
+      },
+      {
+        "design_id": "01a1cf58-9708-74c3-a19e-71c6f572e1c3",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "73025f821a71e8cc86b62ecbfec648f034824723f00d3b11643ecdf82110f70a"
+      },
+      {
+        "design_id": "01a1cf58-e16e-797e-b7b4-93b8cec2c49a",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f2527f597602857cf8d6e7564888d5c01721443ed7289d5fca47d4251ef308b7"
+      },
+      {
+        "design_id": "01a1cf59-064e-7c0d-ad9b-a8e185f8c5f2",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cf70-a1bd-79f2-8e9f-d88d7db6e644",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "186088777b4e8cdc34bf33adf9a02c7ccd5ca18da825e11d593bb90afbecf33a"
+      },
+      {
+        "design_id": "01a1cf70-b377-7e4a-9559-4e12771e4d49",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cf70-dcd3-728c-8ce4-0c946a2a1ed5",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "561777b2fa2885d00af2cc1bed4385ad4093c82a8ba26d3ceb9a30ecad2d93e9"
+      },
+      {
+        "design_id": "01a1cf70-edeb-768c-af2a-2df8c5dfedcd",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "657f4eaf8968b02fc4da2da3e58f2c3d4abd8fa04441e0003b8d3b1f3b30b506"
+      },
+      {
+        "design_id": "01a1cf71-0fa8-7bda-ac18-a7ea4520b548",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e72e0d3cbce54f4b541acb6be7801a64fe0119d77f841cda3102e63629ae0440"
+      },
+      {
+        "design_id": "01a1cf71-288c-7c85-a2ce-d68bb182b301",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3880ef95dde66ff4cd18d946af171af7472cca8353b8dd2512aec923f7a9000f"
+      },
+      {
+        "design_id": "01a1cf71-75dc-739d-a7ca-326a9dd957b2",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ded0fb54a6c9fc277d3ba68716e07ff0eb88c956705963285e196022c9c4d824"
+      },
+      {
+        "design_id": "01a1cf71-87cd-7c54-b6f1-32a97a7b03c9",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "705b9d15703fc49ce6ca76e19a79630227a5b154408eda74a248aa720413b3d7"
+      },
+      {
+        "design_id": "01a1cf70-fed6-72ad-b665-1cfcc6c4aebd",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68f23966db688b0f82476dd347185d1faea57986403d4cf33ca8c8def5a6c5c2"
+      },
+      {
+        "design_id": "01a1cf71-4a43-79c5-8bf6-e48d6dec0578",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b33b25e4a38fa76d7d899aba2943df66b8c6f82f0065d2bc1039f455e54e56d7"
+      },
+      {
+        "design_id": "01a1cf71-5bbd-718a-996d-069bcac6b038",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef6b9ba3eaef110ed9648a6583d804e4d08c87f62b87cb05114f80de35c37607"
+      },
+      {
+        "design_id": "01a1cf71-6cd1-7bd6-afce-30d55c76dd72",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "1d31365486f2ad2b234dc6e236af88548a175a01672f7ace1368c51118aaa743"
+      },
+      {
+        "design_id": "01a1cf71-7f07-7c79-b21e-10a4e7db40a7",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "6ea3b07d9e1867e4c5fb4b4a70847a069bf0f249eeb73bdd58e7a891582642db"
+      },
+      {
+        "design_id": "01a1cf71-886d-7142-bd35-18de952625bb",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf71-8a9a-70d3-ac66-3474b7275ccc",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1cf71-a1b1-7db3-abdc-f6f55f67f624",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cbcc762ee6b7cd3dd4f5516f187900fe81c9434431f51f313eadd76a02835df"
+      },
+      {
+        "design_id": "01a1cf71-3924-7082-bf7c-fe4cd6b7e08d",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf71-b273-77bb-bef2-e285053a7928",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "7ed3e9abdf559508bf4254833cdc9dcd6437ad16d68e6a826dc7994a481c7d8d"
+      },
+      {
+        "design_id": "01a1cf71-c340-72d0-bcf4-68a73a066780",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "106fa6882d45aae42b386ca3df01a5fedadb5921fc164e5d7bac6f74aba349bf"
+      },
+      {
+        "design_id": "01a1cf71-90cd-7cfb-ae36-0f8443b96c8d",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "58313b02b3deac881f4488dea9452f2cb9bbec30256b6816965cfd57d6a202bf"
+      },
+      {
+        "design_id": "01a1cf71-fcdd-7783-b8b8-37cb85a75e8f",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cf77-93d9-75db-982a-ac5cdc35f129",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "186088777b4e8cdc34bf33adf9a02c7ccd5ca18da825e11d593bb90afbecf33a"
+      },
+      {
+        "design_id": "01a1cf77-9bd7-7d06-a101-5b05230faabc",
+        "revision": 1,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b7ca9920a199738b48184f766fcb78c55457449d7984f8f5109b0d6764e31f18"
+      },
+      {
+        "design_id": "01a1cf78-0aad-7f21-85fd-ab7d0b9cc1b5",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e72e0d3cbce54f4b541acb6be7801a64fe0119d77f841cda3102e63629ae0440"
+      },
+      {
+        "design_id": "01a1cf77-995c-7d11-98e0-5bce8fc74a59",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf77-b680-7709-96e0-401238bdf406",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cf77-d7eb-7521-b021-bc94044b0e99",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "561777b2fa2885d00af2cc1bed4385ad4093c82a8ba26d3ceb9a30ecad2d93e9"
+      },
+      {
+        "design_id": "01a1cf77-e106-736a-a5b0-2e3639cac9c7",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "657f4eaf8968b02fc4da2da3e58f2c3d4abd8fa04441e0003b8d3b1f3b30b506"
+      },
+      {
+        "design_id": "01a1cf77-f1e4-729d-b49d-76949df8b651",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68f23966db688b0f82476dd347185d1faea57986403d4cf33ca8c8def5a6c5c2"
+      },
+      {
+        "design_id": "01a1cf78-2369-7229-a2e1-6e6fa2976892",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3880ef95dde66ff4cd18d946af171af7472cca8353b8dd2512aec923f7a9000f"
+      },
+      {
+        "design_id": "01a1cf78-50dd-785a-b0ac-c557b55872cb",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef6b9ba3eaef110ed9648a6583d804e4d08c87f62b87cb05114f80de35c37607"
+      },
+      {
+        "design_id": "01a1cf78-4761-7c4b-bc33-784ac5cb2047",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b33b25e4a38fa76d7d899aba2943df66b8c6f82f0065d2bc1039f455e54e56d7"
+      },
+      {
+        "design_id": "01a1cf78-623a-7c83-b5fb-7acbc0ff677a",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "1d31365486f2ad2b234dc6e236af88548a175a01672f7ace1368c51118aaa743"
+      },
+      {
+        "design_id": "01a1cf78-3e09-7507-9cce-c6a7c27de20c",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cf78-7358-7e11-838b-bc96bfccf8ef",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ded0fb54a6c9fc277d3ba68716e07ff0eb88c956705963285e196022c9c4d824"
+      },
+      {
+        "design_id": "01a1cf78-a818-70aa-ad4a-19d4e86236af",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "7ed3e9abdf559508bf4254833cdc9dcd6437ad16d68e6a826dc7994a481c7d8d"
+      },
+      {
+        "design_id": "01a1cf83-e336-71d7-bfba-7753fc84f3f6",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68f23966db688b0f82476dd347185d1faea57986403d4cf33ca8c8def5a6c5c2"
+      },
+      {
+        "design_id": "01a1cf78-8448-7517-befb-e13b0feecdb3",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "6ea3b07d9e1867e4c5fb4b4a70847a069bf0f249eeb73bdd58e7a891582642db"
+      },
+      {
+        "design_id": "01a1cf78-8d3b-71f1-90d4-0053153ea79d",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "705b9d15703fc49ce6ca76e19a79630227a5b154408eda74a248aa720413b3d7"
+      },
+      {
+        "design_id": "01a1cf78-9f38-7d77-ac83-38d3810f0835",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cbcc762ee6b7cd3dd4f5516f187900fe81c9434431f51f313eadd76a02835df"
+      },
+      {
+        "design_id": "01a1cf78-9630-7149-937e-7c840f258ce2",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "58313b02b3deac881f4488dea9452f2cb9bbec30256b6816965cfd57d6a202bf"
+      },
+      {
+        "design_id": "01a1cf78-b8e8-7e85-b4de-8c9d8e520bb0",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "106fa6882d45aae42b386ca3df01a5fedadb5921fc164e5d7bac6f74aba349bf"
+      },
+      {
+        "design_id": "01a1cf78-e2c4-7139-8dae-744991c68f21",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ef14bcf4e0fd3db878c43954f69467e64b278fec56a49515f3c367bdba5bcd49"
+      },
+      {
+        "design_id": "01a1cf7c-56f0-79c9-a26d-9c2caf287e56",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cf8b-6467-74de-93ef-bc1c634f82ed",
+        "revision": 1,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1cfb1-4106-7c18-a7c0-8f60a4f69e18",
+        "revision": 2,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9574191e96d8fb9641cdb2a9f05ab7a6f7d25496f943a5c71ec853b1203fb041"
+      },
+      {
+        "design_id": "01a1cfb1-54ec-714c-bde3-58c0d1faa5b7",
+        "revision": 3,
+        "data_kind": "synthetic",
+        "source_snapshot_count": 0,
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "6866ed3a089bcd8383d06760bb40f72e717799cc67842aedce671b4c43ee54c2"
+      },
+      {
+        "design_id": "01a1d043-3d25-791f-a4fb-921f37348dd9",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "precipitation_daily",
+          "soil_bdod",
+          "soil_cec",
+          "soil_cfvo",
+          "soil_clay",
+          "soil_phh2o",
+          "soil_sand",
+          "soil_silt",
+          "soil_soc",
+          "soil_wv0010",
+          "soil_wv0033",
+          "soil_wv1500",
+          "solar_radiation_daily",
+          "temperature_maximum_daily",
+          "temperature_mean_daily",
+          "temperature_minimum_daily",
+          "vapour_pressure_daily",
+          "wind_speed_2m_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "precipitation_daily",
+          "soil_bdod",
+          "soil_cec",
+          "soil_cfvo",
+          "soil_clay",
+          "soil_phh2o",
+          "soil_sand",
+          "soil_silt",
+          "soil_soc",
+          "soil_wv0010",
+          "soil_wv0033",
+          "soil_wv1500",
+          "solar_radiation_daily",
+          "temperature_maximum_daily",
+          "temperature_mean_daily",
+          "temperature_minimum_daily",
+          "vapour_pressure_daily",
+          "wind_speed_2m_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3daeee8bba8fa16e7e073cd3a90994bc0d597f2abdb42e188f88803914690efe"
+      },
+      {
+        "design_id": "01a1d043-4015-7727-9540-90d75098ce14",
+        "revision": 2,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 1,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "df313301fd5bad06770df8ee3ee01d8b500050fa5a7af72dc9155505557dff16"
+      },
+      {
+        "design_id": "01a1d043-855b-7675-a4bc-11b64f7e7eb3",
+        "revision": 2,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 2,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f1b53e88335607816117117dfc85021e10f20740dbd9e511d4e9a895e60ac1a5"
+      },
+      {
+        "design_id": "01a1d04b-976c-7bc5-bae3-b369d8fbedf7",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "precipitation_daily",
+          "soil_bdod",
+          "soil_cec",
+          "soil_cfvo",
+          "soil_clay",
+          "soil_phh2o",
+          "soil_sand",
+          "soil_silt",
+          "soil_soc",
+          "soil_wv0010",
+          "soil_wv0033",
+          "soil_wv1500",
+          "solar_radiation_daily",
+          "temperature_maximum_daily",
+          "temperature_mean_daily",
+          "temperature_minimum_daily",
+          "vapour_pressure_daily",
+          "wind_speed_2m_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "precipitation_daily",
+          "soil_bdod",
+          "soil_cec",
+          "soil_cfvo",
+          "soil_clay",
+          "soil_phh2o",
+          "soil_sand",
+          "soil_silt",
+          "soil_soc",
+          "soil_wv0010",
+          "soil_wv0033",
+          "soil_wv1500",
+          "solar_radiation_daily",
+          "temperature_maximum_daily",
+          "temperature_mean_daily",
+          "temperature_minimum_daily",
+          "vapour_pressure_daily",
+          "wind_speed_2m_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3daeee8bba8fa16e7e073cd3a90994bc0d597f2abdb42e188f88803914690efe"
+      },
+      {
+        "design_id": "01a1d04b-9a1b-7d18-a04b-41728cc8da5b",
+        "revision": 2,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 1,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "df313301fd5bad06770df8ee3ee01d8b500050fa5a7af72dc9155505557dff16"
+      },
+      {
+        "design_id": "01a1d04b-deb7-7821-ae8c-3d1b442b90f3",
+        "revision": 2,
+        "data_kind": "user_supplied",
+        "source_snapshot_count": 2,
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f1b53e88335607816117117dfc85021e10f20740dbd9e511d4e9a895e60ac1a5"
+      },
+      {
+        "design_id": "01a1d07f-b868-732b-8349-c78ae8532029",
+        "revision": 1,
+        "data_kind": null,
+        "source_snapshot_count": 0,
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b33b25e4a38fa76d7d899aba2943df66b8c6f82f0065d2bc1039f455e54e56d7"
+      }
+    ],
+    "versions": [
+      {
+        "design_id": "01a1cb1b-e867-7365-891e-b70e6c421ee3",
+        "revision": 1,
+        "sha256": "60f9cb39ca83ea62a6e34ffd98c0a090fee0a9915845c786c0ca715705c083ab",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f4d059c3b5d3f56d9746b312658f3ac4f965287c5e9af2a6c708a9d3b7d30454"
+      },
+      {
+        "design_id": "01a1cb29-4c7f-77f7-9b16-088ab59c2b34",
+        "revision": 1,
+        "sha256": "60f9cb39ca83ea62a6e34ffd98c0a090fee0a9915845c786c0ca715705c083ab",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "f4d059c3b5d3f56d9746b312658f3ac4f965287c5e9af2a6c708a9d3b7d30454"
+      },
+      {
+        "design_id": "01a1cb29-6522-7745-b8ff-0e4836a4bc46",
+        "revision": 1,
+        "sha256": "e94b509c3a6437a228970c9cc0056347ea2db5c238276aa1dd1112d8a4dd88bb",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "4ec9a1f423dd944e723dfef2888038c8fa497a65eb94cb1cdab1adfa6dce6004"
+      },
+      {
+        "design_id": "01a1cb4d-5c84-7eaf-9f1a-5afb1c52957d",
+        "revision": 1,
+        "sha256": "e94b509c3a6437a228970c9cc0056347ea2db5c238276aa1dd1112d8a4dd88bb",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "4ec9a1f423dd944e723dfef2888038c8fa497a65eb94cb1cdab1adfa6dce6004"
+      },
+      {
+        "design_id": "01a1cb79-0882-7b4f-a55c-e4ec83d444a7",
+        "revision": 1,
+        "sha256": "7a20d35e2a7ed1691c96a8ee6ae784d4f31788b7e5a2744b6bfc9b3961cc0579",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "2caf654590071f39130ebb5a2c12a2c24c5f6f491e8f521aca703d68ff8006e5"
+      },
+      {
+        "design_id": "01a1cb79-28b7-7a7d-add2-71bab3eafb93",
+        "revision": 1,
+        "sha256": "d8328fd3a105ab0b3b51c83b63262bfc1769454e654d82371d503ded4fd79674",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "b5fef7e8f3251c116a428e031cddbd5c13b7cd910af24d7c0fe5002a9faa9cf8"
+      },
+      {
+        "design_id": "01a1cb7a-3c19-778f-9357-5df3f79575ce",
+        "revision": 1,
+        "sha256": "e584a48fd423ae334b4497567b5bb84bed48d5378dfbf9d3939d751ded69ebdb",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "leaf_area",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "a3da3f213d96947a96a1c692f70d792b85f69ca81d9f5e9d1f34e0ca5cb0aca7"
+      },
+      {
+        "design_id": "01a1cbab-a2c8-7749-87a3-063431ce94ff",
+        "revision": 1,
+        "sha256": "2adb015f68c536a8fd4e2df413a33cda0b0e8cbf51f70eef4028fda4470c213b",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "de3330815e244301d1b05f569cf0ebb4b1b35945b2c377ba5cba1a137c71d03a"
+      },
+      {
+        "design_id": "01a1cbab-c39d-775e-923e-967c8a4b3c30",
+        "revision": 1,
+        "sha256": "f2c49b4f668a3ed4d6972948b39a20cd45b52386020ef13b820636a7f7f6d392",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "e00658cbbb04af720ff086b310f7e12d31d67a62651acdf84c8b4f9abc3f20e3"
+      },
+      {
+        "design_id": "01a1cbb1-bf03-7794-9c3d-092b8e8271a9",
+        "revision": 1,
+        "sha256": "2adb015f68c536a8fd4e2df413a33cda0b0e8cbf51f70eef4028fda4470c213b",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "de3330815e244301d1b05f569cf0ebb4b1b35945b2c377ba5cba1a137c71d03a"
+      },
+      {
+        "design_id": "01a1cbb1-dfb7-706a-a892-e671893342f1",
+        "revision": 1,
+        "sha256": "f2c49b4f668a3ed4d6972948b39a20cd45b52386020ef13b820636a7f7f6d392",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "e00658cbbb04af720ff086b310f7e12d31d67a62651acdf84c8b4f9abc3f20e3"
+      },
+      {
+        "design_id": "01a1ce26-845f-71c1-a7a8-5e5ba9359766",
+        "revision": 1,
+        "sha256": "da18ee5b39d60bef775b4f45100d0293f437d7dc6e6b10734a79e0f2878628d8",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a486b865e0dd9a46252db84835a6ff9bfe835a3a06449d4a8e0a86bf3928e79e"
+      },
+      {
+        "design_id": "01a1ce26-8e45-7b62-8b8f-61e31d6b62f9",
+        "revision": 1,
+        "sha256": "2adb015f68c536a8fd4e2df413a33cda0b0e8cbf51f70eef4028fda4470c213b",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "de3330815e244301d1b05f569cf0ebb4b1b35945b2c377ba5cba1a137c71d03a"
+      },
+      {
+        "design_id": "01a1ce26-a76a-7b07-9177-e662cb313291",
+        "revision": 1,
+        "sha256": "f2c49b4f668a3ed4d6972948b39a20cd45b52386020ef13b820636a7f7f6d392",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "e00658cbbb04af720ff086b310f7e12d31d67a62651acdf84c8b4f9abc3f20e3"
+      },
+      {
+        "design_id": "01a1ce26-d116-79dc-98c8-9984db711d17",
+        "revision": 1,
+        "sha256": "18390d7d87b0425aa2eeab5e044e90c5791e76051c376bc35a049d28164157ab",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "7fb4c03e0675495c1872ab5130c1a71d8c0dd19fb10f447c5f845f0002ad47d4"
+      },
+      {
+        "design_id": "01a1ce84-bc8a-734e-a3f6-e1875d7700ac",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1ce87-c70c-7846-a34a-1798377e7ecc",
+        "revision": 1,
+        "sha256": "cdbe6cd8c9bd70504ebf5bcbf64747ebdb9e5b81d090e2c29c7d08faa9c44caa",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a486b865e0dd9a46252db84835a6ff9bfe835a3a06449d4a8e0a86bf3928e79e"
+      },
+      {
+        "design_id": "01a1ce8a-2f59-78bb-8064-d15f290de62c",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1ce94-27d7-7f13-b769-9b8ab0713280",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1cee5-6501-7ac1-a227-3f49024492b6",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cee5-7785-7141-a66b-bb7f4bbeb960",
+        "revision": 1,
+        "sha256": "bb8dff7c83628717a81ebc1ee62042dfbd21b600c1b189f79e1ec0182d716d3c",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68027272acea260e3db124030252ff9b06aaf5a6436f9aacd327e95097e8f879"
+      },
+      {
+        "design_id": "01a1cee5-8877-7a7e-9b69-75f239d06c65",
+        "revision": 1,
+        "sha256": "975c18a5359cab107b0e4495fcc4be33ca92ec18e84486a43faca9f050e71a3c",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "de3330815e244301d1b05f569cf0ebb4b1b35945b2c377ba5cba1a137c71d03a"
+      },
+      {
+        "design_id": "01a1cee5-9a10-72d7-8e8e-fde777ccb95d",
+        "revision": 1,
+        "sha256": "9abdd5f9c4d753f8ddafa5cad2d756c652d8f841e24a7f8ac403d33050d70535",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "e00658cbbb04af720ff086b310f7e12d31d67a62651acdf84c8b4f9abc3f20e3"
+      },
+      {
+        "design_id": "01a1cee5-bb51-7dea-a3a9-55b46e45c0a5",
+        "revision": 1,
+        "sha256": "8d17fb2f81ace356368872cc7b8802e976f5fdb2ba9cf0a06d1c5b28d3def08a",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a486b865e0dd9a46252db84835a6ff9bfe835a3a06449d4a8e0a86bf3928e79e"
+      },
+      {
+        "design_id": "01a1cee5-ccca-78e9-a7d1-e094e080479a",
+        "revision": 1,
+        "sha256": "1b25eab2a7d334c230b8cd51aec0206796fa3d15a851a4a8d447a389efc40791",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "1680a8ba32b07c0d8a5fac1aca712e5506c9fd3fdea5261b39e127117d125b13"
+      },
+      {
+        "design_id": "01a1cee5-dd72-70d3-bfae-ab38a65cedae",
+        "revision": 1,
+        "sha256": "ca6a00ccb59c28f2b7af0d552421b8c6f0dba471c355b7e57993fba775a7d3ea",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "fcba469ca353bbe6b2e03b49798a5c1fa4ffdaec33f3a88e03779d29ba554388"
+      },
+      {
+        "design_id": "01a1cee5-eecd-761b-91f2-944b1d223610",
+        "revision": 1,
+        "sha256": "e774ba397b15a9a2998fb648cd065b0c7a0035f24be12267ff7a901fc292bb81",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c5f37975d9d9743886dd7a60691709f7311fa93f69d345127cfea1f723defdf0"
+      },
+      {
+        "design_id": "01a1cee5-ff70-777e-9b9e-18b8187e1788",
+        "revision": 1,
+        "sha256": "43e6d9562622631f514ae72150c30dd1b73029ed7c21ef1666117d65b5394872",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e3837c5369a9fb814755f5ce474e92c1af1e74889f1fd9177acb30b56ebaff99"
+      },
+      {
+        "design_id": "01a1cee6-0fdd-7c1d-ac4c-4588b1851cc2",
+        "revision": 1,
+        "sha256": "8d31b276cdafb91e40bc3f745e323aa307a89e2d52861ebe6d7c4af28da84add",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "449da2f95ecc492306712918c67564bec35bafae2c3c1a498778016520eaba78"
+      },
+      {
+        "design_id": "01a1cee7-db4f-75dc-97e2-09198d271b45",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cef5-c1f3-7986-8fde-ea30fe079809",
+        "revision": 1,
+        "sha256": "4926f150095022befadaae919414500906b8cfb517c45ba5425145da44be36ed",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "8d1bca1d6ad012a29e48a2d848b9a3fb817691577504d70acb9b46bbf5149e75"
+      },
+      {
+        "design_id": "01a1cef5-cb96-7db1-82c1-d072c94e0109",
+        "revision": 1,
+        "sha256": "bb8dff7c83628717a81ebc1ee62042dfbd21b600c1b189f79e1ec0182d716d3c",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "68027272acea260e3db124030252ff9b06aaf5a6436f9aacd327e95097e8f879"
+      },
+      {
+        "design_id": "01a1cef5-dc81-7714-bd9d-81b988cbdd58",
+        "revision": 1,
+        "sha256": "975c18a5359cab107b0e4495fcc4be33ca92ec18e84486a43faca9f050e71a3c",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "de3330815e244301d1b05f569cf0ebb4b1b35945b2c377ba5cba1a137c71d03a"
+      },
+      {
+        "design_id": "01a1cef5-eebb-74b0-8004-727b21bd4d10",
+        "revision": 1,
+        "sha256": "4926f150095022befadaae919414500906b8cfb517c45ba5425145da44be36ed",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "8d1bca1d6ad012a29e48a2d848b9a3fb817691577504d70acb9b46bbf5149e75"
+      },
+      {
+        "design_id": "01a1cef5-fdf8-7ae2-befe-bf9d42826e33",
+        "revision": 1,
+        "sha256": "9abdd5f9c4d753f8ddafa5cad2d756c652d8f841e24a7f8ac403d33050d70535",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "e00658cbbb04af720ff086b310f7e12d31d67a62651acdf84c8b4f9abc3f20e3"
+      },
+      {
+        "design_id": "01a1cef6-1f3f-7ba8-b21e-ad06db216708",
+        "revision": 1,
+        "sha256": "8d17fb2f81ace356368872cc7b8802e976f5fdb2ba9cf0a06d1c5b28d3def08a",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a486b865e0dd9a46252db84835a6ff9bfe835a3a06449d4a8e0a86bf3928e79e"
+      },
+      {
+        "design_id": "01a1cef6-2fd9-7d81-a1a7-e5ed1d9b61d1",
+        "revision": 1,
+        "sha256": "e6574114988285a326024a6721d97a113e6f97f0400a58ef9311c7e5efe86a56",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "62e736f40e1d2baac0e8f72e9e362666aa0a465dd75701bb64bdeec192d1277f"
+      },
+      {
+        "design_id": "01a1cef6-4852-7cda-8bc5-fb0b171629e3",
+        "revision": 1,
+        "sha256": "2df24394030f32345db605b7145815c6bfc5c1edf97486526a81782d5d913850",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "5495c6043cc16d8616e68e61b70018509edef3db25d2f55c8e5fd8456e630352"
+      },
+      {
+        "design_id": "01a1cef6-8224-7768-8a85-b983e0cc15bc",
+        "revision": 1,
+        "sha256": "75f8106097be31312ef7187caa552b704322cae8db4d42619571f90f947fc022",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "32ce10da8ddd32e4004ffad4971ef9f14913128ad024e516ffb0582e8ca2b880"
+      },
+      {
+        "design_id": "01a1cef6-92cc-7dbc-9569-b942c193ea12",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cef6-f6a0-7eb7-b29d-81a5bf34390b",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1cef6-58f7-7f74-9547-e6bc841e78ce",
+        "revision": 1,
+        "sha256": "4a74060e956bed9412c622c62345b547c4223e81a8b3a3bb3a53044e30e03757",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "29fc59f023af1e13d79edaa72dd429ee1052eb50555761792c9d025c48af0f38"
+      },
+      {
+        "design_id": "01a1cef6-6980-758e-afaf-2e8cba6a52e6",
+        "revision": 1,
+        "sha256": "7d9703ab5bea02d2b6d12cc06056aef708caac82f7dbcbdc8277e4d5491417a6",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "fe5c87b48183fa9e7408787a71a8555f784e3962f9ee560ca9fc3dd14ffeafad"
+      },
+      {
+        "design_id": "01a1cf34-2e4e-7137-8389-c7badaf8cb94",
+        "revision": 1,
+        "sha256": "81393a75ca4576124751c54bbee446fa62fa1246faaf024364beb28d2a1ee85c",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c450d20355907357595896e407ddf32ca06fe9dfc81d5b35202b6a7b3a4557be"
+      },
+      {
+        "design_id": "01a1cf34-4f8a-7146-af17-3691ca57c74a",
+        "revision": 1,
+        "sha256": "e8e2448352d3d44cf03efb8c29174c42d1b7efd0e60aef4378e996cd745333f7",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "ad56fa8509d0b17bad32b840eaef317c520646cb8d7d53064a3cf45bf304da50"
+      },
+      {
+        "design_id": "01a1cf34-5c10-746c-9ba0-b9e555af5707",
+        "revision": 1,
+        "sha256": "0449e3708869756cfb3698a9eb65c72b9f9a6ae1880db6b4bb4da1da691a62de",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf34-7092-7f11-b9d5-3e86f8e77afd",
+        "revision": 1,
+        "sha256": "946ef5f7ccf13fca53aeec7efc780734855049e38e9a67f625b36b745722b090",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81ecf67ebbd43825def92985661e177ee3bf42d1a6dd734209cb2cbe68039b2c"
+      },
+      {
+        "design_id": "01a1cf34-7962-78ce-a7ce-6fb987025b25",
+        "revision": 1,
+        "sha256": "a9df1caa953be82d9009dc01a6084bd9eb0370f639c6f6f40c9c3d66705a0f81",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "67308a586c3163ab3385b20cd4b9cee55b558b5a609814c667e7b120b00350ab"
+      },
+      {
+        "design_id": "01a1cf34-8a46-763b-9db3-c7a8cde2cb83",
+        "revision": 1,
+        "sha256": "672153f73483171e209273e9c8831c4f9f539e1cb7f4295497369c4fb1a3e433",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a91db1082930a320469c7c97b3fcaa7d5a42dd3b483cb6a8bd79ad7d1a0a4a11"
+      },
+      {
+        "design_id": "01a1cf34-a2d4-74a3-8846-e9297690a6c0",
+        "revision": 1,
+        "sha256": "bc790b61905ba45e8adb69e9e98d67055a12820c789eed8ae4d1eb23386d8852",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a3e82bfd364d10bee089dfa453d9463c3d284e6ab7086be6e6d08047d64d2f78"
+      },
+      {
+        "design_id": "01a1cf34-bb5a-779c-8752-f3712ce76d9f",
+        "revision": 1,
+        "sha256": "c6260a81b294b2c46c3a644c0e4a2a982b03bcd92cc8d351e328cae634bac1d4",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "2b160425bbd39707692ff6e398fffe8fed515d3098227e8c3a7ee80b3a69d292"
+      },
+      {
+        "design_id": "01a1cf34-e8ce-7f33-b1c1-58123d52f8e5",
+        "revision": 1,
+        "sha256": "16c23b5e651b40000026fa362b2b5ab1bd9615199d7aa4a7e04d1011fef76135",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "628633b63a83e6ca796e1038d9be0b2059d905433eca9012c08ec1ffaa45f79d"
+      },
+      {
+        "design_id": "01a1cf34-fa7f-7cfe-b907-5973d737f709",
+        "revision": 1,
+        "sha256": "454c3a5472fb9f14c1e7e51c1c5bd88214412dab60457387861e5085cc3e5917",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cd04d5284163565fc89bdfab33bca6d3f4ed7be7959b2040a78553680a8ba70"
+      },
+      {
+        "design_id": "01a1cf35-0b6a-7f89-be9b-afd3ca686214",
+        "revision": 1,
+        "sha256": "3e534e684a2efdb05d8d5dc506631a2add5644f3bfdb1eef58cf8594dd07ef5b",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f8940f9d4026f26aad9c500447f982a2f70dab7e532a0ec180d8b1d50681b2cb"
+      },
+      {
+        "design_id": "01a1cf35-1463-7e01-8800-f9282cc3e039",
+        "revision": 1,
+        "sha256": "232ef456db541c12a26e2817be42fdca1012e9a846e1dafd32745f74ea4fe6c7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "269db51f9f336c5b5e08129150b8427943aa46d4555ae4208e80f533f0d9c36d"
+      },
+      {
+        "design_id": "01a1cf34-d3f8-7236-a727-a519e4ff34b2",
+        "revision": 1,
+        "sha256": "cc8a34494508280e9fa679208edb766b7f95c9d630a96a9d1cb17241a1eaf79d",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ee4fc0330a989fa337f37c8b65dee428f6fe1c26692ad5fe9eee34afc0e15403"
+      },
+      {
+        "design_id": "01a1cf34-dfa1-720b-a488-9fe028ddd592",
+        "revision": 1,
+        "sha256": "70003fb17301525bf1ab4566c29fc4e69a50379c3e7be79bcb75259fe8233044",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b535a45f14289e1e76b5f5da98a33d3d7aa38688a902eb2e6cb763351828eb12"
+      },
+      {
+        "design_id": "01a1cf35-1d37-703b-9d5f-6f3a7a8b3f97",
+        "revision": 1,
+        "sha256": "4dd09d68f2b67be11ff8e518493fe7ebaff697474ef90d8835f3162700669f11",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e94cb28de4cd3ef61ebe066c19d02ba9830ef9a3b8abbda8d5c0d930ff2b48e0"
+      },
+      {
+        "design_id": "01a1cf35-262e-7296-a016-80084791a3ea",
+        "revision": 1,
+        "sha256": "9c7b94878c9cd5c8eaea5909b9c4f5fac744dc65c40186220835c89fa6877895",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "280f4d67720eb89382b078a0455f9d310541e29de15130206bc5187ca515550c"
+      },
+      {
+        "design_id": "01a1cf35-2f02-7ac1-860c-9a4616096a18",
+        "revision": 1,
+        "sha256": "19b2ee649f9e789b26ffd0182993441b73579aa1c15e329f8d600a588392bfe7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e63d04eed9e9dbc3dd973a796d0ab74c7ecd6f97457bc08aa8e08e6a290ea6ac"
+      },
+      {
+        "design_id": "01a1cf35-37b2-77a3-9e75-a84fc3de85ec",
+        "revision": 1,
+        "sha256": "b4815598bdc47bccdc8f8aae0a902b6b1075e73d39c0081945785b9c2023eff6",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d70613604a783924fe23bc432bbbff4c906f8fb21c6c6a27b468ceeb2b12a70c"
+      },
+      {
+        "design_id": "01a1cf35-4854-7a92-a4f0-e667dad90792",
+        "revision": 1,
+        "sha256": "9a239590275cd35b091d70d791ef2a2211ab017c9fc46de0389c88ab1f33d5ae",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d09f3650bfda49c6d84fd6ab2a1634dfb0f3ca8872406f8686c783a72f1a7f6b"
+      },
+      {
+        "design_id": "01a1cf34-d3f8-7236-a727-a519e4ff34b2",
+        "revision": 2,
+        "sha256": "b49c640c13e9d36611b511ec859f52aabf91e0c4859a621761bed85f83eb0cf9",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf35-262e-7296-a016-80084791a3ea",
+        "revision": 2,
+        "sha256": "45af131c3de8e10b68fa8b66148596473ea799db8a9d5af19666f34287ca36a3",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "76ae31d925af857a917c146f3c228f7f91b66e36e254542c01a84e4c0015682c"
+      },
+      {
+        "design_id": "01a1cf35-830d-7fc9-8251-22d3077cfdf1",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cf36-9f75-7924-9a0f-a6f513a0be46",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1cf70-a1bd-79f2-8e9f-d88d7db6e644",
+        "revision": 1,
+        "sha256": "81393a75ca4576124751c54bbee446fa62fa1246faaf024364beb28d2a1ee85c",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c450d20355907357595896e407ddf32ca06fe9dfc81d5b35202b6a7b3a4557be"
+      },
+      {
+        "design_id": "01a1cf70-b377-7e4a-9559-4e12771e4d49",
+        "revision": 1,
+        "sha256": "e8e2448352d3d44cf03efb8c29174c42d1b7efd0e60aef4378e996cd745333f7",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "ad56fa8509d0b17bad32b840eaef317c520646cb8d7d53064a3cf45bf304da50"
+      },
+      {
+        "design_id": "01a1cf70-dcd3-728c-8ce4-0c946a2a1ed5",
+        "revision": 1,
+        "sha256": "946ef5f7ccf13fca53aeec7efc780734855049e38e9a67f625b36b745722b090",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81ecf67ebbd43825def92985661e177ee3bf42d1a6dd734209cb2cbe68039b2c"
+      },
+      {
+        "design_id": "01a1cf70-edeb-768c-af2a-2df8c5dfedcd",
+        "revision": 1,
+        "sha256": "a9df1caa953be82d9009dc01a6084bd9eb0370f639c6f6f40c9c3d66705a0f81",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "67308a586c3163ab3385b20cd4b9cee55b558b5a609814c667e7b120b00350ab"
+      },
+      {
+        "design_id": "01a1cf70-fed6-72ad-b665-1cfcc6c4aebd",
+        "revision": 1,
+        "sha256": "672153f73483171e209273e9c8831c4f9f539e1cb7f4295497369c4fb1a3e433",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a91db1082930a320469c7c97b3fcaa7d5a42dd3b483cb6a8bd79ad7d1a0a4a11"
+      },
+      {
+        "design_id": "01a1cf71-3924-7082-bf7c-fe4cd6b7e08d",
+        "revision": 1,
+        "sha256": "cc8a34494508280e9fa679208edb766b7f95c9d630a96a9d1cb17241a1eaf79d",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ee4fc0330a989fa337f37c8b65dee428f6fe1c26692ad5fe9eee34afc0e15403"
+      },
+      {
+        "design_id": "01a1cf71-4a43-79c5-8bf6-e48d6dec0578",
+        "revision": 1,
+        "sha256": "70003fb17301525bf1ab4566c29fc4e69a50379c3e7be79bcb75259fe8233044",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b535a45f14289e1e76b5f5da98a33d3d7aa38688a902eb2e6cb763351828eb12"
+      },
+      {
+        "design_id": "01a1cf71-5bbd-718a-996d-069bcac6b038",
+        "revision": 1,
+        "sha256": "16c23b5e651b40000026fa362b2b5ab1bd9615199d7aa4a7e04d1011fef76135",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "628633b63a83e6ca796e1038d9be0b2059d905433eca9012c08ec1ffaa45f79d"
+      },
+      {
+        "design_id": "01a1cf71-6cd1-7bd6-afce-30d55c76dd72",
+        "revision": 1,
+        "sha256": "454c3a5472fb9f14c1e7e51c1c5bd88214412dab60457387861e5085cc3e5917",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cd04d5284163565fc89bdfab33bca6d3f4ed7be7959b2040a78553680a8ba70"
+      },
+      {
+        "design_id": "01a1cf71-0fa8-7bda-ac18-a7ea4520b548",
+        "revision": 1,
+        "sha256": "bc790b61905ba45e8adb69e9e98d67055a12820c789eed8ae4d1eb23386d8852",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a3e82bfd364d10bee089dfa453d9463c3d284e6ab7086be6e6d08047d64d2f78"
+      },
+      {
+        "design_id": "01a1cf71-288c-7c85-a2ce-d68bb182b301",
+        "revision": 1,
+        "sha256": "c6260a81b294b2c46c3a644c0e4a2a982b03bcd92cc8d351e328cae634bac1d4",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "2b160425bbd39707692ff6e398fffe8fed515d3098227e8c3a7ee80b3a69d292"
+      },
+      {
+        "design_id": "01a1cf71-75dc-739d-a7ca-326a9dd957b2",
+        "revision": 1,
+        "sha256": "3e534e684a2efdb05d8d5dc506631a2add5644f3bfdb1eef58cf8594dd07ef5b",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f8940f9d4026f26aad9c500447f982a2f70dab7e532a0ec180d8b1d50681b2cb"
+      },
+      {
+        "design_id": "01a1cf71-87cd-7c54-b6f1-32a97a7b03c9",
+        "revision": 1,
+        "sha256": "4dd09d68f2b67be11ff8e518493fe7ebaff697474ef90d8835f3162700669f11",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e94cb28de4cd3ef61ebe066c19d02ba9830ef9a3b8abbda8d5c0d930ff2b48e0"
+      },
+      {
+        "design_id": "01a1cf71-886d-7142-bd35-18de952625bb",
+        "revision": 1,
+        "sha256": "0449e3708869756cfb3698a9eb65c72b9f9a6ae1880db6b4bb4da1da691a62de",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf71-7f07-7c79-b21e-10a4e7db40a7",
+        "revision": 1,
+        "sha256": "232ef456db541c12a26e2817be42fdca1012e9a846e1dafd32745f74ea4fe6c7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "269db51f9f336c5b5e08129150b8427943aa46d4555ae4208e80f533f0d9c36d"
+      },
+      {
+        "design_id": "01a1cf71-8a9a-70d3-ac66-3474b7275ccc",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1cf71-90cd-7cfb-ae36-0f8443b96c8d",
+        "revision": 1,
+        "sha256": "9c7b94878c9cd5c8eaea5909b9c4f5fac744dc65c40186220835c89fa6877895",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "280f4d67720eb89382b078a0455f9d310541e29de15130206bc5187ca515550c"
+      },
+      {
+        "design_id": "01a1cf71-3924-7082-bf7c-fe4cd6b7e08d",
+        "revision": 2,
+        "sha256": "b49c640c13e9d36611b511ec859f52aabf91e0c4859a621761bed85f83eb0cf9",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf71-a1b1-7db3-abdc-f6f55f67f624",
+        "revision": 1,
+        "sha256": "19b2ee649f9e789b26ffd0182993441b73579aa1c15e329f8d600a588392bfe7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e63d04eed9e9dbc3dd973a796d0ab74c7ecd6f97457bc08aa8e08e6a290ea6ac"
+      },
+      {
+        "design_id": "01a1cf71-b273-77bb-bef2-e285053a7928",
+        "revision": 1,
+        "sha256": "b4815598bdc47bccdc8f8aae0a902b6b1075e73d39c0081945785b9c2023eff6",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d70613604a783924fe23bc432bbbff4c906f8fb21c6c6a27b468ceeb2b12a70c"
+      },
+      {
+        "design_id": "01a1cf71-c340-72d0-bcf4-68a73a066780",
+        "revision": 1,
+        "sha256": "9a239590275cd35b091d70d791ef2a2211ab017c9fc46de0389c88ab1f33d5ae",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d09f3650bfda49c6d84fd6ab2a1634dfb0f3ca8872406f8686c783a72f1a7f6b"
+      },
+      {
+        "design_id": "01a1cf71-90cd-7cfb-ae36-0f8443b96c8d",
+        "revision": 2,
+        "sha256": "45af131c3de8e10b68fa8b66148596473ea799db8a9d5af19666f34287ca36a3",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "76ae31d925af857a917c146f3c228f7f91b66e36e254542c01a84e4c0015682c"
+      },
+      {
+        "design_id": "01a1cf71-fcdd-7783-b8b8-37cb85a75e8f",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cf77-93d9-75db-982a-ac5cdc35f129",
+        "revision": 1,
+        "sha256": "81393a75ca4576124751c54bbee446fa62fa1246faaf024364beb28d2a1ee85c",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c450d20355907357595896e407ddf32ca06fe9dfc81d5b35202b6a7b3a4557be"
+      },
+      {
+        "design_id": "01a1cf77-995c-7d11-98e0-5bce8fc74a59",
+        "revision": 1,
+        "sha256": "0449e3708869756cfb3698a9eb65c72b9f9a6ae1880db6b4bb4da1da691a62de",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf77-9bd7-7d06-a101-5b05230faabc",
+        "revision": 1,
+        "sha256": "2d79ca6fd2d3ddc352606923f2389f5f27c7b6cce794a85a01dfba9e7911aa8e",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "3849d6ffd883d6e6ee5e1c5e2e28c3b5ae34b9342875cb656c394289847b56e0"
+      },
+      {
+        "design_id": "01a1cf77-b680-7709-96e0-401238bdf406",
+        "revision": 1,
+        "sha256": "e8e2448352d3d44cf03efb8c29174c42d1b7efd0e60aef4378e996cd745333f7",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "ad56fa8509d0b17bad32b840eaef317c520646cb8d7d53064a3cf45bf304da50"
+      },
+      {
+        "design_id": "01a1cf77-d7eb-7521-b021-bc94044b0e99",
+        "revision": 1,
+        "sha256": "946ef5f7ccf13fca53aeec7efc780734855049e38e9a67f625b36b745722b090",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.5",
+        "artifact_ports": [],
+        "external_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "bound_codes": [
+          "agb_kg_ha",
+          "canopy_cover",
+          "lai",
+          "tuber_dm_kg_ha"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "81ecf67ebbd43825def92985661e177ee3bf42d1a6dd734209cb2cbe68039b2c"
+      },
+      {
+        "design_id": "01a1cf77-e106-736a-a5b0-2e3639cac9c7",
+        "revision": 1,
+        "sha256": "a9df1caa953be82d9009dc01a6084bd9eb0370f639c6f6f40c9c3d66705a0f81",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "node_1_request",
+          "node_2_request",
+          "node_3_request"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "67308a586c3163ab3385b20cd4b9cee55b558b5a609814c667e7b120b00350ab"
+      },
+      {
+        "design_id": "01a1cf77-f1e4-729d-b49d-76949df8b651",
+        "revision": 1,
+        "sha256": "672153f73483171e209273e9c8831c4f9f539e1cb7f4295497369c4fb1a3e433",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a91db1082930a320469c7c97b3fcaa7d5a42dd3b483cb6a8bd79ad7d1a0a4a11"
+      },
+      {
+        "design_id": "01a1cf78-0aad-7f21-85fd-ab7d0b9cc1b5",
+        "revision": 1,
+        "sha256": "bc790b61905ba45e8adb69e9e98d67055a12820c789eed8ae4d1eb23386d8852",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "a3e82bfd364d10bee089dfa453d9463c3d284e6ab7086be6e6d08047d64d2f78"
+      },
+      {
+        "design_id": "01a1cf78-2369-7229-a2e1-6e6fa2976892",
+        "revision": 1,
+        "sha256": "c6260a81b294b2c46c3a644c0e4a2a982b03bcd92cc8d351e328cae634bac1d4",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "2b160425bbd39707692ff6e398fffe8fed515d3098227e8c3a7ee80b3a69d292"
+      },
+      {
+        "design_id": "01a1cf78-3e09-7507-9cce-c6a7c27de20c",
+        "revision": 1,
+        "sha256": "cc8a34494508280e9fa679208edb766b7f95c9d630a96a9d1cb17241a1eaf79d",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "ee4fc0330a989fa337f37c8b65dee428f6fe1c26692ad5fe9eee34afc0e15403"
+      },
+      {
+        "design_id": "01a1cf78-4761-7c4b-bc33-784ac5cb2047",
+        "revision": 1,
+        "sha256": "70003fb17301525bf1ab4566c29fc4e69a50379c3e7be79bcb75259fe8233044",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "b535a45f14289e1e76b5f5da98a33d3d7aa38688a902eb2e6cb763351828eb12"
+      },
+      {
+        "design_id": "01a1cf78-623a-7c83-b5fb-7acbc0ff677a",
+        "revision": 1,
+        "sha256": "454c3a5472fb9f14c1e7e51c1c5bd88214412dab60457387861e5085cc3e5917",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "9cd04d5284163565fc89bdfab33bca6d3f4ed7be7959b2040a78553680a8ba70"
+      },
+      {
+        "design_id": "01a1cf78-50dd-785a-b0ac-c557b55872cb",
+        "revision": 1,
+        "sha256": "16c23b5e651b40000026fa362b2b5ab1bd9615199d7aa4a7e04d1011fef76135",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "628633b63a83e6ca796e1038d9be0b2059d905433eca9012c08ec1ffaa45f79d"
+      },
+      {
+        "design_id": "01a1cf78-b8e8-7e85-b4de-8c9d8e520bb0",
+        "revision": 1,
+        "sha256": "9a239590275cd35b091d70d791ef2a2211ab017c9fc46de0389c88ab1f33d5ae",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d09f3650bfda49c6d84fd6ab2a1634dfb0f3ca8872406f8686c783a72f1a7f6b"
+      },
+      {
+        "design_id": "01a1cf78-3e09-7507-9cce-c6a7c27de20c",
+        "revision": 2,
+        "sha256": "b49c640c13e9d36611b511ec859f52aabf91e0c4859a621761bed85f83eb0cf9",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cf78-e2c4-7139-8dae-744991c68f21",
+        "revision": 1,
+        "sha256": "0317c407710973e3202a87153aeb804d232d4151bf9abb9d737f4025186085fe",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "snapshot",
+          "evidence"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "33348ed29f375defbc4b58bc8232908c19cab7ff637cc2df22d979b842901c7c"
+      },
+      {
+        "design_id": "01a1cf78-7358-7e11-838b-bc96bfccf8ef",
+        "revision": 1,
+        "sha256": "3e534e684a2efdb05d8d5dc506631a2add5644f3bfdb1eef58cf8594dd07ef5b",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "f8940f9d4026f26aad9c500447f982a2f70dab7e532a0ec180d8b1d50681b2cb"
+      },
+      {
+        "design_id": "01a1cf78-a818-70aa-ad4a-19d4e86236af",
+        "revision": 1,
+        "sha256": "b4815598bdc47bccdc8f8aae0a902b6b1075e73d39c0081945785b9c2023eff6",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "request",
+          "dataset"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "d70613604a783924fe23bc432bbbff4c906f8fb21c6c6a27b468ceeb2b12a70c"
+      },
+      {
+        "design_id": "01a1cf78-8448-7517-befb-e13b0feecdb3",
+        "revision": 1,
+        "sha256": "232ef456db541c12a26e2817be42fdca1012e9a846e1dafd32745f74ea4fe6c7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "269db51f9f336c5b5e08129150b8427943aa46d4555ae4208e80f533f0d9c36d"
+      },
+      {
+        "design_id": "01a1cf78-8d3b-71f1-90d4-0053153ea79d",
+        "revision": 1,
+        "sha256": "4dd09d68f2b67be11ff8e518493fe7ebaff697474ef90d8835f3162700669f11",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e94cb28de4cd3ef61ebe066c19d02ba9830ef9a3b8abbda8d5c0d930ff2b48e0"
+      },
+      {
+        "design_id": "01a1cf78-9630-7149-937e-7c840f258ce2",
+        "revision": 1,
+        "sha256": "9c7b94878c9cd5c8eaea5909b9c4f5fac744dc65c40186220835c89fa6877895",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "280f4d67720eb89382b078a0455f9d310541e29de15130206bc5187ca515550c"
+      },
+      {
+        "design_id": "01a1cf78-9f38-7d77-ac83-38d3810f0835",
+        "revision": 1,
+        "sha256": "19b2ee649f9e789b26ffd0182993441b73579aa1c15e329f8d600a588392bfe7",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "e63d04eed9e9dbc3dd973a796d0ab74c7ecd6f97457bc08aa8e08e6a290ea6ac"
+      },
+      {
+        "design_id": "01a1cf78-9630-7149-937e-7c840f258ce2",
+        "revision": 2,
+        "sha256": "45af131c3de8e10b68fa8b66148596473ea799db8a9d5af19666f34287ca36a3",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "series"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "76ae31d925af857a917c146f3c228f7f91b66e36e254542c01a84e4c0015682c"
+      },
+      {
+        "design_id": "01a1cfb1-4106-7c18-a7c0-8f60a4f69e18",
+        "revision": 1,
+        "sha256": "0449e3708869756cfb3698a9eb65c72b9f9a6ae1880db6b4bb4da1da691a62de",
+        "category": "artifact_dataset",
+        "schema_version": "1.5",
+        "artifact_ports": [
+          "weather"
+        ],
+        "external_codes": [],
+        "bound_codes": [],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "c3f34577680f6d676a0e4c6eaef2469d8997f95b7920ea5994e0f50c9b0088ac"
+      },
+      {
+        "design_id": "01a1cfb1-54ec-714c-bde3-58c0d1faa5b7",
+        "revision": 1,
+        "sha256": "e8e2448352d3d44cf03efb8c29174c42d1b7efd0e60aef4378e996cd745333f7",
+        "category": "unbound_observations",
+        "schema_version": "1.1",
+        "artifact_ports": [],
+        "external_codes": [
+          "day",
+          "height",
+          "ndvi",
+          "soil_water",
+          "temperature"
+        ],
+        "bound_codes": [],
+        "catalog_binding_check": "rejected",
+        "binding_issue": "Select external inputs from the system input catalog",
+        "scientific_group_sha256": "ad56fa8509d0b17bad32b840eaef317c520646cb8d7d53064a3cf45bf304da50"
+      },
+      {
+        "design_id": "01a1d043-855b-7675-a4bc-11b64f7e7eb3",
+        "revision": 1,
+        "sha256": "b4c3162d60fffc15b0380a5b1eaa000bbb59c8a0d7df5555ada417c1f664850a",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "46c4af4de081476b989bb5c2c610a70cad508eb7a87ee02c385d990fd74edbbf"
+      },
+      {
+        "design_id": "01a1d04b-deb7-7821-ae8c-3d1b442b90f3",
+        "revision": 1,
+        "sha256": "b4c3162d60fffc15b0380a5b1eaa000bbb59c8a0d7df5555ada417c1f664850a",
+        "category": "catalog_bound_observations",
+        "schema_version": "1.4",
+        "artifact_ports": [],
+        "external_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "bound_codes": [
+          "lai",
+          "solar_radiation_daily",
+          "temperature_mean_daily"
+        ],
+        "catalog_binding_check": "passed",
+        "scientific_group_sha256": "46c4af4de081476b989bb5c2c610a70cad508eb7a87ee02c385d990fd74edbbf"
+      }
+    ]
+  },
+  "archived_configurations": [
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "survey-658b",
+      "revision": 1,
+      "sha256": "16a23a33dedd6e1532a553eb1fb6aac6140d743bb52e5c3c44cd72a28bf02242",
+      "artifact_ports": [
+        "snapshot",
+        "evidence"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-water-balance",
+      "revision": 1,
+      "sha256": "47f7f9fc17b104fb532153a03a615c562f130df90e3ba39c47837bc672aec054",
+      "artifact_ports": [
+        "node_1_request",
+        "node_2_request",
+        "node_3_request"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "field-multitarget",
+      "revision": 1,
+      "sha256": "0a342e01cd6030c6cf5493fb72a6b979bbe84f239f030d002477f925328214d7",
+      "artifact_ports": [],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ]
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "historical-chain",
+      "revision": 1,
+      "sha256": "2bb6c12b57a1248ff7360bc5bdc0905dbaac390f232798fb0ea2854e2a0a5958",
+      "artifact_ports": [],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "field-summary",
+      "revision": 1,
+      "sha256": "e7bf1f5cad795dda24daff31e1bceebaff5baee54b1c87b0cf99066c001cdc3e",
+      "artifact_ports": [],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ]
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-random-forest",
+      "revision": 1,
+      "sha256": "89747e4f3f4e3b39d79ced335ea6e435fbeb7fe6a1f8ba0b244054242dac9c3b",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-xgboost",
+      "revision": 1,
+      "sha256": "676605e4fd5417dfd5ee6e18ce2aa2cb3466bb55d5a70d9c33422b85d31aee3b",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-gaussian-process",
+      "revision": 1,
+      "sha256": "8afeffd5ec48288a4a07314bcc5d171afbaeaf26a9c32a13f3ec325f3239983d",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-lstm",
+      "revision": 1,
+      "sha256": "4532ee398fa05022e4857645bbb9df90504e095ff0f2a361963d8d6d385841b8",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v1.json",
+      "id": "greenhouse-convlstm",
+      "revision": 1,
+      "sha256": "047e66a14f7b5864d93fed7b0d689d64b750246d52d2117e5cb1f1b279066e13",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "survey-658b",
+      "revision": 2,
+      "sha256": "f21d4f3a70706563320997a0638169c5a0fb7e6fee29e81580fe8b89807a240b",
+      "artifact_ports": [
+        "snapshot",
+        "evidence"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-water-balance",
+      "revision": 1,
+      "sha256": "47f7f9fc17b104fb532153a03a615c562f130df90e3ba39c47837bc672aec054",
+      "artifact_ports": [
+        "node_1_request",
+        "node_2_request",
+        "node_3_request"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "field-multitarget",
+      "revision": 1,
+      "sha256": "0a342e01cd6030c6cf5493fb72a6b979bbe84f239f030d002477f925328214d7",
+      "artifact_ports": [],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ]
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "historical-chain",
+      "revision": 1,
+      "sha256": "2bb6c12b57a1248ff7360bc5bdc0905dbaac390f232798fb0ea2854e2a0a5958",
+      "artifact_ports": [],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "field-summary",
+      "revision": 1,
+      "sha256": "e7bf1f5cad795dda24daff31e1bceebaff5baee54b1c87b0cf99066c001cdc3e",
+      "artifact_ports": [],
+      "bound_codes": [
+        "lai",
+        "agb_kg_ha",
+        "canopy_cover",
+        "tuber_dm_kg_ha"
+      ]
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-random-forest",
+      "revision": 2,
+      "sha256": "95f3bd0b52a59442d23f4a7230f2386c6a6bc71b1d7a43bde8deb393844e1b7a",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-xgboost",
+      "revision": 2,
+      "sha256": "a3e0ed55a24f86d513518585dfdf1222f0a850e53188c214a538112ee1c6ac9b",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-gaussian-process",
+      "revision": 2,
+      "sha256": "9da47939906178f1de0c2f2b1a1c97081d12dd8fea866837738e1a2c1f04e7cb",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-lstm",
+      "revision": 2,
+      "sha256": "a00db560d1e6f5e2975e7469b3f829897baf2456be519da9e5e7b302b1029879",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    },
+    {
+      "archive": "study-templates-archive-v2.json",
+      "id": "greenhouse-convlstm",
+      "revision": 2,
+      "sha256": "d4804d9466a5522703f61854915fa244bec0dca992ffe7652cb475c052e0af1e",
+      "artifact_ports": [
+        "request",
+        "dataset"
+      ],
+      "bound_codes": []
+    }
+  ]
+}

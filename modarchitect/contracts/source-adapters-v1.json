@@ -1,0 +1,188 @@
+{
+  "sha256": "7e6420417d9c360101e0f5a41f9f28653035d1ab7a270dbb0a22a12b1c54b68b",
+  "payload": {
+    "version": "1.1.0",
+    "bindings": [
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_temperature_minimum_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "08f97fc8a6a86f7a916649b548fbacd542849aa40080a18ed61c5b81fe2bdd21"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_temperature_maximum_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "f5de7995fa906fa85b57046c0359765baa0dde30e41f18cf4c164e1198f6dcd8"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_temperature_mean_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_precipitation_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "0a2b99dc7b33a8bcc77346f22b32bbb22a523c335c5ef849dd5cdcb7cfe288d6"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_solar_radiation_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_wind_speed_2m_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "d405b127f56021119b80248d33f20206b1d2875f25555750c3351b60816bd50f"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_vapour_pressure_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "c3047bcc9a4ba6eb5f0a48e048f358d19fd48fbd50d59a76e6f90b166d983733"
+        },
+        "adapter": "openmeteo_archive"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_bdod",
+          "definition_version": "2.0.0",
+          "contract_sha256": "ee103c80b511e89279ef426f4697f759847d1e2717dfe68ed9ac18e5f20e6aa1"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_cec",
+          "definition_version": "2.0.0",
+          "contract_sha256": "fdd2e15e374a6ffbcaf3bf8c55df523126b37dd34b41c5d97908331dad8e0c43"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_cfvo",
+          "definition_version": "2.0.0",
+          "contract_sha256": "d8420a1c5a0e61ee061965d8219637e85cdbd4cbd49c96397e41fa6ee2407287"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_clay",
+          "definition_version": "2.0.0",
+          "contract_sha256": "2db9da519ea62de917f012fa918b636b82468f552e2a2aac0fcedc0988b8450a"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_phh2o",
+          "definition_version": "2.0.0",
+          "contract_sha256": "347775eae64206ca19c1bc178dbadad6774e0060fd5081a527482dd6d5b9d8ba"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_sand",
+          "definition_version": "2.0.0",
+          "contract_sha256": "3d6fff2edae1a17bec882fa8061a33ffa61c7da3bf99aa0677dd44a18c5dae50"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_silt",
+          "definition_version": "2.0.0",
+          "contract_sha256": "975b52eb4a62446adf342dc2ff164a9c3960f718bad96597c000da990985e029"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_soc",
+          "definition_version": "2.0.0",
+          "contract_sha256": "adb81f85c24a78f4863d3817c2469c4410c9ed66952dcd7293ca6bbc86e56535"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_wv0010",
+          "definition_version": "2.0.0",
+          "contract_sha256": "41f9a2d5168c3f8bdc983f321a733f6f9295691840d586c73d336369d8af1f0c"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_wv0033",
+          "definition_version": "2.0.0",
+          "contract_sha256": "643c1452d2c2f36573ccab820db15d36ed414844230bd9b4599cb871eface8a6"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_wv1500",
+          "definition_version": "2.0.0",
+          "contract_sha256": "e72f7767652ff8bc3436b7b4f78c086bd24e908e4a035925ed48a39cabcb9ee0"
+        },
+        "adapter": "soilgrids_wcs"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "sentinelhub_sentinel2_red_reflectance",
+          "definition_version": "1.0.0",
+          "contract_sha256": "8efdf9e54ea5904ec3b33db21cd84b8d20ac927b2dfa59358b16d527cb7c85fa"
+        },
+        "adapter": "sentinelhub_s2_l2a"
+      },
+      {
+        "binding": {
+          "kind": "variable_source",
+          "code": "sentinelhub_sentinel2_nir_reflectance",
+          "definition_version": "1.0.0",
+          "contract_sha256": "1589ffd103202c9c176f71b64579a1c002bc558dd602b07bf593c0218c8b956b"
+        },
+        "adapter": "sentinelhub_s2_l2a"
+      }
+    ]
+  }
+}

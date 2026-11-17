@@ -1,0 +1,3177 @@
+{
+  "note": "线上隔离验收样例；ID属于验收企业，不继承访问权。业务接入须使用自己的provider_name/company_id和API返回的ID。本文件不含密钥。",
+  "configure_input_request": {
+    "key": "variable_source:temperature_mean_daily@1.0.0",
+    "role": "covariate",
+    "selectors": {}
+  },
+  "configure_input_response": {
+    "variable": {
+      "code": "temperature_mean_daily",
+      "name": "日平均气温",
+      "definition_version": "1.0.0",
+      "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+      "value_type": "number",
+      "unit": "celsius",
+      "role": "covariate",
+      "minimum": null,
+      "maximum": null,
+      "categories": []
+    },
+    "requirement": {
+      "code": "temperature_mean_daily",
+      "variable_code": "temperature_mean_daily",
+      "method": {
+        "protocol_code": "openmeteo_daily_records",
+        "protocol_version": "1.0.0",
+        "method_code": "openmeteo_daily_standard_record",
+        "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+        "evidence_required": true
+      },
+      "unit_kind": "field_season",
+      "requires_sampling_points": false,
+      "required_for": [
+        "train"
+      ],
+      "source": "third_party",
+      "catalog_binding": {
+        "kind": "variable_source",
+        "code": "openmeteo_weather_temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+        "value_nature": "estimated",
+        "source_system": "openmeteo_weather",
+        "selectors": {}
+      },
+      "start_offset_days": 0,
+      "end_offset_days": null,
+      "interval_days": null,
+      "minimum_observations_per_unit": 1,
+      "minimum_independent_units": 1
+    },
+    "entry": {
+      "key": "variable_source:temperature_mean_daily@1.0.0",
+      "variable": {
+        "code": "temperature_mean_daily",
+        "definition_version": "1.0.0",
+        "name": "日平均气温",
+        "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "value_type": "number",
+        "unit": "celsius",
+        "role": "covariate",
+        "minimum": null,
+        "maximum": null
+      },
+      "category": "third_party",
+      "unit_kind": "field_season",
+      "selectable": true,
+      "source": {
+        "code": "openmeteo_weather",
+        "name": "Open-Meteo 天气",
+        "binding": {
+          "kind": "variable_source",
+          "code": "openmeteo_weather_temperature_mean_daily",
+          "definition_version": "1.0.0",
+          "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+          "value_nature": "estimated",
+          "source_system": "openmeteo_weather",
+          "selectors": {}
+        },
+        "definition": {
+          "code": "openmeteo_weather_temperature_mean_daily",
+          "definition_version": "1.0.0",
+          "variable": {
+            "code": "temperature_mean_daily",
+            "definition_version": "1.0.0"
+          },
+          "component": {
+            "code": "openmeteo_weather",
+            "revision": 4
+          },
+          "field_code": "TEMP",
+          "value_nature": "estimated",
+          "support": {
+            "description": "格点日尺度估计；Asia/Shanghai；小时聚合需24个完整整点",
+            "unit_kind": "field_season",
+            "spatial_support": "native_grid_reference",
+            "temporal_support": "daily",
+            "time_basis": "asia_shanghai"
+          },
+          "selectors": {},
+          "description": "来自当前转换器的TEMP字段；不得充当人工实测目标。",
+          "evidence": [
+            {
+              "path": "src/pymlgrowth/openmeteo_weather/conversion.py",
+              "sha256": "566444ad9bd6d485f5f16f2db045969a3237ad74f68e45b6118b916458015598"
+            }
+          ]
+        },
+        "policy": {
+          "code": "temperature_mean_daily",
+          "definition_version": "1.0.0",
+          "source": {
+            "code": "openmeteo_weather_temperature_mean_daily",
+            "definition_version": "1.0.0"
+          },
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          }
+        },
+        "selection_schema": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        },
+        "method": {
+          "protocol_code": "openmeteo_daily_records",
+          "protocol_version": "1.0.0",
+          "method_code": "openmeteo_daily_standard_record",
+          "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+          "evidence_required": true
+        }
+      },
+      "execution": {
+        "available": true,
+        "reason": null,
+        "channel": "source_snapshot"
+      },
+      "data_available": null,
+      "subcategory": "third_party_weather"
+    }
+  },
+  "configure_soil_request": {
+    "key": "variable_source:soil_bdod@1.0.0",
+    "role": "covariate",
+    "selectors": {
+      "depth": "0-5cm",
+      "statistic": "mean"
+    }
+  },
+  "configure_soil_response": {
+    "variable": {
+      "code": "soil_bdod",
+      "name": "土壤容重",
+      "definition_version": "1.0.0",
+      "description": "研究变量：土壤容重。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+      "value_type": "number",
+      "unit": "kg_dm3",
+      "role": "covariate",
+      "minimum": null,
+      "maximum": null,
+      "categories": []
+    },
+    "requirement": {
+      "code": "soil_bdod",
+      "variable_code": "soil_bdod",
+      "method": {
+        "protocol_code": "soilgrids_reference_records",
+        "protocol_version": "1.0.0",
+        "method_code": "soilgrids_mapped_reference_v1",
+        "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+        "evidence_required": true
+      },
+      "unit_kind": "field_season",
+      "requires_sampling_points": false,
+      "required_for": [
+        "train"
+      ],
+      "source": "third_party",
+      "catalog_binding": {
+        "kind": "variable_source",
+        "code": "soilgrids_reference_soil_bdod",
+        "definition_version": "2.0.0",
+        "contract_sha256": "ee103c80b511e89279ef426f4697f759847d1e2717dfe68ed9ac18e5f20e6aa1",
+        "value_nature": "estimated",
+        "source_system": "soilgrids_reference_normalization",
+        "selectors": {
+          "depth": "0-5cm",
+          "statistic": "mean"
+        }
+      },
+      "start_offset_days": 0,
+      "end_offset_days": null,
+      "interval_days": null,
+      "minimum_observations_per_unit": 1,
+      "minimum_independent_units": 1
+    },
+    "entry": {
+      "key": "variable_source:soil_bdod@1.0.0",
+      "variable": {
+        "code": "soil_bdod",
+        "definition_version": "1.0.0",
+        "name": "土壤容重",
+        "description": "研究变量：土壤容重。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+        "value_type": "number",
+        "unit": "kg_dm3",
+        "role": "covariate",
+        "minimum": null,
+        "maximum": null
+      },
+      "category": "third_party",
+      "unit_kind": "field_season",
+      "selectable": true,
+      "source": {
+        "code": "soilgrids_reference_normalization",
+        "name": "SoilGrids 单位与网格参考适配",
+        "binding": {
+          "kind": "variable_source",
+          "code": "soilgrids_reference_soil_bdod",
+          "definition_version": "2.0.0",
+          "contract_sha256": "ee103c80b511e89279ef426f4697f759847d1e2717dfe68ed9ac18e5f20e6aa1",
+          "value_nature": "estimated",
+          "source_system": "soilgrids_reference_normalization",
+          "selectors": {}
+        },
+        "definition": {
+          "code": "soilgrids_reference_soil_bdod",
+          "definition_version": "2.0.0",
+          "variable": {
+            "code": "soil_bdod",
+            "definition_version": "1.0.0"
+          },
+          "component": {
+            "code": "soilgrids_reference_normalization",
+            "revision": 1
+          },
+          "field_code": "bdod",
+          "value_nature": "estimated",
+          "support": {
+            "description": "按准确土层/mean归一原生映射值，并显式选为地块静态网格参考；不是地块均值或每天独立实测。",
+            "unit_kind": "field_season",
+            "spatial_support": "native_grid_reference",
+            "temporal_support": "static",
+            "time_basis": "not_applicable"
+          },
+          "selectors": {
+            "depth": [
+              "0-5cm",
+              "5-15cm",
+              "15-30cm",
+              "30-60cm",
+              "60-100cm",
+              "100-200cm"
+            ],
+            "statistic": [
+              "mean"
+            ]
+          },
+          "description": "使用官方映射单位到研究单位的准确转换；cfvo除10为体积百分数，soc除10为g/kg，水量除1000为比例；不沿用旧CSV的混合d_factor。",
+          "evidence": [
+            {
+              "path": "src/pymlgrowth/research_models/source_normalization.py",
+              "sha256": "68d9a59ae437e488889a639a126cb760104ef92a71e9c6ab6ef674764c41f4d5"
+            },
+            {
+              "path": "src/mlgrowth_contracts/model_center/source_requests.py",
+              "sha256": "26d6c3e0d1826b5892ba86634343ead24b0f3f897521388a7c2fdd8a8376fb52"
+            }
+          ]
+        },
+        "policy": {
+          "code": "soil_bdod",
+          "definition_version": "1.0.0",
+          "source": {
+            "code": "soilgrids_reference_soil_bdod",
+            "definition_version": "2.0.0"
+          },
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          }
+        },
+        "selection_schema": {
+          "type": "object",
+          "properties": {
+            "depth": {
+              "type": "string",
+              "enum": [
+                "0-5cm",
+                "5-15cm",
+                "15-30cm",
+                "30-60cm",
+                "60-100cm",
+                "100-200cm"
+              ]
+            },
+            "statistic": {
+              "type": "string",
+              "enum": [
+                "mean"
+              ]
+            }
+          },
+          "required": [
+            "depth",
+            "statistic"
+          ],
+          "additionalProperties": false
+        },
+        "method": {
+          "protocol_code": "soilgrids_reference_records",
+          "protocol_version": "1.0.0",
+          "method_code": "soilgrids_mapped_reference_v1",
+          "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+          "evidence_required": true
+        }
+      },
+      "execution": {
+        "available": true,
+        "reason": null,
+        "channel": "source_snapshot"
+      },
+      "data_available": null,
+      "subcategory": "third_party_soil"
+    }
+  },
+  "template_detail": {
+    "id": "crop-growth-prediction",
+    "revision": 1,
+    "title": "多因素作物生长指标预测",
+    "summary": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "synthetic",
+    "output_description": "可保存并继续预测的候选模型与验证结果",
+    "limitations": [
+      "示例数据用于说明研究流程，实际结论需用本研究对象的数据验证。"
+    ],
+    "researcher": {
+      "category": "生长与预测",
+      "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+      "needed": "实测生长指标及同日已知因素",
+      "method": "多目标回归与时间留出验证",
+      "outcome": "可保存并继续预测的候选模型与验证结果",
+      "limits": [
+        "示例数据用于说明研究流程，实际结论需用本研究对象的数据验证。"
+      ],
+      "data_description": "可直接运行的示例观测数据",
+      "data_usage": "已载入示例数据；请按相同来源和单位准备自己的研究数据。"
+    },
+    "layout": {},
+    "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f",
+    "execution_mode": "observations",
+    "input_policy": {
+      "mode": "user_observations",
+      "editable": [
+        "records",
+        "inputs",
+        "factors",
+        "targets"
+      ]
+    },
+    "definition": {
+      "schema_version": "1.4",
+      "name": "多因素作物生长指标预测",
+      "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "target",
+          "minimum": 0,
+          "maximum": 15,
+          "categories": []
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "definition_version": "1.0.0",
+          "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "covariate",
+          "minimum": 0,
+          "maximum": 1,
+          "categories": []
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "definition_version": "1.0.0",
+          "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "covariate",
+          "minimum": 0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "agb_kg_ha",
+          "variable_code": "agb_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "agb_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "variable_code": "tuber_dm_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "tuber_dm_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "系统标准人工记录",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "lai",
+            "agb_kg_ha",
+            "canopy_cover",
+            "tuber_dm_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "canopy_cover",
+              "tuber_dm_kg_ha"
+            ],
+            "targets": [
+              "lai",
+              "agb_kg_ha"
+            ],
+            "training_end": "2026-05-10"
+          },
+          "runtime_fields": {}
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "lai",
+          "agb_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按相同对象、单位和日期检查数据覆盖；预测方法须以留出观测逐指标检验偏差。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {
+        "study_template": {
+          "id": "crop-growth-prediction",
+          "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f"
+        }
+      }
+    },
+    "observations": {
+      "columns": [
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "unit": "m2_m2",
+          "value_kind": "observed"
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "unit": "kg_ha",
+          "value_kind": "observed"
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "unit": "fraction",
+          "value_kind": "observed"
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "unit": "kg_ha",
+          "value_kind": "observed"
+        }
+      ],
+      "rows": [
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-01",
+          "values": {
+            "canopy_cover": 0.3,
+            "tuber_dm_kg_ha": 140,
+            "lai": 1.442,
+            "agb_kg_ha": 880
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-02",
+          "values": {
+            "canopy_cover": 0.3782646591108609,
+            "tuber_dm_kg_ha": 158.67603900649075,
+            "lai": 1.6823967890345297,
+            "agb_kg_ha": 995.6167371238423
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-03",
+          "values": {
+            "canopy_cover": 0.44925879013432624,
+            "tuber_dm_kg_ha": 166.70378015833433,
+            "lai": 1.8977875044504788,
+            "agb_kg_ha": 1082.666350450995
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-04",
+          "values": {
+            "canopy_cover": 0.5064049852209442,
+            "tuber_dm_kg_ha": 169.4498186019049,
+            "lai": 2.0700499012434044,
+            "agb_kg_ha": 1145.3046224247541
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-05",
+          "values": {
+            "canopy_cover": 0.5444459998623847,
+            "tuber_dm_kg_ha": 173.9508135788982,
+            "lai": 2.185523243660824,
+            "agb_kg_ha": 1192.347627020181
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-06",
+          "values": {
+            "canopy_cover": 0.5599459410473393,
+            "tuber_dm_kg_ha": 186.6885104978764,
+            "lai": 2.2358443762913804,
+            "agb_kg_ha": 1233.322962043092
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-07",
+          "values": {
+            "canopy_cover": 0.5516178207697285,
+            "tuber_dm_kg_ha": 211.54022567758804,
+            "lai": 2.218315530012462,
+            "agb_kg_ha": 1274.6982721249046
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-08",
+          "values": {
+            "canopy_cover": 0.5204462482764021,
+            "tuber_dm_kg_ha": 248.5528464890048,
+            "lai": 2.135904598775908,
+            "agb_kg_ha": 1317.5519412544118
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-09",
+          "values": {
+            "canopy_cover": 0.46959356445142797,
+            "tuber_dm_kg_ha": 293.92800566006576,
+            "lai": 1.9969590950523037,
+            "agb_kg_ha": 1357.4495757715595
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-10",
+          "values": {
+            "canopy_cover": 0.4040983668145975,
+            "tuber_dm_kg_ha": 341.22311759905443,
+            "lai": 1.8146620357235088,
+            "agb_kg_ha": 1386.5446020127065
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-11",
+          "values": {
+            "canopy_cover": 0.3303951656083226,
+            "tuber_dm_kg_ha": 383.3885113935664,
+            "lai": 1.6062020502430376,
+            "agb_kg_ha": 1397.1721883954554
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-12",
+          "values": {
+            "canopy_cover": 0.2557009635320567,
+            "tuber_dm_kg_ha": 414.9965230038657,
+            "lai": 1.3916018474973297,
+            "agb_kg_ha": 1385.694009539788
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-13",
+          "values": {
+            "canopy_cover": 0.18732723823267827,
+            "tuber_dm_kg_ha": 433.9577120465429,
+            "lai": 1.1921690283119977,
+            "agb_kg_ha": 1355.242662325764
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-14",
+          "values": {
+            "canopy_cover": 0.1319829182279169,
+            "tuber_dm_kg_ha": 442.1815387686623,
+            "lai": 1.0286032163143495,
+            "agb_kg_ha": 1316.3459957652415
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-15",
+          "values": {
+            "canopy_cover": 0.09513480156168935,
+            "tuber_dm_kg_ha": 444.9725964417073,
+            "lai": 0.9188961836175803,
+            "agb_kg_ha": 1285.079994445104
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-16",
+          "values": {
+            "canopy_cover": 0.08048639031028013,
+            "tuber_dm_kg_ha": 449.353309314816,
+            "lai": 0.8762651637252852,
+            "agb_kg_ha": 1279.193008939912
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-17",
+          "values": {
+            "canopy_cover": 0.08962482513654779,
+            "tuber_dm_kg_ha": 461.84345576320965,
+            "lai": 0.9074275121386063,
+            "agb_kg_ha": 1313.3117366629672
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-18",
+          "values": {
+            "canopy_cover": 0.12186957863094885,
+            "tuber_dm_kg_ha": 486.39862708163196,
+            "lai": 1.0115283240173363,
+            "agb_kg_ha": 1394.6668327942127
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-19",
+          "values": {
+            "canopy_cover": 0.17433733193595413,
+            "tuber_dm_kg_ha": 523.1594772316374,
+            "lai": 1.1799598389773536,
+            "agb_kg_ha": 1520.656286399229
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-20",
+          "values": {
+            "canopy_cover": 0.24221684977968716,
+            "tuber_dm_kg_ha": 568.407248333269,
+            "lai": 1.3971727238390423,
+            "agb_kg_ha": 1679.0313464462251
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-21",
+          "values": {
+            "canopy_cover": 0.31922764929562586,
+            "tuber_dm_kg_ha": 615.7396346539156,
+            "lai": 1.6424048382830523,
+            "agb_kg_ha": 1850.7069186034569
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-22",
+          "values": {
+            "canopy_cover": 0.3982187364178834,
+            "tuber_dm_kg_ha": 658.0951791943897,
+            "lai": 1.892084763011967,
+            "agb_kg_ha": 2014.4090948066628
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-23",
+          "values": {
+            "canopy_cover": 0.47185033059898807,
+            "tuber_dm_kg_ha": 689.9860926199378,
+            "lai": 2.1225468195829453,
+            "agb_kg_ha": 2151.8225158388636
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-24",
+          "values": {
+            "canopy_cover": 0.5332935870829224,
+            "tuber_dm_kg_ha": 709.2334815449193,
+            "lai": 2.3126508057122432,
+            "agb_kg_ha": 2251.760550172761
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-25",
+          "values": {
+            "canopy_cover": 0.5768816102077723,
+            "tuber_dm_kg_ha": 717.6563103717963,
+            "lai": 2.4459417237348555,
+            "agb_kg_ha": 2312.1942309513647
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-26",
+          "values": {
+            "canopy_cover": 0.5986496947777941,
+            "tuber_dm_kg_ha": 720.4962482946466,
+            "lai": 2.5120979588217764,
+            "agb_kg_ha": 2339.6421913670874
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-27",
+          "values": {
+            "canopy_cover": 0.5967132927496869,
+            "tuber_dm_kg_ha": 724.7602637229522,
+            "lai": 2.5075679573659464,
+            "agb_kg_ha": 2346.2338201955913
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-28",
+          "values": {
+            "canopy_cover": 0.5714476725878,
+            "tuber_dm_kg_ha": 737.0050345363834,
+            "lai": 2.435444528124315,
+            "agb_kg_ha": 2345.457741660567
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-29",
+          "values": {
+            "canopy_cover": 0.5254521438480717,
+            "tuber_dm_kg_ha": 761.2637393268967,
+            "lai": 2.304735553342284,
+            "agb_kg_ha": 2347.9796225018654
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-04-30",
+          "values": {
+            "canopy_cover": 0.463302257563443,
+            "tuber_dm_kg_ha": 797.7707741939655,
+            "lai": 2.1292380049485184,
+            "agb_kg_ha": 2358.8438059513737
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-01",
+          "values": {
+            "canopy_cover": 0.3911136058767654,
+            "tuber_dm_kg_ha": 842.8876371550753,
+            "lai": 1.9262071087768187,
+            "agb_kg_ha": 2376.888880186916
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-02",
+          "values": {
+            "canopy_cover": 0.31595880514983166,
+            "tuber_dm_kg_ha": 890.2534153763344,
+            "lai": 1.7149524400623952,
+            "agb_kg_ha": 2396.4656359025003
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-03",
+          "values": {
+            "canopy_cover": 0.24519324321630503,
+            "tuber_dm_kg_ha": 932.7960934047069,
+            "lai": 1.5154185576703272,
+            "agb_kg_ha": 2410.7854300257186
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-04",
+          "values": {
+            "canopy_cover": 0.18575386922144857,
+            "tuber_dm_kg_ha": 964.9687106615368,
+            "lai": 1.3467522208628067,
+            "agb_kg_ha": 2415.691290544522
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-05",
+          "values": {
+            "canopy_cover": 0.1434978744188451,
+            "tuber_dm_kg_ha": 984.5032995591458,
+            "lai": 1.225844613124279,
+            "agb_kg_ha": 2412.5044735371366
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-06",
+          "values": {
+            "canopy_cover": 0.12264430937528722,
+            "tuber_dm_kg_ha": 993.1280124287847,
+            "lai": 1.165871331854497,
+            "agb_kg_ha": 2408.9003342328565
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-07",
+          "values": {
+            "canopy_cover": 0.12537186981279738,
+            "tuber_dm_kg_ha": 996.0206831239493,
+            "lai": 1.174921814375577,
+            "agb_kg_ha": 2417.413236060696
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-08",
+          "values": {
+            "canopy_cover": 0.1516111953138785,
+            "tuber_dm_kg_ha": 1000.1716060543619,
+            "lai": 1.254885067757944,
+            "agb_kg_ha": 2451.9544074226023
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-09",
+          "values": {
+            "canopy_cover": 0.19905148164850095,
+            "tuber_dm_kg_ha": 1012.1732187269592,
+            "lai": 1.4008064105635907,
+            "agb_kg_ha": 2523.3979191024196
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-10",
+          "values": {
+            "canopy_cover": 0.26336077635078015,
+            "tuber_dm_kg_ha": 1036.1355858635923,
+            "lai": 1.600923004811418,
+            "agb_kg_ha": 2635.631948077965
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-11",
+          "values": {
+            "canopy_cover": 0.3385989561379226,
+            "tuber_dm_kg_ha": 1072.386804951937,
+            "lai": 1.837512909899349,
+            "agb_kg_ha": 2783.3725660417967
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-12",
+          "values": {
+            "canopy_cover": 0.41778401585288516,
+            "tuber_dm_kg_ha": 1117.3692624597873,
+            "lai": 2.0885628262965916,
+            "agb_kg_ha": 2952.5225407724597
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-13",
+          "values": {
+            "canopy_cover": 0.49355768298612795,
+            "tuber_dm_kg_ha": 1164.7645442954383,
+            "lai": 2.3301024122470153,
+            "agb_kg_ha": 3123.0867715770046
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-14",
+          "values": {
+            "canopy_cover": 0.5588869028402877,
+            "tuber_dm_kg_ha": 1207.4913060205247,
+            "lai": 2.5389081003270206,
+            "agb_kg_ha": 3273.869514881337
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-15",
+          "values": {
+            "canopy_cover": 0.6077343197506235,
+            "tuber_dm_kg_ha": 1239.9443801505124,
+            "lai": 2.695186273297024,
+            "agb_kg_ha": 3387.6230800516482
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-16",
+          "values": {
+            "canopy_cover": 0.6356338354687524,
+            "tuber_dm_kg_ha": 1259.7671191814131,
+            "lai": 2.784831642160681,
+            "agb_kg_ha": 3455.1680738315786
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-17",
+          "values": {
+            "canopy_cover": 0.6401163750827303,
+            "tuber_dm_kg_ha": 1268.5965629343164,
+            "lai": 2.800928094128486,
+            "agb_kg_ha": 3477.309500951363
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-18",
+          "values": {
+            "canopy_cover": 0.6209452709905261,
+            "tuber_dm_kg_ha": 1271.5458097567218,
+            "lai": 2.744299555898595,
+            "agb_kg_ha": 3464.0368905039695
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-19",
+          "values": {
+            "canopy_cover": 0.5801388250994466,
+            "tuber_dm_kg_ha": 1275.5872647972599,
+            "lai": 2.6230926547375177,
+            "agb_kg_ha": 3431.313354693966
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-20",
+          "values": {
+            "canopy_cover": 0.5217778983325077,
+            "tuber_dm_kg_ha": 1287.347979096148,
+            "lai": 2.4515380887263674,
+            "agb_kg_ha": 3396.4738565248035
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-21",
+          "values": {
+            "canopy_cover": 0.4516168704844491,
+            "tuber_dm_kg_ha": 1311.0141889711736,
+            "lai": 2.2481548681446997,
+            "agb_kg_ha": 3373.645248426796
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-22",
+          "values": {
+            "canopy_cover": 0.3765350587370603,
+            "tuber_dm_kg_ha": 1347.0076362585303,
+            "lai": 2.03370746708874,
+            "agb_kg_ha": 3370.550331254121
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-23",
+          "values": {
+            "canopy_cover": 0.30388089267582,
+            "tuber_dm_kg_ha": 1391.852214366746,
+            "lai": 1.8291983423374838,
+            "agb_kg_ha": 3387.585321409312
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-24",
+          "values": {
+            "canopy_cover": 0.2407713674793257,
+            "tuber_dm_kg_ha": 1439.2731064013701,
+            "lai": 1.6540960343583881,
+            "agb_kg_ha": 3419.317580282066
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-25",
+          "values": {
+            "canopy_cover": 0.19341356041268304,
+            "tuber_dm_kg_ha": 1482.1808700290708,
+            "lai": 1.5248949422467704,
+            "agb_kg_ha": 3457.7753004708247
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-26",
+          "values": {
+            "canopy_cover": 0.1665128923981648,
+            "tuber_dm_kg_ha": 1514.9131053167198,
+            "lai": 1.4540126087895104,
+            "agb_kg_ha": 3496.3391030316043
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-27",
+          "values": {
+            "canopy_cover": 0.1628245467801122,
+            "tuber_dm_kg_ha": 1535.0248945467304,
+            "lai": 1.4489811087043558,
+            "agb_kg_ha": 3532.874335873573
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-28",
+          "values": {
+            "canopy_cover": 0.18289080981626232,
+            "tuber_dm_kg_ha": 1544.0618804309765,
+            "lai": 1.51189099357808,
+            "agb_kg_ha": 3571.0145706782155
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-29",
+          "values": {
+            "canopy_cover": 0.22498937297773786,
+            "tuber_dm_kg_ha": 1547.0715368998008,
+            "lai": 1.6390895800031537,
+            "agb_kg_ha": 3619.1324467773393
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-30",
+          "values": {
+            "canopy_cover": 0.2852975255472983,
+            "tuber_dm_kg_ha": 1551.0071676894545,
+            "lai": 1.8211947269487312,
+            "agb_kg_ha": 3687.3118609262074
+          }
+        }
+      ]
+    },
+    "prediction_observations": {
+      "columns": [
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "unit": "fraction",
+          "value_kind": "observed"
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "unit": "kg_ha",
+          "value_kind": "observed"
+        }
+      ],
+      "rows": [
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-05-31",
+          "values": {
+            "canopy_cover": 0.35825658456584475,
+            "tuber_dm_kg_ha": 1562.5292852618934
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-06-01",
+          "values": {
+            "canopy_cover": 0.43710181997800945,
+            "tuber_dm_kg_ha": 1585.899569754467
+          }
+        },
+        {
+          "object": {
+            "field_ref": "acceptance-potato-field",
+            "crop_code": "potato",
+            "season_ref": "2026-synthetic"
+          },
+          "business_date": "2026-06-02",
+          "values": {
+            "canopy_cover": 0.5145073556970136,
+            "tuber_dm_kg_ha": 1621.6333340321498
+          }
+        }
+      ]
+    }
+  },
+  "component_detail": {
+    "definition": {
+      "code": "multivariate_linear_training",
+      "revision": 1,
+      "name": "多变量线性模型训练",
+      "summary": "用多个已知因子预测一个或多个数值目标。",
+      "category": "training",
+      "execution_mode": "external_cli",
+      "implementation": {
+        "module": "components.research_runtime.linear",
+        "symbol": "train",
+        "source_sha256": "301732eb8037324e3356a91d220c4b009737ce5a0f30989cd2d3d76805aa227b"
+      },
+      "algorithm": "普通最小二乘",
+      "mechanism": "按日期截点切分，通过普通最小二乘拟合各目标。",
+      "inputs": [
+        {
+          "code": "observations",
+          "name": "观测输入",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          },
+          "required": true,
+          "description": "包含已对齐的候选因子和目标。",
+          "projection": "identity",
+          "allow_none": false,
+          "output_view": null
+        },
+        {
+          "code": "request",
+          "name": "组件配置",
+          "data_type": {
+            "semantic": "multivariate_regression_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          },
+          "required": true,
+          "description": "输入变量、预测目标和训练截止日期。",
+          "projection": "identity",
+          "allow_none": false,
+          "output_view": null
+        }
+      ],
+      "outputs": [
+        {
+          "code": "trained_model",
+          "name": "训练后的模型",
+          "data_type": {
+            "semantic": "multivariate_linear_model",
+            "version": 2,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          },
+          "required": true,
+          "description": "按目标保存截距和各输入变量系数。",
+          "projection": "identity",
+          "allow_none": false,
+          "output_view": null
+        },
+        {
+          "code": "predictions",
+          "name": "预测结果表",
+          "data_type": {
+            "semantic": "research_prediction_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          },
+          "required": true,
+          "description": "按地块、业务日期和目标输出预测数值。",
+          "projection": "identity",
+          "allow_none": false,
+          "output_view": null
+        }
+      ],
+      "requirements": [
+        "训练期每行应有完整的候选因子及实测目标。",
+        "预测期每行应提供同口径的候选因子。"
+      ],
+      "limitations": [
+        "用于线性基线，缺失值和不满秩的训练数据会被拒绝。",
+        "真实预测需独立评价，并核对各因子在预测时已可用。"
+      ],
+      "configuration": {
+        "research_model": {
+          "request_schema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "features": {
+                "title": "输入变量",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,95}$"
+                },
+                "x-research-variables": {
+                  "table_port": "observations",
+                  "roles": [
+                    "covariate",
+                    "driver"
+                  ]
+                }
+              },
+              "targets": {
+                "title": "预测目标",
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,95}$"
+                },
+                "x-research-variables": {
+                  "table_port": "observations",
+                  "roles": [
+                    "target"
+                  ],
+                  "observed": true,
+                  "evaluation_target": true
+                }
+              },
+              "training_end": {
+                "title": "训练截止日期",
+                "type": "string",
+                "format": "date",
+                "description": "使用截至当天的记录训练，对之后日期的已知因子计算预测值。"
+              }
+            },
+            "required": [
+              "features",
+              "targets",
+              "training_end"
+            ]
+          }
+        }
+      },
+      "selection_options": {},
+      "related_capabilities": [],
+      "composable": true,
+      "native_parameters": [
+        {
+          "code": "observations",
+          "required": true
+        },
+        {
+          "code": "request",
+          "required": true
+        }
+      ],
+      "runtime_parameters": [],
+      "requires_instance": true
+    },
+    "contract_sha256": "1f9b0d9d4396d5ca2817df712a8dbb1f57efc31f73d9277b2a18914c1fe4c4d8",
+    "available_for_new_design": true,
+    "research_contract": {
+      "request_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "title": "输入变量",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$"
+            },
+            "x-research-variables": {
+              "table_port": "observations",
+              "roles": [
+                "covariate",
+                "driver"
+              ]
+            }
+          },
+          "targets": {
+            "title": "预测目标",
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$"
+            },
+            "x-research-variables": {
+              "table_port": "observations",
+              "roles": [
+                "target"
+              ],
+              "observed": true,
+              "evaluation_target": true
+            }
+          },
+          "training_end": {
+            "title": "训练截止日期",
+            "type": "string",
+            "format": "date",
+            "description": "使用截至当天的记录训练，对之后日期的已知因子计算预测值。"
+          }
+        },
+        "required": [
+          "features",
+          "targets",
+          "training_end"
+        ]
+      },
+      "execution": {
+        "status": "available",
+        "profile": "offline_cpu"
+      },
+      "input_uses": {
+        "features": {
+          "role": "feature",
+          "phases": [
+            "training",
+            "application"
+          ]
+        },
+        "targets": {
+          "role": "label",
+          "phases": [
+            "training",
+            "evaluation"
+          ]
+        }
+      },
+      "capabilities": {
+        "operations": [
+          "train"
+        ],
+        "state_output": "trained_model",
+        "inference": {
+          "code": "multivariate_linear_predict",
+          "revision": 1
+        },
+        "input_uses": {
+          "features": {
+            "role": "feature",
+            "phases": [
+              "training",
+              "application"
+            ]
+          },
+          "targets": {
+            "role": "label",
+            "phases": [
+              "training",
+              "evaluation"
+            ]
+          }
+        }
+      }
+    },
+    "designer": null
+  },
+  "definition": {
+    "schema_version": "1.4",
+    "name": "多因素作物生长指标预测",
+    "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+    "objective": "prediction",
+    "purpose": "train",
+    "variables": [
+      {
+        "code": "lai",
+        "name": "叶面积指数",
+        "definition_version": "1.0.0",
+        "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+        "value_type": "number",
+        "unit": "m2_m2",
+        "role": "target",
+        "minimum": 0,
+        "maximum": 15,
+        "categories": []
+      },
+      {
+        "code": "agb_kg_ha",
+        "name": "地上生物量",
+        "definition_version": "1.0.0",
+        "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+        "value_type": "number",
+        "unit": "kg_ha",
+        "role": "target",
+        "minimum": 0,
+        "maximum": null,
+        "categories": []
+      },
+      {
+        "code": "canopy_cover",
+        "name": "冠层覆盖度",
+        "definition_version": "1.0.0",
+        "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+        "value_type": "number",
+        "unit": "fraction",
+        "role": "covariate",
+        "minimum": 0,
+        "maximum": 1,
+        "categories": []
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "name": "块茎干物质",
+        "definition_version": "1.0.0",
+        "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+        "value_type": "number",
+        "unit": "kg_ha",
+        "role": "covariate",
+        "minimum": 0,
+        "maximum": null,
+        "categories": []
+      }
+    ],
+    "collection_requirements": [
+      {
+        "code": "lai",
+        "variable_code": "lai",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "lai",
+          "definition_version": "1.0.0",
+          "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "agb_kg_ha",
+        "variable_code": "agb_kg_ha",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "agb_kg_ha",
+          "definition_version": "1.0.0",
+          "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "canopy_cover",
+        "variable_code": "canopy_cover",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "canopy_cover",
+          "definition_version": "1.0.0",
+          "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      },
+      {
+        "code": "tuber_dm_kg_ha",
+        "variable_code": "tuber_dm_kg_ha",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "tuber_dm_kg_ha",
+          "definition_version": "1.0.0",
+          "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      }
+    ],
+    "composition": {
+      "schema_version": "1.0",
+      "object_scope": "field_crop_season",
+      "inputs": [
+        {
+          "code": "observations",
+          "name": "系统标准人工记录",
+          "role": "context",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          }
+        },
+        {
+          "code": "regression_config",
+          "name": "多变量线性回归配置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "multivariate_regression_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "code": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": null,
+                "port": "observations"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "regression_config"
+              }
+            }
+          ],
+          "selections": {}
+        }
+      ],
+      "outputs": [
+        {
+          "code": "trained_model",
+          "source": {
+            "node": "regression",
+            "port": "trained_model"
+          }
+        },
+        {
+          "code": "predictions",
+          "source": {
+            "node": "regression",
+            "port": "predictions"
+          }
+        }
+      ]
+    },
+    "input_recipes": {
+      "observations": {
+        "kind": "observations",
+        "variable_codes": [
+          "lai",
+          "agb_kg_ha",
+          "canopy_cover",
+          "tuber_dm_kg_ha"
+        ]
+      },
+      "regression_config": {
+        "kind": "configuration",
+        "value": {
+          "features": [
+            "canopy_cover",
+            "tuber_dm_kg_ha"
+          ],
+          "targets": [
+            "lai",
+            "agb_kg_ha"
+          ],
+          "training_end": "2026-05-10"
+        },
+        "runtime_fields": {}
+      }
+    },
+    "evaluation": {
+      "target_codes": [
+        "lai",
+        "agb_kg_ha"
+      ],
+      "purpose": "exploratory",
+      "split_unit": "time",
+      "success_criteria": "按相同对象、单位和日期检查数据覆盖；预测方法须以留出观测逐指标检验偏差。",
+      "update_policy": "manual_candidate",
+      "numeric_gate": null
+    },
+    "layout": {
+      "study_template": {
+        "id": "crop-growth-prediction",
+        "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f"
+      }
+    }
+  },
+  "configuration": {
+    "format": "research_plan_draft",
+    "definition": {
+      "schema_version": "1.4",
+      "name": "多因素作物生长指标预测",
+      "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "target",
+          "minimum": 0,
+          "maximum": 15,
+          "categories": []
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "definition_version": "1.0.0",
+          "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "covariate",
+          "minimum": 0,
+          "maximum": 1,
+          "categories": []
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "definition_version": "1.0.0",
+          "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "covariate",
+          "minimum": 0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "agb_kg_ha",
+          "variable_code": "agb_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "agb_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "variable_code": "tuber_dm_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "tuber_dm_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "系统标准人工记录",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "lai",
+            "agb_kg_ha",
+            "canopy_cover",
+            "tuber_dm_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "canopy_cover",
+              "tuber_dm_kg_ha"
+            ],
+            "targets": [
+              "lai",
+              "agb_kg_ha"
+            ],
+            "training_end": "2026-05-10"
+          },
+          "runtime_fields": {}
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "lai",
+          "agb_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按相同对象、单位和日期检查数据覆盖；预测方法须以留出观测逐指标检验偏差。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {
+        "study_template": {
+          "id": "crop-growth-prediction",
+          "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f"
+        }
+      }
+    },
+    "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+  },
+  "check_success": {
+    "valid": true,
+    "compiled": {
+      "validation_scope": "design_contract",
+      "compiler_version": "1.0.0",
+      "object_scope": "field_crop_season",
+      "order": [
+        "regression"
+      ],
+      "external_inputs": [
+        {
+          "code": "observations",
+          "name": "系统标准人工记录",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          },
+          "role": "context"
+        },
+        {
+          "code": "regression_config",
+          "name": "多变量线性回归配置",
+          "data_type": {
+            "semantic": "multivariate_regression_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          },
+          "role": "parameter"
+        }
+      ],
+      "nodes": [
+        {
+          "node": "regression",
+          "component": {
+            "code": "multivariate_linear_training",
+            "revision": 1
+          },
+          "execution_mode": "external_cli",
+          "runtime_parameters": [],
+          "composable": true,
+          "selections": {},
+          "requirements": [
+            "训练期每行应有完整的候选因子及实测目标。",
+            "预测期每行应提供同口径的候选因子。"
+          ],
+          "limitations": [
+            "用于线性基线，缺失值和不满秩的训练数据会被拒绝。",
+            "真实预测需独立评价，并核对各因子在预测时已可用。"
+          ]
+        }
+      ],
+      "binding_checks": [
+        "verified_company_and_object_access",
+        "crop_field_season_and_boundary_version",
+        "business_dates_cutoff_and_grid_alignment",
+        "source_quality_units_and_ground_truth",
+        "artifact_integrity_applicability_and_release_authorization"
+      ]
+    },
+    "issues": []
+  },
+  "check_failure": {
+    "valid": false,
+    "issues": [
+      {
+        "path": [
+          "composition",
+          "nodes",
+          0,
+          "bindings"
+        ],
+        "type": "missing_input",
+        "message": "Required input bindings are missing: regression.observations,request",
+        "node": "regression",
+        "port": "observations"
+      }
+    ]
+  },
+  "save_create_request": {
+    "provider_name": "modarchitect_design_loop",
+    "company_id": 1,
+    "configuration": {
+      "format": "research_plan_draft",
+      "definition": {
+        "schema_version": "1.4",
+        "name": "多因素作物生长指标预测",
+        "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+        "objective": "prediction",
+        "purpose": "train",
+        "variables": [
+          {
+            "code": "lai",
+            "name": "叶面积指数",
+            "definition_version": "1.0.0",
+            "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "value_type": "number",
+            "unit": "m2_m2",
+            "role": "target",
+            "minimum": 0,
+            "maximum": 15,
+            "categories": []
+          },
+          {
+            "code": "agb_kg_ha",
+            "name": "地上生物量",
+            "definition_version": "1.0.0",
+            "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "value_type": "number",
+            "unit": "kg_ha",
+            "role": "target",
+            "minimum": 0,
+            "maximum": null,
+            "categories": []
+          },
+          {
+            "code": "canopy_cover",
+            "name": "冠层覆盖度",
+            "definition_version": "1.0.0",
+            "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "value_type": "number",
+            "unit": "fraction",
+            "role": "covariate",
+            "minimum": 0,
+            "maximum": 1,
+            "categories": []
+          },
+          {
+            "code": "tuber_dm_kg_ha",
+            "name": "块茎干物质",
+            "definition_version": "1.0.0",
+            "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "value_type": "number",
+            "unit": "kg_ha",
+            "role": "covariate",
+            "minimum": 0,
+            "maximum": null,
+            "categories": []
+          }
+        ],
+        "collection_requirements": [
+          {
+            "code": "lai",
+            "variable_code": "lai",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "lai",
+              "definition_version": "1.0.0",
+              "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "agb_kg_ha",
+            "variable_code": "agb_kg_ha",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "agb_kg_ha",
+              "definition_version": "1.0.0",
+              "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "canopy_cover",
+            "variable_code": "canopy_cover",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "canopy_cover",
+              "definition_version": "1.0.0",
+              "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "tuber_dm_kg_ha",
+            "variable_code": "tuber_dm_kg_ha",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "tuber_dm_kg_ha",
+              "definition_version": "1.0.0",
+              "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          }
+        ],
+        "composition": {
+          "schema_version": "1.0",
+          "object_scope": "field_crop_season",
+          "inputs": [
+            {
+              "code": "observations",
+              "name": "系统标准人工记录",
+              "role": "context",
+              "data_type": {
+                "semantic": "research_observation_table",
+                "version": 1,
+                "shape": "table",
+                "unit": "column_definitions",
+                "alignment": "business_date"
+              }
+            },
+            {
+              "code": "regression_config",
+              "name": "多变量线性回归配置",
+              "role": "parameter",
+              "data_type": {
+                "semantic": "multivariate_regression_request",
+                "version": 1,
+                "shape": "bundle",
+                "unit": "native_contract",
+                "alignment": "context"
+              }
+            }
+          ],
+          "nodes": [
+            {
+              "code": "regression",
+              "component": {
+                "code": "multivariate_linear_training",
+                "revision": 1
+              },
+              "bindings": [
+                {
+                  "port": "observations",
+                  "source": {
+                    "node": null,
+                    "port": "observations"
+                  }
+                },
+                {
+                  "port": "request",
+                  "source": {
+                    "node": null,
+                    "port": "regression_config"
+                  }
+                }
+              ],
+              "selections": {}
+            }
+          ],
+          "outputs": [
+            {
+              "code": "trained_model",
+              "source": {
+                "node": "regression",
+                "port": "trained_model"
+              }
+            },
+            {
+              "code": "predictions",
+              "source": {
+                "node": "regression",
+                "port": "predictions"
+              }
+            }
+          ]
+        },
+        "input_recipes": {
+          "observations": {
+            "kind": "observations",
+            "variable_codes": [
+              "lai",
+              "agb_kg_ha",
+              "canopy_cover",
+              "tuber_dm_kg_ha"
+            ]
+          },
+          "regression_config": {
+            "kind": "configuration",
+            "value": {
+              "features": [
+                "canopy_cover",
+                "tuber_dm_kg_ha"
+              ],
+              "targets": [
+                "lai",
+                "agb_kg_ha"
+              ],
+              "training_end": "2026-05-10"
+            },
+            "runtime_fields": {}
+          }
+        },
+        "evaluation": {
+          "target_codes": [
+            "lai",
+            "agb_kg_ha"
+          ],
+          "purpose": "exploratory",
+          "split_unit": "time",
+          "success_criteria": "按相同对象、单位和日期检查数据覆盖；预测方法须以留出观测逐指标检验偏差。",
+          "update_policy": "manual_candidate",
+          "numeric_gate": null
+        },
+        "layout": {
+          "study_template": {
+            "id": "crop-growth-prediction",
+            "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f"
+          }
+        }
+      },
+      "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    }
+  },
+  "save_success": {
+    "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+    "revision": 1,
+    "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+  },
+  "saved_detail": {
+    "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+    "revision": 1,
+    "configuration": {
+      "format": "research_plan_draft",
+      "definition": {
+        "schema_version": "1.4",
+        "name": "多因素作物生长指标预测",
+        "question": "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的关系，并预测多个生长指标。",
+        "objective": "prediction",
+        "purpose": "train",
+        "variables": [
+          {
+            "code": "lai",
+            "name": "叶面积指数",
+            "definition_version": "1.0.0",
+            "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "value_type": "number",
+            "unit": "m2_m2",
+            "role": "target",
+            "minimum": 0,
+            "maximum": 15,
+            "categories": []
+          },
+          {
+            "code": "agb_kg_ha",
+            "name": "地上生物量",
+            "definition_version": "1.0.0",
+            "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "value_type": "number",
+            "unit": "kg_ha",
+            "role": "target",
+            "minimum": 0,
+            "maximum": null,
+            "categories": []
+          },
+          {
+            "code": "canopy_cover",
+            "name": "冠层覆盖度",
+            "definition_version": "1.0.0",
+            "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "value_type": "number",
+            "unit": "fraction",
+            "role": "covariate",
+            "minimum": 0,
+            "maximum": 1,
+            "categories": []
+          },
+          {
+            "code": "tuber_dm_kg_ha",
+            "name": "块茎干物质",
+            "definition_version": "1.0.0",
+            "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "value_type": "number",
+            "unit": "kg_ha",
+            "role": "covariate",
+            "minimum": 0,
+            "maximum": null,
+            "categories": []
+          }
+        ],
+        "collection_requirements": [
+          {
+            "code": "lai",
+            "variable_code": "lai",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "lai",
+              "definition_version": "1.0.0",
+              "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "agb_kg_ha",
+            "variable_code": "agb_kg_ha",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "agb_kg_ha",
+              "definition_version": "1.0.0",
+              "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "canopy_cover",
+            "variable_code": "canopy_cover",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "canopy_cover",
+              "definition_version": "1.0.0",
+              "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          },
+          {
+            "code": "tuber_dm_kg_ha",
+            "variable_code": "tuber_dm_kg_ha",
+            "method": {
+              "protocol_code": "system_manual_record",
+              "protocol_version": "1.0.0",
+              "method_code": "standard_manual_entry",
+              "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+              "evidence_required": true
+            },
+            "unit_kind": "field_season",
+            "requires_sampling_points": false,
+            "required_for": [
+              "train"
+            ],
+            "source": "manual",
+            "catalog_binding": {
+              "kind": "sampling_indicator",
+              "code": "tuber_dm_kg_ha",
+              "definition_version": "1.0.0",
+              "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+              "value_nature": "observed",
+              "source_system": null,
+              "selectors": {}
+            },
+            "start_offset_days": 0,
+            "end_offset_days": null,
+            "interval_days": null,
+            "minimum_observations_per_unit": 1,
+            "minimum_independent_units": 1
+          }
+        ],
+        "composition": {
+          "schema_version": "1.0",
+          "object_scope": "field_crop_season",
+          "inputs": [
+            {
+              "code": "observations",
+              "name": "系统标准人工记录",
+              "role": "context",
+              "data_type": {
+                "semantic": "research_observation_table",
+                "version": 1,
+                "shape": "table",
+                "unit": "column_definitions",
+                "alignment": "business_date"
+              }
+            },
+            {
+              "code": "regression_config",
+              "name": "多变量线性回归配置",
+              "role": "parameter",
+              "data_type": {
+                "semantic": "multivariate_regression_request",
+                "version": 1,
+                "shape": "bundle",
+                "unit": "native_contract",
+                "alignment": "context"
+              }
+            }
+          ],
+          "nodes": [
+            {
+              "code": "regression",
+              "component": {
+                "code": "multivariate_linear_training",
+                "revision": 1
+              },
+              "bindings": [
+                {
+                  "port": "observations",
+                  "source": {
+                    "node": null,
+                    "port": "observations"
+                  }
+                },
+                {
+                  "port": "request",
+                  "source": {
+                    "node": null,
+                    "port": "regression_config"
+                  }
+                }
+              ],
+              "selections": {}
+            }
+          ],
+          "outputs": [
+            {
+              "code": "trained_model",
+              "source": {
+                "node": "regression",
+                "port": "trained_model"
+              }
+            },
+            {
+              "code": "predictions",
+              "source": {
+                "node": "regression",
+                "port": "predictions"
+              }
+            }
+          ]
+        },
+        "input_recipes": {
+          "observations": {
+            "kind": "observations",
+            "variable_codes": [
+              "lai",
+              "agb_kg_ha",
+              "canopy_cover",
+              "tuber_dm_kg_ha"
+            ]
+          },
+          "regression_config": {
+            "kind": "configuration",
+            "value": {
+              "features": [
+                "canopy_cover",
+                "tuber_dm_kg_ha"
+              ],
+              "targets": [
+                "lai",
+                "agb_kg_ha"
+              ],
+              "training_end": "2026-05-10"
+            },
+            "runtime_fields": {}
+          }
+        },
+        "evaluation": {
+          "target_codes": [
+            "lai",
+            "agb_kg_ha"
+          ],
+          "purpose": "exploratory",
+          "split_unit": "time",
+          "success_criteria": "按相同对象、单位和日期检查数据覆盖；预测方法须以留出观测逐指标检验偏差。",
+          "update_policy": "manual_candidate",
+          "numeric_gate": null
+        },
+        "layout": {
+          "study_template": {
+            "id": "crop-growth-prediction",
+            "sha256": "debcc0cb601db59523ace691d440aebfba5bfd18428a389873202e1550dbb76f"
+          }
+        }
+      },
+      "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    },
+    "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+    "updated_at": "2026-11-16T21:38:09.945171+08:00"
+  },
+  "compatible_ports": {
+    "source": {
+      "code": "multivariate_linear_training",
+      "revision": 1,
+      "output": "trained_model"
+    },
+    "items": [
+      {
+        "code": "multivariate_linear_predict",
+        "revision": 1,
+        "input": "model"
+      }
+    ],
+    "total": 1
+  }
+}

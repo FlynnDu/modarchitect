@@ -1,0 +1,113 @@
+{
+  "checked_at": "2026-11-17T11:29:57.558455+08:00",
+  "host": "172.16.1.122",
+  "configuration": "/etc/nginx/conf.d/mlgrowth-api.conf",
+  "backup": "/etc/nginx/conf.d/mlgrowth-api.conf.bak-modarchitect-20261117T112956",
+  "before_sha256": "96a9b445596c6b9658235cc1bf0b60c2711d50d2f98834048c5d7660025fe573",
+  "after_sha256": "72feb08e9b1075b4e169a1720d26e2ac48f753eef70ca5092dee48bac08b3fe5",
+  "proxy_prefix": "/modarchitect/",
+  "upstream": "http://172.16.1.122:18925/",
+  "commands": [
+    {
+      "command": "nginx -t",
+      "status": 0,
+      "output": "nginx: the configuration file /etc/nginx/nginx.conf syntax is ok\nnginx: configuration file /etc/nginx/nginx.conf test is successful"
+    },
+    {
+      "command": "systemctl reload nginx",
+      "status": 0,
+      "output": ""
+    },
+    {
+      "command": "systemctl is-active nginx",
+      "status": 0,
+      "output": "active"
+    }
+  ],
+  "checks": {
+    "proxy_health": {
+      "status": 200,
+      "response": {
+        "status": "ok"
+      },
+      "readiness_statuses": [
+        404,
+        200
+      ]
+    },
+    "components": {
+      "status": 200,
+      "matches_direct": true,
+      "total": 28
+    },
+    "openapi_json": {
+      "status": 200,
+      "title": "modarchitect"
+    },
+    "/healthz": {
+      "before_status": 200,
+      "after_status": 200,
+      "response_unchanged": true
+    },
+    "/mlgrowth/health": {
+      "before_status": 404,
+      "after_status": 404,
+      "response_unchanged": true
+    },
+    "/mlgrowth/openapi.json": {
+      "before_status": 200,
+      "after_status": 200,
+      "response_unchanged": true
+    },
+    "missing_key": {
+      "status": 401
+    },
+    "invalid_key": {
+      "status": 401
+    },
+    "valid_key": {
+      "status": 200,
+      "items": 20,
+      "matches_direct": true
+    },
+    "prefix_redirect": {
+      "status": 308,
+      "location": "http://172.16.1.122:17000/modarchitect/?probe=query-preserved",
+      "query_preserved": true
+    },
+    "api_job": {
+      "version": 11,
+      "image": "172.16.1.122/sumfen/modarchitect-api:0.1.1-20261116-570beac9e18b@sha256:bf8d47b82c7577993f9f6028700f18c0d93f9fe2b66749a9e5ac86cb851e299c",
+      "unchanged": true
+    },
+    "api_allocations": [
+      {
+        "id": "73148a87-063e-4014-75c2-43f49a8d876c",
+        "status": "running",
+        "healthy": true
+      }
+    ],
+    "consul": [
+      {
+        "address": "172.16.1.122",
+        "port": 18925,
+        "checks": [
+          "passing",
+          "passing"
+        ]
+      }
+    ]
+  },
+  "rollback_performed": false,
+  "existing_configuration_bytes_preserved": true,
+  "scope": {
+    "nginx_only": true,
+    "api_job_changed": false,
+    "database_changed": false,
+    "designer_prefix_supported": false,
+    "docs_ui_prefix_supported": false
+  },
+  "verified_at": "2026-11-17T11:30:42.044889+08:00",
+  "reload_observation": "The first request after reload reached the old worker (404); the next readiness probe returned 200 after 0.5 seconds. The initial deployment attempt restored the original file before applying the bounded readiness check.",
+  "earlier_rollback_backup": "/etc/nginx/conf.d/mlgrowth-api.conf.bak-modarchitect-20261117T112826"
+}

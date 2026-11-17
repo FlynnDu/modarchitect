@@ -1,0 +1,48 @@
+{
+  "columns": [
+    {
+      "code": "lai",
+      "name": "叶面积指数",
+      "unit": "m2_m2",
+      "value_kind": "observed"
+    }
+  ],
+  "rows": [
+    {
+      "object": {
+        "field_ref": "fixture",
+        "crop_code": "wheat",
+        "season_ref": "fixture-season"
+      },
+      "business_date": "2026-04-01",
+      "values": {
+        "lai": 1
+      }
+    },
+    {
+      "object": {
+        "field_ref": "fixture",
+        "crop_code": "wheat",
+        "season_ref": "fixture-season"
+      },
+      "business_date": "2026-04-02",
+      "values": {
+        "lai": 2
+      }
+    },
+    {
+      "object": {
+        "field_ref": "fixture",
+        "crop_code": "wheat",
+        "season_ref": "fixture-season"
+      },
+      "business_date": "2026-04-03",
+      "values": {
+        "lai": 3
+      }
+    }
+  ],
+  "source_sha256": [
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "algorithm": "random_forest",
+    "design_id": "01a1e460-20a3-7b11-8d62-fee9645e9576",
+    "model_id": "01a1e460-51ac-7df1-9629-5c84e03dd6e4",
+    "fresh_client_reopened": true,
+    "model_sha256": "d8e7fa6eed1401413826ac2581c5cdaa9b4f0dea4f31e11b42af52fc281956c8",
+    "state_unchanged": true,
+    "prediction_without_refit": true,
+    "other_workspace_status": 404
+  },
+  {
+    "algorithm": "xgboost",
+    "design_id": "01a1e461-877b-7ed6-9968-ecd8e5ee4de7",
+    "model_id": "01a1e461-d69b-738d-8ac8-304642fb5305",
+    "fresh_client_reopened": true,
+    "model_sha256": "3ff987dfc7f760d9c062fe6560188219f3fd819ed967d76da806103e9aa2f1f1",
+    "state_unchanged": true,
+    "prediction_without_refit": true,
+    "other_workspace_status": 404
+  },
+  {
+    "algorithm": "gaussian_process",
+    "design_id": "01a1e461-81eb-75d7-8e3c-e5c8f8a7a420",
+    "model_id": "01a1e461-d14b-7e6c-b92c-4be243d50acc",
+    "fresh_client_reopened": true,
+    "model_sha256": "821f92b0394a7db8ca28517524802b80beecbae690edbed32c670803740744a6",
+    "state_unchanged": true,
+    "prediction_without_refit": true,
+    "other_workspace_status": 404
+  }
+]

@@ -1,0 +1,132 @@
+{
+  "method": "real curl / real HTTP / isolated PostgreSQL / SQLite business-reference transaction",
+  "identity": "business identity HTTP contract adapter; not production authorization",
+  "business_database_retains_configuration_after_confirmation": false,
+  "pre_send_restart_recovered": true,
+  "reference_failure_recovered": true,
+  "update_replay_stable": true,
+  "stale_update_rejected": true,
+  "duplicate_designs": 0,
+  "receipt": {
+    "design_id": "01a1e332-23a5-700c-8c09-a95757fd4765",
+    "revision": 1,
+    "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+  },
+  "exchanges": [
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates",
+      "status": 401
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/research-inputs",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/model-center/components/logistic_growth_curve?revision=4",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/model-center/research-inputs/configure",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/models",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/study-templates/crop-growth-prediction",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/check",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/import",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/1afe2b39-2c18-4d67-a4f6-1074725244e9",
+      "status": 404
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/1afe2b39-2c18-4d67-a4f6-1074725244e9",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e332-23a5-700c-8c09-a95757fd4765",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/configurations/draft",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/research/design-saves",
+      "status": 409
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-saves/1afe2b39-2c18-4d67-a4f6-1074725244e9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/research/design-drafts/01a1e332-23a5-700c-8c09-a95757fd4765",
+      "status": 200
+    }
+  ]
+}
