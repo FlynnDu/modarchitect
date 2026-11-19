@@ -34,4 +34,8 @@
 - 首轮通过 `.venv/Scripts/python.exe .ops/verify_local_database.py` 在新隔离库及非特权角色运行 11 个相关测试文件，共 82 场景，81 通过，发现 1 处发布/版本读回响应差异。修复后用 `PYTHONPATH=.`、`MODARCHITECT_PYTEST_ARGS` 指定 api_design_loop、design_api、versioned_studies、research_inspection 四个文件，运行 `.venv/Scripts/python.exe .ops/run_remote_tests.py`，31/31 通过；覆盖了上述失败场景。
 - 最终对检查响应空值字段和执行预检重新运行 research_inspection 的数据库读回用例与 platform_rules，10/10 通过。上述相关 Python 场景并集 82 项均已通过；没有用跳过数据库的结果代替联验。迁移检查无新增结构差异。
 - 对全部 12 个本次自有 Python 文件执行 Ruff 及 `check_python_headers.py`，全部通过；`git diff --check` 通过。早期直接 pytest 遇到系统临时目录访问失败，后续使用项目隔离验收目录与标准数据库入口完成验证。
-- 未部署，未进行浏览器像素布局验收或真实 DolphinScheduler 联验；本次验证覆盖 HTTP、实际隔离数据库、DOM 行为及既有计算回归。
+- 本机实施验收阶段未部署，未进行浏览器像素布局验收或真实 DolphinScheduler 联验；本次验证覆盖 HTTP、实际隔离数据库、DOM 行为及既有计算回归。
+
+## 发布包复核
+
+2026-11-19。从干净公开发布目录构建安装包，公开源码检查排除内部部署文件和未完成改动。安装包的 156 个服务文件与 Git 源码归档逐字节核对；对测试制品只存在换行规范差异，源码内容一致。隔离 PostgreSQL 的完整安装包回归166项、公开目录前端125项通过；全部168个 Python 文件头及 Ruff 通过。发布版本保持 v0.2.0，准确提交和制品摘要随发布元数据记录，原 tag 指向保留在版本历史与发布回退记录中。

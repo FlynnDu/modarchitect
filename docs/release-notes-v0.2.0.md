@@ -27,7 +27,7 @@
 ## 验证
 
 - 前端 125 项测试通过，覆盖真实服务端响应、不同方法共用展示、未知组件/规则、参数编辑、请求乱序、重试与焦点保留。
-- 相关 Python 82 项场景分批验证通过，包含 HTTP 合同、隔离 PostgreSQL 保存重开、发布/读回一致性、操作兼容及历史行为。
-- 本次 12 个产品及测试 Python 文件通过 Ruff 与文件头检查，git diff 检查通过。
+- 发布安装包在隔离 PostgreSQL 和低权限角色下完成 Python 全量回归，166 项通过，覆盖 HTTP 合同、保存重开、发布/读回一致性、操作兼容及历史行为。
+- 公开发布源码的 168 个 Python 文件通过文件头检查，Ruff 与 git diff 检查通过。安装包的 156 个服务文件与 Git 归档逐字节一致。
 
 [完整统一响应合同](research-inspection-api.md) · [前端接入说明](frontend-integration.md) · [业务后端接入说明](business-api-integration.md)
