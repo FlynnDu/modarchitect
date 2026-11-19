@@ -194,7 +194,9 @@ def test_native_template_save_reopen_authorization_revision_and_replay(runtime_c
     assert completed.status_code == 200
     edited = deepcopy(row["definition"])
     edited["evaluation"]["maximum_runs"] = 2
-    update = client.put("/api/v1/workspace/plans/" + saved["design_id"], headers=headers, json={"definition": edited, "expected_revision": saved["revision"]})
+    opened = client.post("/api/v1/workspace/design-versions/" + first.json()["design_version_id"] + "/drafts",
+                         headers={**headers, "Idempotency-Key": str(uuid4())}).raise_for_status().json()
+    update = client.put("/api/v1/workspace/plans/" + saved["design_id"], headers=headers, json={"definition": edited, "expected_revision": opened["revision"]})
     assert update.status_code == 200, update.text
     body["expected_revision"] = update.json()["revision"]
     rejected = client.post("/api/v1/workspace/template-runs", headers={**headers, "Idempotency-Key": str(uuid4())}, json=body)

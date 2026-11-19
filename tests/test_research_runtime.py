@@ -243,11 +243,13 @@ def test_saved_study_trains_reopens_and_predicts_without_refitting(
         assert row["values"]["height"] == pytest.approx(expected, abs=0.0001)
     revised = deepcopy(example["definition"])
     revised["name"] += " revised"
+    opened = client.post(BASE + "/design-versions/" + completed["design_version_id"] + "/drafts",
+                         headers={**WRITE, "Idempotency-Key": str(uuid4())}).raise_for_status().json()
     assert (
         client.put(
             BASE + "/plans/" + saved["design_id"],
             headers=WRITE,
-            json={"definition": revised, "expected_revision": saved["revision"]},
+            json={"definition": revised, "expected_revision": opened["revision"]},
         ).status_code
         == 200
     )

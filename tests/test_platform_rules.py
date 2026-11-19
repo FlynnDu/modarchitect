@@ -123,8 +123,10 @@ def test_input_remove_add_then_real_model_and_historical_flow(runtime_clients):
     edited = deepcopy(original["definition"])
     previous = edited["input_recipes"]["regression_config"]["value"]["training_end"]
     edited["input_recipes"]["regression_config"]["value"]["training_end"] = "2026-05-09"
+    opened = client.post(BASE + "/design-versions/" + started.json()["design_version_id"] + "/drafts",
+                         headers={**WRITE, "Idempotency-Key": str(uuid4())}).raise_for_status().json()
     updated = client.put(BASE + "/plans/" + saved["design_id"], headers=WRITE,
-                         json={"definition": edited, "expected_revision": 1, "data_kind": "user_supplied"})
+                         json={"definition": edited, "expected_revision": opened["revision"], "data_kind": "user_supplied"})
     assert updated.status_code == 200, updated.text
     current = client.get(BASE + "/plans/" + saved["design_id"]).json()["configuration"]["definition"]
     historic = client.get(BASE + "/runs/" + run_id + "/plan").json()
