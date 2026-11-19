@@ -1,4 +1,0 @@
-# 只覆盖本次已验收的页面镜像，其他服务继续使用原部署配置。
-services:
-  api:
-    image: modarchitect:0.1.0-figma-ui-b62341979b81

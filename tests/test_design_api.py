@@ -44,6 +44,44 @@ SELECTION = {
 }
 
 
+def test_designer_assets_revalidate_browser_cache_without_affecting_api():
+    """更新后静态模块必须重新校验；304仍保留缓存规则，API协议不受影响。"""
+    with TestClient(create_app()) as client:
+        for path in ("/designer/", "/designer/schema-fields.js", "/designer/request-schema.js"):
+            response = client.get(path)
+            assert response.status_code == 200
+            assert response.headers.get("cache-control") == "no-cache"
+            cached = client.get(path, headers={"If-None-Match": response.headers["etag"]})
+            assert cached.status_code == 304
+            assert cached.headers.get("cache-control") == "no-cache"
+        assert client.get("/api/v1/workspace/study-templates").status_code == 200
+
+
+def test_platform_template_reads_use_service_key_without_company_scope():
+    """业务模式按公共目录查询，企业参数与 OpenAPI 均不参与模板检索。"""
+    key = {"X-Modarchitect-Api-Key": "template-read-test-key"}
+    with TestClient(create_app(api_key=key["X-Modarchitect-Api-Key"], authentication_mode="api_key")) as client:
+        paths = client.get("/openapi.json").json()["paths"]
+        for suffix, parameters in (("", set()), ("/crop-growth-prediction", {"template_id", "sha256"})):
+            path = ROOT + "/study-templates" + suffix
+            result = client.get(path, headers=key)
+            assert result.status_code == 200
+            assert client.get(path).status_code == 401
+            assert client.get(path, headers={"X-Modarchitect-Api-Key": "wrong"}).status_code == 401
+            for company_id in (1, 2):
+                scoped = client.get(path, headers=key, params={"provider_name": "test-catalog", "company_id": company_id})
+                assert scoped.status_code == 200 and scoped.json() == result.json()
+            schema_path = ROOT + "/study-templates" + ("/{template_id}" if suffix else "")
+            operation = paths[schema_path]["get"]
+            assert {item["name"] for item in operation.get("parameters", [])} == parameters
+            assert {"ModarchitectApiKey": []} in operation["security"]
+        definition = result.json()
+        assert "bundles" not in definition
+        exact = client.get(path, headers=key, params={"sha256": definition["sha256"]})
+        assert exact.json() == definition
+        assert client.get(path, headers=key, params={"sha256": "0" * 64}).status_code == 404
+
+
 def fit_file(revision: int = 4) -> dict:
     """读取迁移基线固定的实际文件。"""
     return json.loads((FILES / ("research-fit-v%s.json" % revision)).read_bytes())
@@ -111,6 +149,29 @@ def test_validation_locates_wrong_logistic_axis_and_preserves_layout_identity() 
             "observations",
             "x_code",
         )
+
+
+def test_responsible_user_reference_round_trips_without_changing_scientific_identity() -> None:
+    """业务用户ID随配置往返，人员调整不改变科学身份，非法引用准确定位。"""
+    with TestClient(create_app(api_key="responsible-reference")) as client:
+        headers = {"X-Modarchitect-Api-Key": "responsible-reference"}
+        definition = fit_file()["definition"]
+        baseline = client.post(ROOT + "/plans/validate", json=definition, headers=headers).json()
+        definition["responsible_user_id"] = "9007199254740993"
+        configuration = client.post(ROOT + "/configurations/draft", json=definition, headers=headers)
+        assert configuration.status_code == 200, configuration.text
+        checked = client.post(ROOT + "/configurations/check", json=configuration.json(), headers=headers).json()
+        assert checked["valid"], checked
+        imported = client.post(ROOT + "/configurations/import", json=configuration.json(), headers=headers)
+        assert imported.json() == configuration.json()
+        after = client.post(ROOT + "/plans/validate", json=definition, headers=headers)
+        assert after.status_code == 200, after.text
+        assert after.json()["plan_sha256"] == baseline["plan_sha256"]
+        for value in ("", " ", " user", "user\n", "u" * 129, 123, True):
+            definition["responsible_user_id"] = value
+            bad = client.post(ROOT + "/configurations/draft", json=definition, headers=headers).json()
+            issues = client.post(ROOT + "/configurations/check", json=bad, headers=headers).json()["issues"]
+            assert issues[0]["path"] == ["responsible_user_id"]
 
 
 def test_package_preflight_checks_registered_ports_and_local_schemas() -> None:

@@ -233,7 +233,7 @@ def refusals(client: httpx.Client) -> dict:
 def main() -> None:
     """生成不含 Cookie 或凭据的工程验收记录；所有观测为构造验收数据。"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default="http://192.168.3.249:18925")
+    parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     with httpx.Client(base_url=args.base_url, timeout=30) as client:

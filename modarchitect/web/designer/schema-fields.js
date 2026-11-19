@@ -1,30 +1,8 @@
 import { element } from "./visuals.js?v=continuous1";
-import { sourceFor } from "./editor.js?v=continuous1";
-
-const legacyFields = {
-  operation: { title: "操作", default: "fit", labels: { fit: "拟合", evaluate: "求值" } },
-  axis_kind: { title: "时间轴", default: "elapsed_days", labels: { elapsed_days: "播种后天数", growing_degree_days: "生长度日" } },
-  x_code: { title: "驱动变量", "x-research-variables": { table_port: "observations", roles: ["driver"] } },
-  target_code: { title: "目标变量", "x-research-variables": { table_port: "observations", roles: ["target"] } },
-  cutoff: { title: "拟合截止日期" },
-  degree_day_definition: { title: "积温定义" },
-  allow_extrapolation: { title: "允许外推" },
-  simulation_only: { title: "仅用于模拟" },
-};
-
-function properties(schema) {
-  return Object.entries(schema?.properties || {}).map(([name, field]) => {
-    const reference = field.$ref?.match(/^#\/\$defs\/([\w]+)$/)?.[1];
-    const resolved = reference ? { ...schema.$defs[reference], ...field } : field;
-    return [name, schema.title === "LogisticGrowthRequest" ? { ...resolved, ...legacyFields[name] } : resolved];
-  });
-}
-
-export function defaults(schema) {
-  if (!schema) return null;
-  return Object.fromEntries(properties(schema).filter(([, field]) => field.default !== undefined)
-    .map(([name, field]) => [name, structuredClone(field.default)]));
-}
+import { requestProperties, variableCandidates } from "./request-schema.js?v=continuous1";
+import { calendarAxes } from "./calendar-axis.js?v=continuous1";
+// 已打开的旧页面仍会从此模块导入这些函数，保留出口以兼容浏览器缓存。
+export { defaults, requestProperties, variableCandidates } from "./request-schema.js?v=continuous1";
 
 export function field(title, name, control, wide = false) {
   const label = element("label", "field" + (wide ? " wide" : ""), title);
@@ -61,12 +39,12 @@ export function choices(options, update, attribute) {
 }
 
 function variableControl(grid, definition, node, spec, title, name, shape, value, change) {
-  const binding = node && sourceFor(node, spec.table_port);
-  const table = binding && !binding.node && definition.input_recipes[binding.port];
-  const variables = definition.variables.filter((item) =>
-    (definition.schema_version === "1.5" || spec.roles.includes(item.role)) && (!spec.unit || item.unit === spec.unit)
-    && (!spec.observed || !definition.collection_requirements.some((requirement) => requirement.variable_code === item.code && requirement.catalog_binding?.value_nature && requirement.catalog_binding.value_nature !== "observed")) && (!table || (spec.new_column
-      ? !table.variable_codes.includes(item.code) : table.variable_codes.includes(item.code))));
+  const variables = variableCandidates(definition, node, spec);
+  if (spec.roles?.join() === "driver" && calendarAxes(definition).some((axis) => axis.code === value)) {
+    const control = element("input"); control.type = "text"; control.readOnly = true; control.value = "平台观测日期（自动使用）";
+    grid.append(field("时间驱动", name, control), element("p", "field-note", "由平台根据实际观测日期生成，无需采集或选择天数；不表示播种后天数或积温。"));
+    return control;
+  }
   const options = variables.map((item) => [item.code, item.name + " · " + item.unit]);
   if (shape === "array") {
     const group = element("fieldset", "variable-picks");
@@ -88,47 +66,64 @@ function variableControl(grid, definition, node, spec, title, name, shape, value
   if (value && !options.some(([id]) => id === value)) options.push([value, value + "（不在可用观测列中）"]);
   const control = selectField([["", "请选择"], ...options], value, (next) => change(next || undefined));
   grid.append(field(title, name, control));
+  if (!variables.length) grid.append(element("p", "field-note", spec.unit === "day" ? "平台日期驱动尚未连接，请先连接带观测日期的研究资料，再重新选择此计算方法；无需人工添加天数。" : spec.unit === "deg_c_day" ? "当前没有符合条件的积温资料（deg_c_day）。可采用已有天数轴；积温指标及其计算来源须由系统登记后使用，普通气温不能代替积温。" : "当前没有符合该参数单位和来源要求的指标，请先补充研究资料。"));
   return control;
 }
 
 export function parameters(definition, node, schema, requestPort, update, issue) {
   const grid = element("div", "field-grid");
   const value = definition.input_recipes[requestPort].value;
-  for (const [name, property] of properties(schema)) {
-    if (schema.title === "LogisticGrowthRequest" && name === "degree_day_definition" && value.axis_kind !== "growing_degree_days") continue;
-    const title = property.title || name;
-    const change = (next) => update(requestPort, name, next);
-    let control;
-    if (property["x-research-variables"]) {
-      control = variableControl(grid, definition, node, property["x-research-variables"], title, name, property.type, value[name], change);
-    } else {
-      const shape = property.type || property.anyOf?.find((option) => option.type !== "null")?.type;
-      if (property.enum) {
-        const options = property.enum.map((key) => [String(key), property.labels?.[key] || String(key)]);
-        control = selectField([["", "请选择"], ...options], value[name], (next) =>
-          change(property.enum.find((item) => String(item) === next)));
+  function render() {
+    grid.replaceChildren();
+    for (const [name, property] of requestProperties(schema, value)) {
+      if (schema.title === "LogisticGrowthRequest" && name === "degree_day_definition" && value.axis_kind !== "growing_degree_days") continue;
+      const title = property.title || name;
+      const change = (next) => {
+        update(requestPort, name, next);
+        if (schema.title === "LogisticGrowthRequest" && name === "axis_kind") {
+          const spec = requestProperties(schema, value).find(([field]) => field === "x_code")[1]["x-research-variables"];
+          if (!variableCandidates(definition, node, spec).some((variable) => variable.code === value.x_code)) update(requestPort, "x_code", undefined);
+          if (spec.unit === "day" && !value.x_code) {
+            const automatic = calendarAxes(definition).find((axis) => variableCandidates(definition, node, spec).some((variable) => variable.code === axis.code));
+            if (automatic) update(requestPort, "x_code", automatic.code);
+          }
+          render(); grid.querySelector('[data-field="axis_kind"]')?.focus();
+        }
+      };
+      let control;
+      if (property["x-research-variables"]) {
+        control = variableControl(grid, definition, node, property["x-research-variables"], title, name, property.type, value[name], change);
       } else {
-        const structured = ["array", "object"].includes(shape) || !shape;
-        control = element(structured ? "textarea" : "input", "");
-        const kind = property.format === "date" ? "date" : { boolean: "checkbox", number: "number", integer: "number" }[shape] || "text";
-        if (!structured) control.type = kind;
-        if (kind === "number") control.step = shape === "integer" ? "1" : "any";
-        if (kind === "checkbox") control.checked = value[name] ?? property.default ?? false;
-        else control.value = structured && value[name] !== undefined ? JSON.stringify(value[name]) : value[name] ?? "";
-        control.addEventListener("input", () => {
-          if (kind === "checkbox") change(control.checked);
-          else if (!control.value.trim()) change(property.anyOf?.some((item) => item.type === "null") ? null : undefined);
-          else if (kind === "number") change(control.valueAsNumber);
-          else if (structured) {
-            try { change(JSON.parse(control.value)); control.removeAttribute("aria-invalid"); }
-            catch { change(undefined); control.setAttribute("aria-invalid", "true"); }
-          } else change(control.value);
-        });
+        const shape = property.type || property.anyOf?.find((option) => option.type !== "null")?.type;
+        if (property.enum) {
+          const options = property.enum.map((key) => [String(key), property.labels?.[key] || String(key)]);
+          control = selectField([["", "请选择"], ...options], value[name], (next) =>
+            change(property.enum.find((item) => String(item) === next)));
+        } else {
+          const structured = ["array", "object"].includes(shape) || !shape;
+          control = element(structured ? "textarea" : "input", "");
+          const kind = property.format === "date" ? "date" : { boolean: "checkbox", number: "number", integer: "number" }[shape] || "text";
+          if (!structured) control.type = kind;
+          if (property.const !== undefined) control.readOnly = true;
+          if (kind === "number") control.step = shape === "integer" ? "1" : "any";
+          if (kind === "checkbox") control.checked = value[name] ?? property.default ?? false;
+          else control.value = structured && value[name] !== undefined ? JSON.stringify(value[name]) : value[name] ?? "";
+          control.addEventListener("input", () => {
+            if (kind === "checkbox") change(control.checked);
+            else if (!control.value.trim()) change(property.anyOf?.some((item) => item.type === "null") ? null : undefined);
+            else if (kind === "number") change(control.valueAsNumber);
+            else if (structured) {
+              try { change(JSON.parse(control.value)); control.removeAttribute("aria-invalid"); }
+              catch { change(undefined); control.setAttribute("aria-invalid", "true"); }
+            } else change(control.value);
+          });
+        }
+        grid.append(field(title, name, control, true));
       }
-      grid.append(field(title, name, control, true));
+      if (issue?.path?.[1] === requestPort && issue.path.at(-1) === name) control.setAttribute("aria-invalid", "true");
+      if (property.description) grid.append(element("p", "field-note schema-note", property.description));
     }
-    if (issue?.path?.[1] === requestPort && issue.path.at(-1) === name) control.setAttribute("aria-invalid", "true");
-    if (property.description) grid.append(element("p", "field-note schema-note", property.description));
   }
+  render();
   return grid;
 }

@@ -1,5 +1,5 @@
 {
-  "note": "线上隔离验收样例；ID属于验收企业，不继承访问权。业务接入须使用自己的provider_name/company_id和API返回的ID。本文件不含密钥。",
+  "note": "隔离验收接口示例，配置摘要按这里的完整正文计算。方案ID为演示值。对接请使用本企业的provider_name/company_id和实际接口返回的ID。",
   "configure_input_request": {
     "key": "variable_source:temperature_mean_daily@1.0.0",
     "role": "covariate",
@@ -2455,7 +2455,7 @@
         }
       }
     },
-    "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
   },
   "check_success": {
     "valid": true,
@@ -2843,16 +2843,16 @@
           }
         }
       },
-      "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+      "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
     }
   },
   "save_success": {
-    "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+    "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
     "revision": 1,
-    "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+    "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525"
   },
   "saved_detail": {
-    "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+    "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
     "revision": 1,
     "configuration": {
       "format": "research_plan_draft",
@@ -3154,9 +3154,9 @@
           }
         }
       },
-      "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+      "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
     },
-    "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+    "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525",
     "updated_at": "2026-11-16T21:38:09.945171+08:00"
   },
   "compatible_ports": {

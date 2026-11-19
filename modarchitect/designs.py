@@ -23,13 +23,14 @@ from .system_inputs import validate_input_bindings, validate_input_adoption
 
 
 def draft_view(row: Mapping) -> dict:
-    """输出旧草稿接口的字段，验证当前存储的摘要。"""
+    """输出当前草稿及已分配版本，验证存储的摘要。"""
     configuration = row["configuration_json"]
     if identity_sha256(configuration) != row["configuration_sha256"]:
         raise DesignConflict("Persisted research draft checksum differs")
     return {
         "design_id": row["design_id"],
         "revision": row["revision"],
+        "version_name": row["version_name"],
         "configuration": configuration,
         "configuration_sha256": row["configuration_sha256"],
         "updated_at": row["updated_at"],
@@ -46,6 +47,7 @@ def _version_summary(row: Mapping) -> dict:
         raise DesignConflict("Persisted research version checksum or revision differs")
     return {
         "design_version_id": row["design_version_id"],
+        "version_name": row["version_name"],
         "revision": row["revision"],
         "contract_sha256": row["contract_sha256"],
         "published_at": row["created_at"],
@@ -84,6 +86,8 @@ def _append(
     design_id: UUID,
     publication: DesignPublication,
     latest: Mapping | None,
+    *,
+    version_name: str | None = None,
 ) -> tuple[dict, bool]:
     """冻结下一版，完全相同的旧请求重放返回原版。"""
     if latest is not None and publication.revision <= latest["revision"]:
@@ -96,7 +100,7 @@ def _append(
     if publication.revision != (latest["revision"] if latest is not None else 0) + 1:
         raise DesignConflict("Research design revision must be the next version")
     digests = {key: entry.contract_sha256 for key, entry in catalog().items()}
-    return _version_view(tx, tx.append_version(design_id, publication, digests)), True
+    return _version_view(tx, tx.append_version(design_id, publication, digests, version_name=version_name)), True
 
 
 class ResearchDesigns:
@@ -116,13 +120,13 @@ class ResearchDesigns:
         return configuration
 
     def create(
-        self, principal: VerifiedPrincipal, key: str, configuration: dict
+        self, principal: VerifiedPrincipal, key: str, configuration: dict, *, version_name: str | None = None,
     ) -> tuple[dict, bool]:
         """核验采集点后幂等创建或重开草稿。"""
         configuration = self.prepare_draft(principal, configuration)
         validate_input_adoption(configuration["definition"], self.creation_definition(principal, key, configuration))
         with self.store.transaction(principal) as tx:
-            row, created = tx.create_draft(key, configuration)
+            row, created = tx.create_draft(key, configuration, version_name=version_name)
             return draft_view(row), created
 
     def creation_definition(self, principal: VerifiedPrincipal, key: str, configuration: dict) -> dict | None:
@@ -136,7 +140,11 @@ class ResearchDesigns:
     def read(self, principal: VerifiedPrincipal, design_id: UUID) -> dict:
         """按可信企业和主体读取草稿。"""
         with self.store.transaction(principal) as tx:
-            return draft_view(tx.get_draft(design_id))
+            draft = draft_view(tx.get_draft(design_id))
+            latest = tx.latest_version(design_id)
+            if latest is not None:
+                draft["latest_version"] = {key: latest[key] for key in ("design_version_id", "version_name")}
+            return draft
 
     def list_drafts(self, principal: VerifiedPrincipal) -> list[dict]:
         """列出当前主体的草稿。"""
@@ -149,18 +157,23 @@ class ResearchDesigns:
         design_id: UUID,
         revision: int,
         configuration: dict,
+        *,
+        version_name: str | None = None,
+        replace_candidate: bool = False,
     ) -> dict:
         """保存前在线核对采集点，再用短事务更新指定修订。"""
         previous = self.read(principal, design_id)["configuration"]["definition"]
         configuration = self.prepare_draft(principal, configuration)
         validate_input_adoption(configuration["definition"], previous)
         with self.store.transaction(principal) as tx:
-            return draft_view(tx.save_draft(design_id, revision, configuration))
+            return draft_view(tx.save_draft(design_id, revision, configuration, version_name=version_name, replace_candidate=replace_candidate))
 
     def save_reference(self, principal: VerifiedPrincipal, request_id: UUID, body: DesignSave) -> dict:
         """完整方案与保存回执原子提交，业务登记重试不会再次写方案。"""
-        digest = identity_sha256(body.model_dump(mode="json", exclude_none=True,
-                                               exclude={"provider_name", "company_id"}))
+        request = body.model_dump(mode="json", exclude_none=True, exclude={"provider_name", "company_id", "version_name"})
+        if "version_name" in body.model_fields_set:
+            request["version"] = body.version_name
+        digest = identity_sha256(request)
         with self.store.transaction(principal) as tx:
             previous = design_save_store.read_receipt(tx, request_id, digest)
             if previous is not None:
@@ -174,11 +187,12 @@ class ResearchDesigns:
             if previous is not None:
                 return previous
             if body.design_id is None:
-                draft, _ = tx.create_draft("design-save/" + str(request_id), configuration)
+                draft, _ = tx.create_draft("design-save/" + str(request_id), configuration, version_name=body.version_name)
                 if draft["configuration_sha256"] != identity_sha256(configuration):
                     raise DesignConflict("Design save creation identity is already occupied")
             else:
-                draft = tx.save_draft(body.design_id, body.expected_revision, configuration)
+                draft = tx.save_draft(body.design_id, body.expected_revision, configuration, version_name=body.version_name,
+                                      replace_candidate="version_name" in body.model_fields_set)
             return design_save_store.record_receipt(tx, request_id, digest, draft)
 
     def save_receipt(self, principal: VerifiedPrincipal, request_id: UUID) -> dict:
@@ -203,9 +217,10 @@ class ResearchDesigns:
             if (
                 latest is not None
                 and latest["contract_json"].get("research_plan") == definition
+                and snapshot["version_name"] in (None, latest["version_name"])
             ):
                 return _version_view(tx, latest)
-        compile_plan(plan, adopted=True)
+        compile_plan(plan, adopted=True, for_execution=False)
         check_sampling(self.gateway, principal, definition)
         with self.store.transaction(principal) as tx:
             tx.lock_design(design_id)
@@ -219,6 +234,7 @@ class ResearchDesigns:
             if (
                 latest is not None
                 and latest["contract_json"].get("research_plan") == definition
+                and snapshot["version_name"] in (None, latest["version_name"])
             ):
                 return _version_view(tx, latest)
             publication = DesignPublication(
@@ -227,7 +243,7 @@ class ResearchDesigns:
                 research_plan=definition,
                 revision=(latest["revision"] if latest is not None else 0) + 1,
             )
-            result, _ = _append(tx, design_id, publication, latest)
+            result, _ = _append(tx, design_id, publication, latest, version_name=snapshot["version_name"])
             return result
 
     def publish_direct(

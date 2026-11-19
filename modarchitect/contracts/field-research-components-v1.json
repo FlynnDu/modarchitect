@@ -464,5 +464,162 @@
         "required": true
       }
     ]
+  },
+  {
+    "code": "research_calendar_axis",
+    "revision": 1,
+    "name": "平台观测日期驱动",
+    "category": "transform",
+    "summary": "从实际观测日期自动生成精确时间坐标，保持对象、来源与稀疏日期。",
+    "execution_mode": "external_cli",
+    "implementation": {
+      "module": "components.field_research.calendar",
+      "symbol": "calendar_axis",
+      "source_sha256": "34e9fdbf9d09068a2505b9f9e4be3727cceea472e2ad0f096b43d8f8c2878721"
+    },
+    "algorithm": "固定日历基准的精确日期差",
+    "mechanism": "t = business_date − 1970-01-01；不按批次首日重新归零。",
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "带对象与日期的研究资料",
+        "description": "只读取实际已有记录，不补造日期。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      },
+      {
+        "code": "request",
+        "name": "平台时间轴规则",
+        "description": "固定版本与基准；输出日期列不能由客户端数值覆盖。",
+        "data_type": {
+          "semantic": "research_calendar_axis_request",
+          "version": 1,
+          "shape": "bundle",
+          "unit": "native_contract",
+          "alignment": "context"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "table",
+        "name": "含平台日期驱动的研究资料",
+        "description": "继承原指标并增加精确日期坐标；该坐标不具备实测标签资格。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "requirements": [
+      "每条记录必须保留准确对象与business_date。"
+    ],
+    "limitations": [
+      "不代表播种后天数、定植后天数或积温。",
+      "日期坐标不能当作实测训练目标。"
+    ],
+    "composable": true,
+    "requires_instance": true,
+    "configuration": {
+      "research_model": {
+        "kind": "transform",
+        "request_schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "output_code": {
+              "type": "string",
+              "title": "日期坐标",
+              "default": "platform_calendar_day",
+              "pattern": "^[a-z][a-z0-9_]{0,95}$",
+              "x-research-variables": {
+                "table_port": "observations",
+                "roles": [
+                  "driver"
+                ],
+                "unit": "day",
+                "new_column": true
+              }
+            },
+            "origin_date": {
+              "type": "string",
+              "title": "平台日历基准",
+              "const": "1970-01-01",
+              "default": "1970-01-01",
+              "format": "date"
+            }
+          },
+          "required": [
+            "output_code",
+            "origin_date"
+          ]
+        },
+        "execution": {
+          "operations": [
+            "train",
+            "predict",
+            "analyze",
+            "simulate",
+            "calibrate"
+          ],
+          "input_uses": {
+            "output_code": {
+              "role": "derived",
+              "phases": [
+                "training",
+                "application",
+                "analysis"
+              ]
+            }
+          }
+        },
+        "table_outputs": {
+          "table": {
+            "inherit": "observations",
+            "computed": [
+              "output_code"
+            ],
+            "exact_dates": [
+              "output_code"
+            ]
+          }
+        },
+        "automatic_date_axis": {
+          "input_port": "observations",
+          "output_port": "table",
+          "output_field": "output_code",
+          "variable": {
+            "code": "platform_calendar_day",
+            "name": "观测日期坐标",
+            "definition_version": "1.0.0",
+            "description": "平台从实际观测日期按固定日历基准换算的时间坐标；不表示播种后或定植后天数。",
+            "value_type": "number",
+            "unit": "day",
+            "role": "driver",
+            "minimum": null,
+            "maximum": null,
+            "categories": []
+          }
+        }
+      }
+    },
+    "native_parameters": [
+      {
+        "code": "observations",
+        "required": true
+      },
+      {
+        "code": "request",
+        "required": true
+      }
+    ]
   }
 ]

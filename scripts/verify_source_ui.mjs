@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { JSDOM } from "jsdom";
 import { mountSourceData } from "../modarchitect/web/designer/source-data.js";
 
-const base = process.env.MODARCHITECT_UI_BASE || "http://192.168.3.249:18925";
+const base = process.env.MODARCHITECT_UI_BASE || "http://127.0.0.1:8000";
 const output = process.env.MODARCHITECT_SOURCE_UI_PROOF || ".ops/source-ui-proof.json";
 let cookie = "";
 const exchanges = [];

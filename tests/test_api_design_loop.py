@@ -4,6 +4,7 @@
 # @File    : test_api_design_loop.py
 """按业务转接文档验证开放设计、正式检查保存及重新查询的完整链路。"""
 
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 import json
 import os
@@ -99,19 +100,114 @@ def business_client():
         yield client, scope
 
 
+def test_study_versions_are_assigned_and_reserved_per_design(business_client) -> None:
+    """名称随准确快照固定，改稿不改变已应用版本。"""
+    client, scope = business_client
+    template = client.get(API + "/study-templates/crop-growth-prediction").json()["definition"]
+    draft_file = client.post(API + "/configurations/draft", json=template).json()
+
+    def save(body: dict, key: str | None = None):
+        """用业务保存协议持久化当前草稿。"""
+        return client.post(API + "/design-saves", headers={"Idempotency-Key": key or str(uuid4())}, json={**scope, **body})
+
+    receipt = save({"configuration": draft_file}).raise_for_status().json()
+    path = API + "/design-drafts/" + receipt["design_id"]
+
+    def publish(revision):
+        """确认待应用方案的实际版本。"""
+        return client.post(path + "/publish", params=scope, json={"expected_revision": revision}).raise_for_status().json()
+
+    original = publish(1)
+    assert original["version_name"] == "1.0.0"
+    assert original["definition"]["research_plan"]["layout"]["study_template"] == template["layout"]["study_template"]
+    assert publish(1) == original
+    template["name"] = "修改后的农学方案"
+    changed = client.post(API + "/configurations/draft", json=template).json()
+    update = {"design_id": receipt["design_id"], "expected_revision": 1, "configuration": changed}
+    invalid = save({**update, "version_name": "两行\n版本"})
+    assert invalid.status_code == 422 and invalid.json()["issues"][0]["path"][-1] == "version_name"
+    occupied = save({**update, "version_name": "1.0.0"})
+    assert occupied.status_code == 409 and occupied.json()["issues"][0]["path"] == ["version_name"]
+
+    key = str(uuid4())
+    second = save({**update, "version_name": " 春季采样基线 "}, key).raise_for_status().json()
+    assert save({**update, "version_name": " 春季采样基线 "}, key).json() == second
+    confirm = publish(second["revision"])
+    assert confirm["version_name"] == "春季采样基线"
+    assert confirm["design_version_id"] != original["design_version_id"]
+    assert client.get(path, params=scope).json()["latest_version"]["version_name"] == "春季采样基线"
+    assert client.get(API + "/design-versions/" + original["design_version_id"] + "/configuration", params=scope).status_code == 200
+
+    custom = save({"configuration": changed, "version_name": "春季采样基线"}).raise_for_status().json()
+    own_version = client.post(API + "/design-drafts/" + custom["design_id"] + "/publish", params=scope,
+                              json={"expected_revision": custom["revision"]}).raise_for_status().json()
+    assert own_version["version_name"] == confirm["version_name"]
+    update["expected_revision"] = second["revision"]
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        changes = list(pool.map(lambda name: save({**update, "version_name": name}), ("处理组 A", "处理组 B")))
+    assert sorted(response.status_code for response in changes) == [200, 409]
+    current = client.get(path, params=scope).json()
+    assert current["version_name"] in {"处理组 A", "处理组 B"}
+    template["question"] = "评估不同地块上的泛化效果"
+    next_file = client.post(API + "/configurations/draft", json=template).json()
+    cleared = save({**update, "expected_revision": current["revision"], "configuration": next_file,
+                    "version_name": None}).raise_for_status().json()
+    assert publish(cleared["revision"])["version_name"] == "1.0.2"
+    old = client.get(API + "/design-versions/" + original["design_version_id"], params=scope).raise_for_status().json()
+    assert old == original
+    assert client.get(path, params={**scope, "company_id": 2}).status_code == 404
+
+
 @pytest.mark.parametrize("future_model", [False, True])
 def test_check_save_query_and_graph_references_share_one_validated_definition(business_client, future_model: bool) -> None:
     """正式保存重验，错误不落库，成功回执可重放，查询可复原全部节点和连线。"""
     client, scope = business_client
-    templates = client.get(API + "/study-templates", params=scope)
+    templates = client.get(API + "/study-templates")
     assert templates.status_code == 200 and len(templates.json()["items"]) == 20
-    assert client.get(API + "/study-templates/crop-growth-prediction", params=scope).status_code == 200
+    assert client.get(API + "/study-templates/crop-growth-prediction").status_code == 200
     plan = all_indicator_design(client)
     if future_model:
         plan = deferred_model_design(plan)
+    plan["responsible_user_id"] = "9007199254740993"
     configuration = client.post(API + "/configurations/draft", json=plan).json()
     checked = client.post(API + "/configurations/check", json=configuration)
     assert checked.status_code == 200 and checked.json()["valid"], checked.text
+    pending = deepcopy(plan)
+    parameter_port = next(binding["source"]["port"] for binding in pending["composition"]["nodes"][0]["bindings"] if binding["port"] == "request")
+    pending["input_recipes"][parameter_port] = {"kind": "deferred"}
+    pending_file = client.post(API + "/configurations/draft", json=pending).json()
+    pending_check = client.post(API + "/configurations/check", json=pending_file).json()
+    assert not pending_check["valid"] and pending_check["issues"][0]["type"] == "incomplete_configuration"
+    pending_key = str(uuid4())
+    pending_save = client.post(API + "/design-saves", headers={"Idempotency-Key": pending_key}, json={**scope, "configuration": pending_file})
+    assert pending_save.status_code == 422 and pending_save.json()["issues"] == pending_check["issues"]
+    assert client.get(API + "/design-saves/" + pending_key, params=scope).status_code == 404
+    unregistered = deepcopy(plan)
+    index = next(i for i, item in enumerate(unregistered["collection_requirements"])
+                 if item["variable_code"] == "temperature_mean_daily")
+    unregistered["collection_requirements"][index].pop("catalog_binding")
+    unregistered_file = client.post(API + "/configurations/draft", json=unregistered).json()
+    unregistered_check = client.post(API + "/configurations/check", json=unregistered_file).json()
+    assert unregistered_check["issues"][0]["type"] == "unregistered_indicator"
+    assert unregistered_check["issues"][0]["path"] == ["collection_requirements", index, "catalog_binding"]
+    unregistered_key = str(uuid4())
+    rejected_indicator = client.post(API + "/design-saves", headers={"Idempotency-Key": unregistered_key}, json={**scope, "configuration": unregistered_file})
+    assert rejected_indicator.status_code == 422
+    assert rejected_indicator.json()["issues"] == unregistered_check["issues"]
+    assert client.get(API + "/design-saves/" + unregistered_key, params=scope).status_code == 404
+    if not future_model:
+        overlap = deepcopy(plan)
+        request = next(recipe for recipe in overlap["input_recipes"].values() if recipe.get("kind") == "configuration" and "targets" in recipe.get("value", {}))
+        request["value"]["features"].append(request["value"]["targets"][0])
+        invalid_configuration = client.post(API + "/configurations/draft", json=overlap).json()
+        overlap_result = client.post(API + "/configurations/check", json=invalid_configuration).json()
+        assert not overlap_result["valid"]
+        assert overlap_result["issues"][0]["type"] == "input_target_overlap"
+        overlap_key = str(uuid4())
+        rejected_overlap = client.post(API + "/design-saves", headers={"Idempotency-Key": overlap_key}, json={**scope, "configuration": invalid_configuration})
+        assert rejected_overlap.status_code == 422
+        assert rejected_overlap.json()["issues"] == overlap_result["issues"]
+        assert client.get(API + "/design-saves/" + overlap_key, params=scope).status_code == 404
     invalid = deepcopy(plan)
     invalid["composition"]["nodes"][0]["bindings"] = []
     bad = client.post(API + "/configurations/draft", json=invalid).json()
@@ -131,8 +227,15 @@ def test_check_save_query_and_graph_references_share_one_validated_definition(bu
     reopened = client.get(API + "/design-drafts/" + receipt["design_id"], params=scope).json()
     assert reopened["configuration"] == configuration and reopened["configuration_sha256"] == identity_sha256(configuration)
     assert reopened["configuration"]["definition"]["composition"] == plan["composition"]
+    assert reopened["configuration"]["definition"]["responsible_user_id"] == "9007199254740993"
+    assert "sampling_selection" not in reopened["configuration"]["definition"]
+    assert client.get(API + "/report-tasks", params=scope).json() == {"items": []}
     assert client.get(API + "/design-drafts", params=scope).json()["items"][0]["design_id"] == receipt["design_id"]
+    assert client.get(API + "/design-drafts").status_code == 422
+    assert client.get(API + "/design-drafts/" + receipt["design_id"]).status_code == 422
     assert client.get(API + "/design-drafts/" + receipt["design_id"], params={**scope, "company_id": 2}).status_code == 404
+    assert client.get(API + "/study-templates").json() == templates.json()
+    assert client.get(API + "/study-templates/" + receipt["design_id"]).status_code == 404
 
 
 def test_invalid_indicator_and_parameter_issues_locate_the_original_fields() -> None:

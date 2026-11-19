@@ -15,12 +15,14 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     JSON,
     String,
     Table,
     UniqueConstraint,
     Uuid,
     insert,
+    or_,
     select,
     text,
     update,
@@ -39,6 +41,7 @@ acquisitions = Table(
     metadata,
     Column("acquisition_id", Uuid, primary_key=True),
     Column("design_id", ForeignKey("research_designs.design_id"), nullable=False),
+    Column("study_id", Uuid),
     Column("request_key", String(128), nullable=False),
     Column("request_sha256", String(64), nullable=False),
     Column("input_json", JSON, nullable=False),
@@ -52,6 +55,8 @@ acquisitions = Table(
     Column("created_at", DateTime(timezone=True), nullable=False),
     Column("updated_at", DateTime(timezone=True), nullable=False),
     UniqueConstraint("design_id", "request_key", name="uq_input_acquisition_request"),
+    ForeignKeyConstraint(["study_id", "design_id"],
+                         ["research_studies.study_id", "research_studies.design_id"], name="fk_acquisition_study"),
     CheckConstraint(
         "status IN ('queued','dispatching','submitted','running','succeeded','failed','uncertain','cancelled')",
         name="ck_input_acquisition_status",
@@ -140,6 +145,7 @@ class SourceStore:
         payload: dict,
         *,
         frozen_version_id: UUID | None = None,
+        study_id: UUID | None = None,
     ) -> dict:
         """锁定同一方案后创建唯一采集和投递记录，重放不重新获取数据。"""
         with self.store.transaction(owner) as tx:
@@ -177,6 +183,7 @@ class SourceStore:
             row = dict(
                 acquisition_id=identity,
                 design_id=design_id,
+                study_id=study_id,
                 request_key=key,
                 request_sha256=request_sha,
                 input_json=payload,
@@ -201,15 +208,14 @@ class SourceStore:
             )
             return self._view(tx.connection, row)
 
-    def read(self, owner: VerifiedPrincipal, identity: UUID) -> dict:
+    def read(self, owner: VerifiedPrincipal, identity: UUID, *, study_id: UUID | None = None) -> dict:
         """按可信主体读取采集状态。"""
+        query = select(acquisitions).where(acquisitions.c.acquisition_id == identity)
+        if study_id is not None:
+            query = query.where(acquisitions.c.study_id == study_id)
         with self.store.transaction(owner) as tx:
             row = (
-                tx.connection.execute(
-                    select(acquisitions).where(
-                        acquisitions.c.acquisition_id == identity
-                    )
-                )
+                tx.connection.execute(query)
                 .mappings()
                 .first()
             )
@@ -240,12 +246,15 @@ class SourceStore:
                 )
             return self._view(tx.connection, row)
 
-    def read_snapshot(self, owner: VerifiedPrincipal, identity: UUID) -> dict:
+    def read_snapshot(self, owner: VerifiedPrincipal, identity: UUID, *, study_ids: tuple[UUID | None, ...] | None = None) -> dict:
         """受权读回准确证据并重新核对内容摘要。"""
         with self.store.transaction(owner) as tx:
+            query = select(snapshots).where(snapshots.c.snapshot_id == identity)
+            if study_ids:
+                query = query.join(acquisitions).where(or_(*(acquisitions.c.study_id == study_id for study_id in study_ids)))
             row = (
                 tx.connection.execute(
-                    select(snapshots).where(snapshots.c.snapshot_id == identity)
+                    query
                 )
                 .mappings()
                 .first()
@@ -261,12 +270,14 @@ class SourceStore:
             }
 
     def resolve(
-        self, owner: VerifiedPrincipal, identities: Sequence[UUID]
+        self, owner: VerifiedPrincipal, identities: Sequence[UUID], *, study_id: UUID | None = None,
+        allow_prior_unbound: bool = False,
     ) -> list[dict]:
         """只向统一封存规则传递服务端读取的可信资料。"""
         if len(set(identities)) != len(identities) or len(identities) > 1800:
             raise ValueError("Source snapshot references must be unique and bounded")
-        return [self.read_snapshot(owner, identity) for identity in identities]
+        allowed = (study_id, None) if allow_prior_unbound else (study_id,)
+        return [self.read_snapshot(owner, identity, study_ids=allowed) for identity in identities]
 
     def next_dispatch(self) -> dict | None:
         """内部队列只存投递凭据，原始资料始终受 RLS 保护。"""

@@ -1,20 +1,47 @@
 # 前端API使用说明
 
-范围：浏览方案→采用模板/自定义→选择指标和模型→校验→保存→重新查询→显示流程图。逐接口说明响应字段如何用于界面，与[业务系统API文档](business-api-integration.md)对应。
+覆盖浏览、设计、检查、保存、流程回读，以及可应用版本和研究实例。响应字段的界面用法与[业务系统 API 文档](business-api-integration.md)对应。
 
 [查看完整闭环流程图（按 API 编号）](model-designer-api-flow.md)
 
+## v0.2.0 前端改动
+
+| 改哪里 | 界面与响应字段 | API |
+| --- | --- | --- |
+| 基础信息 | 增加可选的「方案版本名称」，允许留空。用 `version_name` 回填候选值，用 `latest_version.version_name` 展示最近确认版本。「来源模板」单独只读展示，自定义显示「自定义」。 | 11、12、14 |
+| 检查与确认 | 用户保存方案后从 14 回读流程。用户确认「保存为可应用版本」后使用 19 返回的名称展示成功。409 重名或 422 格式错误按 `issues[].path` 定位，保留编辑状态。 | 09–12、14、19 |
+| 历史版本与应用 | 20 的 `items` 用于版本选择，显示 `version_name`，以 `design_version_id` 作为选中值。应用时填写地块、种植季、点位和观察期，按 24 返回的对象与日期展示实例。 | 20–24 |
+| 历史实例与模型 | 用实例或模型返回的 `design_version_id` 回读原版流程，按 `study_id` 展示原对象与周期。历史模型缺少实例引用时仍可展示原模型资料。 | 17、21、24 |
+| 模板选择 | 初次进入直接显示已配置的输入、目标和成果。「查看本方案输入示例」只打开当前方案的预览；关闭后仍保留当前编辑配置与流程。 | 02、06、14 |
+
+[19–24 请求、curl、响应及渲染字段](research-version-integration.md)
+
+## 2026-11-18 前端配置流程修改
+
+本节对应 2026-11-18 设计器版本。内置浏览器已验收从自定义方案到保存回读。已接好的 API 编号、路径、转接及保存回读顺序可以继续使用。
+
+| 编号 | 改哪里 | 接口 |
+| --- | --- | --- |
+| F1 | 基础信息显示名称、负责人、研究目标、方案版本名称和模板来源。负责人写入可缺省的业务用户 ID 字符串。 | 02、09—12、14 |
+| F2 | 指标配置分两页，共用目录。已选指标按 `variable.code` 跨页禁选。只读展示指标详情、来源和提供方式，已登记的待接入项仍可采用。 | 02—04、06 |
+| F3 | 采用日尺度方法时按准确组件合同接入观测日期。用户无需在指标库补选天数。 | 05—08 |
+| F4 | 「检查与确认」预览当前草稿，完整检查失败时定位到字段或节点，通过后再由用户正式保存。 | 09—12 |
+| F5 | 移除保存前的采样计划确认及模型初始化。地块、样点和采样排程留给应用方案。 | 11/12 |
+| F6 | 保存成功后回读数据库配置，核对修订，再按实际输入、计算、成果和依赖生成动态流程。 | 14、06 |
+
+[本期对接修改清单及联调用例](model-designer-integration-changes-20261118.md)
+
 ## 调用与身份
 
-浏览器只请求业务后端，由业务后端注入Key和企业范围后转接。下面BFF地址和用户登录头是业务项目需实现的示例，不是本系统已经提供的登录或转接服务。
+浏览器只请求业务后端。业务后端为调用注入服务 Key，并为企业私有读写从登录态注入企业范围。平台默认方案的 01 和 02 只需服务 Key。下文 BFF 地址和用户登录头由业务项目实现。
 
 | 项目 | 约定 |
 | --- | --- |
 | 本系统安全方案 | `ModarchitectApiKey`（`apiKey`） |
 | 转发请求头 | `X-Modarchitect-Api-Key`，原值不加Bearer前缀 |
 | 业务后端环境变量 | `MODARCHITECT_API_KEY` |
-| 已部署Key | Nomad `nomad/jobs/modarchitect-api` 的 `api_key`；[获取入口](business-api-integration.md#api-key接入约定) |
-| 企业范围 | 业务后端从登录态注入`provider_name/company_id`，不信任浏览器自报 |
+| 服务 Key | 业务后端从私有运行配置加载，与平台配置的服务 Key 相同。 |
+| 企业范围 | 企业私有接口由业务后端从登录态注入 `provider_name/company_id` |
 | 浏览器凭据 | 业务系统自己的登录凭据，本系统Key不下发浏览器 |
 
 ```sh
@@ -25,6 +52,81 @@ AUTH="Authorization: Bearer $USER_TOKEN"
 下文curl访问BFF，前端正文不带企业字段。转接除注入身份范围外应保持请求/响应结构。业务后端负责持久化并管理保存请求ID，将`Idempotency-Key`转发给本系统；浏览器示例同名头只说明该次请求身份。
 
 **“字段节选”用于解释，不能直接提交给校验/保存。** 完整定义和配置见[示例JSON](examples/model-designer.json)。
+
+## 开始配置时的四项基本信息
+
+自带独立设计器与业务系统登录不同：默认个人工作区通过浏览器签名Cookie识别，切换浏览器或无痕窗口会进入另一个空间，数据库记录不会丢失。18937本地单人验收已配置稳定工作区，新浏览器可重新读取同一批方案；该配置只允许回环入口，不作为正式企业登录方案。业务前端继续经业务后端访问本文API，不依赖自带页面的Cookie，也不把方案ID当访问凭据。
+
+基本信息区按以下字段配置。
+
+| 页面项 | 数据来源与使用 |
+| --- | --- |
+| 研究方案名称 | 用户填写，保存为`definition.name`。 |
+| 负责人 | 业务系统提供用户ID，写入`definition.responsible_user_id`，本系统随方案保存并回读；成员列表与姓名由业务系统提供。 |
+| 研究目标 | 用户填写，保存为`definition.question`；具体目标指标在后续指标配置中选择。 |
+| 方案版本名称 | 14 的 `version_name` 是当前草稿候选名称。用 `latest_version.version_name` 展示最近固定的版本。用户可在新建或编辑时填写候选名称，放在 11/12 请求体外层。 |
+| 模板来源 | 采用模板时按接口02的`id/revision/sha256`展示名称与版本，保留原有`definition.layout.study_template`中的`id/sha256`。重开时按原引用解析并只读显示。自定义方案显示“自定义”。 |
+
+实际地块、样方点、作物、周期在发起具体研究时填写，指标来源尺度、模型操作和成果仍按后续配置校验。正式提交按09→10→11/12完成配置生成、检查与保存。
+
+负责人只传业务用户ID字符串：`"responsible_user_id": "9007199254740993"`，放在完整`definition`中。长度1—128，不含空白；不传姓名或成员对象，不把数字ID转为JavaScript的Number。历史方案允许缺省，清空时删除此键。接口14通过`configuration.definition.responsible_user_id`回读，前端用业务系统成员信息显示姓名；这个ID不作为本系统登录或授权凭据。
+
+## 确认可应用版本并启动研究
+
+11/12 保存及 14 回查处理草稿编辑。用户点击「保存为可应用版本」时，业务后端用保存回执的 `revision` 调用 19，并使用响应的 `version_name` 显示名称。确认后用 `design_version_id` 选择版本。用户清空候选名称时发送 `version_name: null`。
+
+创建研究实例时再收集地块、作物种植季、采集点和观察周期。`POST /studies` 的 `study_id` 用于该实例后续的采集、数据集和运行。展示已保存模型时可从 `study_id` 查看原对象和周期，从 `design_version_id` 查看原方案，从 `dataset_snapshot_id` 查看样本。历史数据缺少实例归属时显示「历史记录」，保留原运行版本。业务转接接口见 [固定版本与研究实例](business-api-integration.md#确认可应用版本并运行研究实例)。
+
+## 分两步选择研究资料和目标指标
+
+因素与指标不建立两套目录。页面按研究信息流分成两个独立步骤：“研究资料与候选因素”选择可提供的土壤、气象、遥感与作物观测资料；“目标指标与预期成果”选择关注的生长指标，基础模型确定后确认真实成果。两步统一采用系统定义；同一指标不能因用作因素或目标而复制定义，训练与应用用途以具体模型节点合同为准。
+
+02与03添加互斥：按`items[].variable.code`关联已选变量，已选指标在两页均标明原用途并禁用添加，不只按entry.key去重。点击时先检查当前方案，调用04后写入配置前再防重复；需要改变用途时显式调整原选择，不能同时保留在两边。API10及11/12另检查同一模型的同一数据列不能既是训练输入又是目标，返回`input_target_overlap`并定位节点及参数字段。不同节点的合法用途、上游派生结果作为下游输入继续按准确端口合同解释，不作整个图的同名变量一刀切禁止。
+
+处理、分组用途需要时再展开水平、对照或受管字典配置；普通预测或分析不强制配置分组。当前目录尚未完整登记截图中的灌溉处理、品种分组等定义，不能把界面合并理解为这些能力已实现，也不能用页面自由新增变量代替系统登记。
+
+界面对研究者使用“模型输入”“预测输出”，以两个独立步骤及各自添加动作代替X/Y下拉。预测输出对应要预测的指标，训练与验证时仍需其实测记录；分析、模拟按准确基础模型展示实际成果。接口04继续传递已有`role`：模型输入为`covariate`（驱动仍按合同），实测预测输出为`target`；模型参数继续采用已有`features/targets`或准确Schema字段，不能仅改显示而不更新节点绑定。预测输出指标与`composition.outputs`中的模型文件、结果表等成果端口分别解释，不新增同名配置副本。
+
+系统指标的名称、编码、类型、单位、来源尺度保持只读，编辑入口只展示合同允许配置的内容。截图中的处理水平CK/T1/T2、对照标记、实际处理量、分配和缺失策略尚无完整系统合同，不能直接增加表单字段后提交，或将其藏入layout冒充已校验设置。对照组不是验证集；处理与对照仅在已登记完整合同的相应研究中按需配置，不作为普通预测的必填步骤。
+
+系统指标只提供「查看指标详情」。研究人员可调整在本方案中的采用、用途与来源合同允许选择的属性。1.5 配置按目录核验固定定义和科学值域，`minimum/maximum` 等字段保持 04 返回值。历史配置保留其原有合同。
+
+只读详情复用接口03已返回的准确条目，无需增加详情查询接口：variable展示名称、编码、description、definition_version、value_type、unit、minimum/maximum；unit_kind展示观测尺度；source.name、binding.value_nature和method.instructions展示来源、数值性质与方法；execution展示接入状态和缺口。已有卡片只显示部分摘要，业务前端需据这些字段提供详情页或弹窗，不创建新的定义副本。
+
+本期通用建模界面移除“处理水平与对照”，不为它新增通用表单或接口。它只对明确的处理效应试验有意义，不是指标采用、模型编排、训练和预测的前置条件。历史处理/分组合同保持解释能力，未来若纳入该业务，再以专门组件及完整科学合同接入。
+
+## 方法需要日期驱动时如何配置
+
+日期模型所需时间坐标由平台生成，不在03指标库中伪造“天数”指标，也不要求人工采集。自带设计器会自动连接`research_calendar_axis@1`；外部前端按06返回的准确组件合同生成同样的图，09只封装已编辑定义，不自动补图。
+
+| 06返回字段 | 前端使用 |
+| --- | --- |
+| `definition.configuration.research_model.automatic_date_axis` | 识别平台自动日期变换，不作为用户手选的基础计算方法展示。 |
+| 该声明的`input_port/output_port/output_field/variable` | 连接原始观测资料→日期变换→所选模型；按声明建立图内变量与输出参数，不新增外部采集要求。 |
+| 准确请求Schema的`origin_date.const` | 原值写入日期变换参数，只读保留；不要按当前批次首日改写。 |
+| 所选模型参数的`x-research-variables.roles=["driver"]`且`unit="day"` | 缺少合法驱动时采用日期变换输出；旧逻辑斯蒂准确合同由`axis_kind=elapsed_days`表示day轴。 |
+
+页面只读显示“平台观测日期（自动使用）”；02显示“平台日期驱动”，不显示“未绑定来源”。外部指标仍由04采用，参数及连线经10、11/12复验。日期变量不能用作实测目标或上传外部数值。训练需要目标实测；纯时间模型预测可用`columns: []`、每行`values: {}`，对象与`business_date`仍必填。需要其他因素的方法按实际合同提交，不能统一清空预测列。
+
+默认坐标来自实际观测日期，不表示播种后天数、定植后天数或积温。人工观测可间隔采集，卫星按有效场景日期，静态土壤参考也不等于每天重新实测；平台不为缺测日补造数据。日历规则随方案和模型保留，训练与预测使用同一时间语义。
+
+## 每一步如何校验：当前能力
+
+“下一步”不等于已请求服务端验证。自带设计器的普通下一步使用页面轻量检查；采用指标、应用计算方法及完整检查才调用相应服务。业务前端按下表接入，不依赖页面专用的`/designer/validate`。
+
+| 环节 | 当前校验入口 | 能确认什么 |
+| --- | --- | --- |
+| 基本信息下一步 | 页面必填、长度与输入格式 | 本区表单完整性；不是一次完整API检查。 |
+| 添加指标及来源属性 | 04 | 准确目录身份、来源属性与用途是否合法；不是整份图的校验。 |
+| 配置基础模型与连接 | 06的request_schema生成表单，08辅助筛选端口 | 06/08属于读取合同与兼容候选，不代表参数、图和研究用途已整体通过。 |
+| 已有完整草稿时检查 | 09生成当前配置后调用10 | 完整设计合同、参数、引用和连接，按issues.path定位错误。 |
+| 正式保存 | 11/12服务端重新检查 | 不信任前端的“通过”标记；错误不作为正式方案保存。 |
+
+「检查与确认」页使用当前编辑定义预览实际流程，检查失败按问题路径定位到配置区。点击「检查方案」只检查。点击「保存研究方案」时检查当前定义，通过后提交正式保存。保存后用 14 返回的 `configuration.definition` 还原已保存流程。地块、采样点、采样频率、执行时间及采样人员在发起研究时确定。
+
+09只生成草稿文件及摘要，允许尚未完成，不能当成业务校验通过。10目前只支持整份设计，没有当前分区/scope/step参数。可在每次修改后调用10，但自定义方案尚未填写后续内容时，也会收到后续缺失错误，不能据此阻止当前正常配置；从完整模板开始时，10检查的仍是整份当前定义及模板默认值。前端可按path展示定位，不能忽略其他错误后宣称整份已通过。
+
+如果业务要求“每一步都由API判定本步通过”，当前还不完整，需要在共用校验服务中增加领域范围的分段检查，区分未到步骤的待配置与真正非法配置，不机械新增每个UI步骤的独立接口。该能力尚未实现，不向现有10添加未声明参数。正式保存仍必须完整复验；设计通过也不表示来源、数据和执行制品已满足启动条件。
 
 ## 接口索引
 
@@ -270,6 +372,8 @@ curl -fsS "$BFF/api/v1/research/study-templates/$TEMPLATE_ID" \
 | definition.variables | 已采用指标 | 按code关联，显示name、unit；保留完整科学定义和版本。 |
 | definition.collection_requirements | 指标来源与采集规则 | 按variable_code关联指标；展示来源、方法、采样尺度和取数属性。 |
 | definition.composition / input_recipes | 节点连线、资料与参数 | 恢复流程图和参数面板，见本文末尾字段规则。 |
+| input_requirements[].port / name / unit / kind / use / source | 指定资料的字段说明 | 按 `port` 匹配 `definition.composition.inputs[].code`，在对应资料卡列出指标或参数。`kind=target` 可同步展示在目标区。这个数组只在指定资料的详情返回。 |
+| definition.composition.outputs[] | 方案公开的计算成果 | 沿 `source.node` 找节点和准确组件版本，用 `source.port` 匹配接口 06 的输出名称、说明。评价目标为空时照常显示模拟、分析和拟合成果。 |
 | definition.evaluation / layout | 评价设置、界面信息 | 恢复评价条件并保留layout；node_labels可用作节点标题。 |
 | observations / prediction_observations | 模板可提供的示例记录，可能为null | 独立于definition；本次设计保存不把示例记录塞入definition。 |
 
@@ -791,7 +895,7 @@ curl -fsS "$BFF/api/v1/model-center/components/$COMPONENT_CODE?revision=1" \
 | definition.requirements / limitations | 条件与限制 | 显示方法适用说明。 |
 | contract_sha256 / available_for_new_design | 合同摘要、新采用状态 | 保留准确身份，历史节点按原版本解释。 |
 
-本例参数为features/targets/training_end，写入对应request输入配方的configuration.value；不是每个模型都有这些参数。未确定时可保留{"kind":"deferred"}，但输入data_type和参数角色保持原合同。
+本例参数为features/targets/training_end，写入对应request输入配方的configuration.value；不是每个模型都有这些参数。未确定时可在编辑草稿保留{"kind":"deferred"}，输入data_type和参数角色保持原合同；必需request参数待配置时，10返回incomplete_configuration，11/12拒绝正式保存。已配置参数且只缺数据接入的typed deferred资料，仍允许设计检查与保存，实际运行单独拒绝缺失适配。
 
 ## 07. 查询基础模型历史版本
 
@@ -1049,7 +1153,7 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/draft" \
   "definition": {
     "name": "多因素作物生长指标预测"
   },
-  "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+  "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
 }
 ```
 
@@ -1083,7 +1187,7 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/draft" \
   "definition": {
     "name": "多因素作物生长指标预测"
   },
-  "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+  "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
 }
 ```
 
@@ -1122,6 +1226,10 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/check" \
 | compiled.order | 节点依赖顺序 | 可辅助排列，不是实际运行记录。 |
 | compiled.validation_scope | 检查范围 | design_contract表示设计合同检查，不能显示运行成功。 |
 
+`incomplete_configuration`定位到`input_recipes[输入code]`，同时给出`node`和`port=request`。引导用户回到“计算与评价”完成参数，不能忽略该错误或把待配置步骤显示成已检查通过。空名称、纯空格名称、空研究问题、缺模型/成果和不合法参数也不得显示检查成功。合法模板已含预置配置时，无需用户重复填写；检查的是当前整份定义。
+
+02 按真实资料形态展示。普通 `observations` 列按节点用途显示。`artifact` 和 `deferred` 资料从 `composition.inputs` 和 `input_recipes` 列出名称、来源状态和使用它的节点。指定资料明细按 `input_requirements[].port` 显示到对应资料卡。已保存方案的 `layout.study_template` 含模板 ID 和 SHA-256，可用接口 02 读取准确版本的明细。尚未采用的候选指标标为“尚未用于计算”。03 从 `composition.outputs` 关联接口 06 的准确输出端口，显示预期成果。样例目标可由 `kind=target` 提供。
+
 设计检查失败通常仍返回HTTP200：
 
 ```json
@@ -1157,6 +1265,7 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/check" \
 | --- | --- |
 | Idempotency-Key（请求头） | 必填UUID，发送前持久化；重试保持原ID和原正文。 |
 | configuration | 必填object，接口09生成且接口10检查通过的完整配置。 |
+| version_name | 可选单行字符串，如「春季基线」。留空在确认可应用版本时分配名称。 |
 
 请求体（字段节选；实际提交完整文件）：
 
@@ -1167,7 +1276,7 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/check" \
     "definition": {
       "name": "多因素作物生长指标预测"
     },
-    "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
   }
 }
 ```
@@ -1186,9 +1295,9 @@ curl -fsS -X POST "$BFF/api/v1/research/design-saves" \
 
 ```json
 {
-  "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+  "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
   "revision": 1,
-  "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+  "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525"
 }
 ```
 
@@ -1236,6 +1345,7 @@ curl -fsS -X POST "$BFF/api/v1/research/design-saves" \
 | configuration | 编辑后重新通过接口09、10的完整配置。 |
 | design_id | 必填UUID，接口14返回的方案ID。 |
 | expected_revision | 必填integer≥1，与design_id成对提供，取接口14返回的revision。 |
+| version_name | 可选候选名称，已确认版本中的名称按方案唯一。 |
 | Idempotency-Key（请求头） | 每次新的保存生成新UUID，该次重试保留原值。 |
 
 请求体（字段节选；实际提交完整文件）：
@@ -1247,9 +1357,9 @@ curl -fsS -X POST "$BFF/api/v1/research/design-saves" \
     "definition": {
       "name": "多因素作物生长指标预测"
     },
-    "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
   },
-  "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+  "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
   "expected_revision": 1
 }
 ```
@@ -1270,9 +1380,9 @@ curl -fsS -X POST "$BFF/api/v1/research/design-saves" \
 
 ```json
 {
-  "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+  "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
   "revision": 1,
-  "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+  "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525"
 }
 ```
 
@@ -1311,16 +1421,16 @@ curl -fsS "$BFF/api/v1/research/design-drafts" \
 {
   "items": [
     {
-      "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+      "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
       "revision": 1,
-      "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+      "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525",
       "updated_at": "2026-11-16T21:38:09.945171+08:00",
       "configuration": {
         "format": "research_plan_draft",
         "definition": {
           "name": "多因素作物生长指标预测"
         },
-        "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+        "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
       }
     }
   ]
@@ -1365,16 +1475,18 @@ curl -fsS "$BFF/api/v1/research/design-drafts/$DESIGN_ID" \
 
 ```json
 {
-  "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+  "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
   "revision": 1,
-  "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18",
+  "version_name": null,
+  "latest_version": {"design_version_id": "18d1001a-d86f-5827-8525-0466086c7499", "version_name": "1.0.0"},
+  "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525",
   "updated_at": "2026-11-16T21:38:09.945171+08:00",
   "configuration": {
     "format": "research_plan_draft",
     "definition": {
       "name": "多因素作物生长指标预测"
     },
-    "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+    "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
   }
 }
 ```
@@ -1387,9 +1499,32 @@ curl -fsS "$BFF/api/v1/research/design-drafts/$DESIGN_ID" \
 | configuration.definition.composition | 节点、连线、成果 | 按本文流程图规则渲染。 |
 | configuration.definition.variables / collection_requirements | 指标及来源 | 恢复名称、单位、提供方式及准确绑定。 |
 | design_id / revision | 本次查询的ID与修订 | 供后续修改提交使用。 |
+| version_name / latest_version | 候选名称及最近固定版本 | 候选填入基础信息。用 `latest_version.version_name` 显示最近固定版本，使用其中的 UUID 应用。 |
 | configuration_sha256 / updated_at | 持久化摘要、更新时间 | 核对保存结果并显示更新时间。 |
 
 404表示当前企业不可见或方案不存在，不能切换匿名空间读取。配置接口不返回当次真实观测或运行结果。
+
+14 查询该方案当前修订。保存后用返回的 `revision` 和 `configuration_sha256` 对照保存回执。有并发更新时，页面标明当前显示的修订。
+
+保存或确认版本时用 `issues[].path` 把错误定位到版本名称。409 表示该方案已用此名称，422 表示格式错误。保留编辑中的配置，用户改名后用新保存请求重试。
+
+### 用已保存响应还原动态研究流程
+
+卡片数量与依赖随方案变化，不能固定套用五栏，也不能向配置补写展示节点。自带页面采用黄色来源、绿色处理/计算、蓝色评价/成果，卡片底部展开明细；全屏、适应宽度与缩放不修改配置。
+
+| 卡片 | 使用的数据 | 缺少实际证据时显示 |
+| --- | --- | --- |
+| 资料卡：每个实际外部输入一张 | 14的`configuration.definition.composition.inputs/input_recipes`，变量与`collection_requirements`关联03目录一级/二级分类；按06节点参数确定实际用途。`configuration`参数并入消费步骤，不单独成卡；原生资料包不能因端口叫request而隐藏 | 列出该输入内全部已选指标，区分参与计算与尚未使用；目录取数能力不等于本次已取数 |
+| 数据划分卡：确有可解释的划分规则才出现 | 当次真实观测或已封存记录数；按准确训练截止与实际记录划分训练/时间留出 | “尚未提供数据”；不从日期跨度推算样本，不虚构数据集编号或独立测试集；未识别到规则时不追加此卡 |
+| 计算卡：每个实际节点一张 | 14的`composition.nodes`与06准确版本、输入端口及参数；运行状态从对应步骤回执读取 | “待训练/待拟合/待分析”；自动日期变换单独标为平台资料处理；并行步骤同层，串联步骤按依赖展开 |
+| 评价卡：实际评价节点、已识别的时间留出规则或真实评价结果 | 实际结果中的目标、配对行数、RMSE及已提供的MAE/R²；成果关联决定预测数据从哪里进入 | 无依据不额外补评价卡；有规则未运行时显示“尚无评价结果”；时间留出不叫独立地块验证，缺值不填0 |
+| 成果卡：按公开输出的产生节点分组 | 14的`composition.outputs[].source`及06准确输出端口；实际成果与16/17已保存模型另行关联 | 列出该分支预期成果及“等待产出”；方案修订不是训练模型版本，不显示虚构发布版本 |
+
+连线必须来自`composition.nodes[].bindings`与`composition.outputs[].source`，只连接真正依赖的卡片，不能因为相邻就补箭头。同一对卡片的多端口连接可以合并展示，保留端口明细；多个输入汇合、并行计算和各自产出分支都要保留。时间留出资料绕过训练进入评价，使用虚线；没有实测时标明计划或待补，不声称验证通过。
+
+例如高温条件分析是“资料→分析→成果”3个环节；平台日期拟合是“资料→日期处理→曲线拟合→成果”4个环节；土壤、气象、卫星资料汇合计算时有3张来源卡。具体数量以返回配置为准。
+
+14仅提供可复用设计，无法单独提供图中真实样本数、误差、地块覆盖和发布进度。业务前端须结合自己的实际数据及相应运行记录。当前自带页面复用工作区观测与运行结果展示统计，未新增专为卡片服务的API或数据库字段。
 
 ## 15. 按保存请求ID查询成功回执
 
@@ -1416,9 +1551,9 @@ curl -fsS "$BFF/api/v1/research/design-saves/$REQUEST_ID" \
 
 ```json
 {
-  "design_id": "01a1e494-59a9-7dab-a3b0-f29e8f1ec366",
+  "design_id": "d5abe113-2d68-56a9-b08f-a24ca8619fc8",
   "revision": 1,
-  "configuration_sha256": "83a41a9d263bb3330a478c3f30932e3dfad3d3c02527e816e345c8e6e8977e18"
+  "configuration_sha256": "f9f66d773dc142c10f812d3c9d08f1a8447c8c26319aea489cb0d4aaef767525"
 }
 ```
 
@@ -1525,6 +1660,7 @@ curl -fsS "$BFF/api/v1/research/models/$MODEL_ID" \
 | --- | --- | --- |
 | model_id / name / created_at | 模型身份、名称、保存时间 | 显示详情基本信息。 |
 | run_id / model_sha256 | 训练来源、内容摘要 | 保留准确训练模型身份。 |
+| design_version_id / study_id / dataset_snapshot_id | 训练绑定的固定版本、研究实例和样本快照 | 用 21 读取原方案流程，用 24 读取对象与观察期。缺少引用的历史记录继续显示自身可用信息。 |
 | model_json | 版本化训练状态 | 算法间结构不同，完整保留；不能用作统一设计参数表或普通研究定义。 |
 
 上方为合同字段示意，省略model_json；本次不为该企业新开训练任务补样例。不存在或企业不符返回404。模型实际发布、运行和预测不在本文范围。
@@ -1549,7 +1685,7 @@ curl -fsS "$BFF/api/v1/research/models/$MODEL_ID" \
   "definition": {
     "name": "多因素作物生长指标预测"
   },
-  "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+  "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
 }
 ```
 
@@ -1569,7 +1705,7 @@ curl -fsS -X POST "$BFF/api/v1/research/configurations/import" \
   "definition": {
     "name": "多因素作物生长指标预测"
   },
-  "sha256": "70cd9bcfb3829d022533851686f1695bcab2e4993a09706f38f8618e5c3a5ead"
+  "sha256": "b6cc93ca20884d35a5a8b8a51dabe99badd9b34fc2243bb5d9a512e70f18d517"
 }
 ```
 
@@ -1583,7 +1719,7 @@ research_plan_draft核验文件身份；历史research_plan还会走对应完整
 
 ## 流程图与编辑状态
 
-使用接口14的configuration.definition恢复状态，再按每个节点component.code/revision通过接口06读取准确名称、端口。下面路径相对于definition。
+保存前用当前编辑的 `definition` 预览。保存后用接口 14 的 `configuration.definition` 恢复状态。两个页面按相同规则构图，按每个节点的 `component.code/revision` 通过 06 读取准确名称和端口。下面路径相对于 `definition`。
 
 | 显示内容 | 字段或规则 | 前端处理 |
 | --- | --- | --- |
@@ -1644,7 +1780,7 @@ regression是上游节点code，model必须是下游合同真实声明的输入�
 - 模型选择保留准确code/revision和端口合同。未接通实现可保留待配置；已经填写的参数仍须合法。
 - 展示来源时，category/subcategory用于分类，source.name为具体提供方，method.instructions解释如何提供，execution.reason说明接入缺口。
 - 历史绑定未匹配当前目录时保留原绑定、显示历史来源待核验；不能仅凭同名指标换来源或升级版本。
-- 五阶段研究卡片可由同一配置归纳生成；设计接口不返回运行数量、资料齐备数量、训练曲线，不编造这些状态。
+- 研究流程按同一配置的实际输入、计算节点、公开成果及依赖动态生成；设计接口不返回运行数量、资料齐备数量、训练曲线，不编造这些状态。
 
 ## 检查错误如何定位
 
@@ -1659,6 +1795,13 @@ regression是上游节点code，model必须是下游合同真实声明的输入�
 | configuration | 文件格式或摘要，提示重新生成配置 |
 
 不是所有错误都有node/port；未知path/type也显示message。HTTP422请求解析错误可能使用rule而非type，path前的body/query/path表示请求层位置。409保留用户未保存编辑并提示重读，不能自动覆盖。
+
+| `issues[].type` | 典型定位和处理 |
+| --- | --- |
+| `unregistered_indicator` | `collection_requirements / 下标 / catalog_binding`，返回资料或目标配置，从指标库重新采用。 |
+| `invalid_indicator` | `variables / 下标 / 字段`，恢复目录中已登记的定义。 |
+| `input_target_overlap` | `input_recipes / 输入code / value / 参数字段`，在对应模型参数中移除重复用作训练输入和目标的列。 |
+| `incomplete_configuration` | `input_recipes / 输入code`，结合 `node/port` 回到计算与评价，补齐必需模型参数。 |
 
 ## 保存成功后的界面行为
 

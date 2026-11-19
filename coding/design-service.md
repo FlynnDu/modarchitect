@@ -35,4 +35,4 @@
 | 逻辑斯蒂数值 | 独立 Python 3.12 环境构建并从 wheel 安装，执行 `python -I components/logistic_growth/verify.py --expected-wheel-sha256 <本次制品摘要>`。恢复参数 100、0.1、50，常量序列按预期拒绝。工程 wheel SHA-256 为 `f2bafdbbfa5eea4e7f29f034a54ca9241172e13269a2b23a1d1dbd6b6a99f16c`，历史绑定继续使用原封存摘要。 |
 | 静态检查 | 38 个本次新增或修改的 Python 文件通过文件头检查，Ruff 通过。数值核心与原逻辑斯蒂源码字节一致。 |
 
-249 已从独立 PostgreSQL 空库初始化，API、低权限数据库连接和 V3/V4 文件校验通过。原冻结运行制品、真实业务授权与点位、原设计器页面、研究实例与海豚闭环、正式自助上传按后续阶段验收。 [249 部署记录](deployments/modarchitect-249/README.md) · [首批验收用例](model-designer-first-batch-acceptance.md)
+249 已从独立 PostgreSQL 空库初始化，API、低权限数据库连接和 V3/V4 文件校验通过。原冻结运行制品、真实业务授权与点位、原设计器页面、研究实例与海豚闭环、正式自助上传按后续阶段验收。 249 部署记录 · [首批验收用例](model-designer-first-batch-acceptance.md)

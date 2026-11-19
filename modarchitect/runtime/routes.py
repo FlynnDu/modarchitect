@@ -79,7 +79,7 @@ def open_session(request: Request, response: Response) -> dict:
 @workspace.get("/examples/{kind}")
 def example(kind: str) -> dict:
     """读取准确标注为合成数据的可编辑研究样例。"""
-    if kind not in {"multivariable", "chain", "system", "analysis"}:
+    if kind not in {"multivariable", "chain", "system", "analysis", "calendar"}:
         raise HTTPException(404, "Research example was not found")
     source = files("modarchitect").joinpath("web", "designer", kind + "-study.json")
     return json.loads(source.read_text(encoding="utf-8"))

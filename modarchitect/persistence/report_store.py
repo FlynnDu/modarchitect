@@ -51,6 +51,8 @@ tasks = Table(
     Column("created_at", DateTime(timezone=True), nullable=False),
     Column("updated_at", DateTime(timezone=True), nullable=False),
     UniqueConstraint("design_id", "request_key", name="uq_report_task_request"),
+    ForeignKeyConstraint(["task_id", "design_id", "design_version_id"],
+                         ["research_studies.study_id", "research_studies.design_id", "research_studies.design_version_id"], name="fk_report_study"),
     ForeignKeyConstraint(
         ["design_version_id", "design_id"],
         [

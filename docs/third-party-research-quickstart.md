@@ -1,6 +1,6 @@
 # 纯第三方气象研究
 
-入口：[作物高温暴露条件分析](http://172.16.1.122:18925/designer/?template=crop-high-temperature#configure/sources)。每个浏览器在自己的研究空间保存。
+入口：[作物高温暴露条件分析](https://research.example.com/designer/?template=crop-high-temperature#configure/sources)。每个浏览器在自己的研究空间保存。
 
 1. 采用方案，在“数据来源”填写地块编号、作物代码、种植季、参考坐标及日期。
 2. 点击“采集所选平台指标”，等待“已采用”记录；来源数值只读。
@@ -16,7 +16,7 @@
 以下为个人研究工作区接口，Cookie保留在自己的客户端；企业保存接口及服务Key规则见[业务接入](business-api-integration.md)。
 
 ```sh
-API=http://172.16.1.122:18925
+API=https://research.example.com
 curl -fsS -c session.cookie "$API/api/v1/workspace/session"
 curl -fsS -b session.cookie "$API/api/v1/workspace/study-templates/crop-high-temperature" -o template.json
 curl -fsS -b session.cookie -H 'X-Workspace-Request: 1' -H 'Content-Type: application/json' \

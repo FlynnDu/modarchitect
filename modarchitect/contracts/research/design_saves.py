@@ -5,18 +5,36 @@
 """定义企业方案保存请求与可用于业务关联的最小回执。"""
 
 from typing import Annotated
+from unicodedata import normalize
 from uuid import UUID
 
-from pydantic import Field, model_validator
+from pydantic import AliasChoices, BeforeValidator, Field, model_validator
 
 from ..model_center.components import Contract
 from ..enterprise.business_scope import BusinessScope
+
+
+def _clean_version_name(value: object) -> object:
+    """版本名使用规范化的单行文本，留空由平台分配。"""
+    if not isinstance(value, str):
+        return value
+    value = normalize("NFC", value.strip())
+    if value and not value.isprintable():
+        raise ValueError("Version name must be a single line of printable text")
+    return value or None
+
+
+VersionName = Annotated[
+    Annotated[str, Field(strict=True, min_length=1, max_length=128)] | None,
+    BeforeValidator(_clean_version_name),
+]
 
 
 class DesignSave(Contract):
     """新建只传配置，更新必须同时指定方案和预期修订。"""
 
     configuration: dict
+    version_name: VersionName = Field(default=None, validation_alias=AliasChoices("version_name", "version"))
     design_id: UUID | None = None
     expected_revision: Annotated[int, Field(strict=True, ge=1)] | None = None
     provider_name: str | None = None

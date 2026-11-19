@@ -30,12 +30,10 @@ class ReferencePoint(Contract):
     ]
 
 
-class AcquisitionRequest(Contract):
-    """从准确草稿解析来源，只允许选择需求子集和自有研究范围。"""
+class AcquisitionWindow(Contract):
+    """限制准确研究对象、观察日期及采集需求。"""
 
-    expected_revision: Annotated[int, Field(strict=True, ge=1)]
     object: ObjectReference
-    reference_point: ReferencePoint
     start_date: date
     end_date: date
     requirements: Annotated[tuple[Code, ...], Field(max_length=256)] = ()
@@ -48,6 +46,13 @@ class AcquisitionRequest(Contract):
         if len(set(self.requirements)) != len(self.requirements):
             raise ValueError("Acquisition requirements must be unique")
         return self
+
+
+class AcquisitionRequest(AcquisitionWindow):
+    """采集适配器接收已冻结的参考位置和生成请求的准确修订。"""
+
+    expected_revision: Annotated[int, Field(strict=True, ge=1)]
+    reference_point: ReferencePoint
 
 
 class SourceSnapshot(Contract):

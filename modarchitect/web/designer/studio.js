@@ -1,10 +1,10 @@
 import {
-  addConfiguration, addModel, addObservation, addObservationInput, blankPlan, connectInput,
-  recordKey, removeNode, requestInput, setOutput, sourceKey, updateVariable,
+  addConfiguration, addModel, addObservationInput, blankPlan, connectInput,
+  recordKey, removeNode, requestInput, setOutput, sourceKey,
 } from "./editor.js?v=continuous1";
 import { describe, inspect, issueMessage, renderFlowSummary, resources } from "./panels.js?v=continuous1";
 import { defaults } from "./schema-fields.js?v=continuous1";
-import { createChart, createGraph, element } from "./visuals.js?v=continuous1";
+import { createGraph, element } from "./visuals.js?v=continuous1";
 import { mountResearch } from "./research.js?v=proxy1";
 import { applicationPath } from "./http-path.js?v=proxy1";
 import { mountModeling } from "./modeling-view.js?v=continuous1";
@@ -27,7 +27,6 @@ const graph = createGraph(byId("board-stage"), byId("graph"), byId("connections"
   onConfigure(code) { technical(true); state.tab = "parameters"; select("node:" + code); },
 });
 let noticeTimer;
-let sample;
 let researchWorkspace;
 let modelingWorkspace;
 let inputWorkspace;
@@ -145,15 +144,6 @@ const inspectorCallbacks = {
     heading();
     modified();
   },
-  updateVariable(code, name, value) {
-    updateVariable(state.definition, code, name, value);
-    modified();
-    renderResources();
-  },
-  updateRequirement(code, name, value) {
-    state.definition.collection_requirements.find((item) => item.code === code)[name] = Number.isNaN(value) ? null : value;
-    modified();
-  },
   setObservationColumn(input, code, enabled) {
     const recipe = state.definition.input_recipes[input];
     recipe.variable_codes = recipe.variable_codes.filter((item) => item !== code);
@@ -161,7 +151,6 @@ const inspectorCallbacks = {
     modified();
   },
   addObservation: createObservation,
-  addDerived: () => createObservation(true),
   addConfiguration(node, record) {
     addConfiguration(state.definition, node, record, defaults(record.research_contract.request_schema));
     rebuild("node:" + node.code);
@@ -278,17 +267,9 @@ function addTable() {
   modified();
 }
 
-function createObservation(derived) {
-  if (derived !== true) {
-    byId("system-input-workspace").scrollIntoView({ behavior: "smooth", block: "start" });
-    byId("input-catalog-search").focus();
-    return;
-  }
-  const code = addObservation(state.definition, derived === true);
-  showLibrary("variables");
-  select("variable:" + code);
-  modified();
-  byId("inspector-content").querySelector('[data-field="variable-name"]').focus();
+function createObservation() {
+  byId("system-input-workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+  byId("input-catalog-search").focus();
 }
 
 function chooseSource(source) {
@@ -418,22 +399,6 @@ async function apply(action, file) {
     buttons();
   }
 }
-function renderSample(dataset) {
-  const metrics = [
-    ["K · 株高饱和值", dataset.parameters.asymptote.toFixed(2), "cm"],
-    ["r · 生长速率", dataset.parameters.rate.toFixed(3), "/ 天"],
-    ["x₀ · 生长拐点", dataset.parameters.inflection.toFixed(2), "天"],
-  ];
-  for (const [label, value, unit] of metrics) {
-    const row = element("div", "");
-    const result = element("dd", "", value + " ");
-    result.append(element("span", "", unit));
-    row.append(element("dt", "", label), result);
-    byId("sample-metrics").append(row);
-  }
-  byId("sample-score").textContent = "拟合 RMSE " + dataset.rmse.toFixed(2) + " cm · " + dataset.observations.length + " 个合成观测";
-  createChart(byId("sample-chart"), dataset, byId("toggle-points"), byId("toggle-curve"));
-}
 async function boot() {
   try {
     const first = await request(CATALOG + "?page_size=100");
@@ -472,24 +437,8 @@ async function boot() {
 }
 
 async function openExample() {
-  const generation = state.generation;
-  state.busy = true;
-  buttons();
-  try {
-    if (!sample) {
-      sample = await request("./example.json");
-      renderSample(sample.fit);
-    }
-    await loadRecords(sample.definition);
-    if (generation !== state.generation) throw new Error("方案已更新，请重试操作。");
-    load(sample.definition, true);
-    zoom(1);
-  } catch (error) {
-    notify(error.message);
-  } finally {
-    state.busy = false;
-    buttons();
-  }
+  if (!researchWorkspace) { notify("正在连接研究工作区，请稍后重试。"); return; }
+  await researchWorkspace.openExample("calendar");
 }
 
 async function openChain(focusBoard = false) {
@@ -532,9 +481,6 @@ function zoom(value) {
 }
 
 byId("show-components").addEventListener("click", () => showLibrary("components"));
-byId("open-system-example").addEventListener("click", async () => {
-  if (researchWorkspace) await researchWorkspace.openExample("system");
-});
 byId("component-library-link").addEventListener("click", (event) => {
   event.preventDefault(); technical(true); byId("library-search").focus();
 });
@@ -590,9 +536,14 @@ wizardWorkspace = mountWizard({
   onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); },
   onExample(kind) {
     if (!researchWorkspace) throw new Error("正在连接工作区，请稍后重试。");
-    return researchWorkspace.openExample(kind);
+    return researchWorkspace.openExample(kind, { persist: false });
   },
   onTechnical: () => technical(true),
+  onSave() {
+    if (!researchWorkspace) throw new Error("个人工作区仍在连接，请稍后保存。");
+    return researchWorkspace.publishConfiguration();
+  },
+  onChooseIndicators: (role) => inputWorkspace?.setAdoptionRole(role),
   validate: async (definition) => (await request("./validate", definition)).check,
 });
 methodWorkspace = mountMethodPicker({
@@ -600,17 +551,24 @@ methodWorkspace = mountMethodPicker({
   onEdit(definition) { state.definition = definition; heading(); rebuild("plan"); modified(); },
   validate: async (definition) => (await request("./validate", definition)).check,
 });
-boot().then(() => {
+// 公开目录独立读取，个人工作区或本地草稿初始化失败不会阻断目录展示。
+const libraryReady = mountStudyLibrary({ openTemplate: (id, persist) => {
+  if (!researchWorkspace) throw new Error("设计器尚未准备好，请等待初始化完成或重新加载页面。当前方案目录仍可浏览。");
+  return researchWorkspace.openTemplate(id, persist);
+} });
+await boot().then(() => {
   researchWorkspace = mountResearch({
     getDefinition: () => structuredClone(state.definition), getRecords: () => state.records, notify,
     onDataChange(table, dataKind) { modelingWorkspace.setData(table); wizardWorkspace.setData(table, dataKind); },
     onRunChange(run) { modelingWorkspace.setRun(run); wizardWorkspace.setRun(run); },
-    onFlowChange(context) { showStudyFlow(context, state.records); },
+    onFlowChange(context) { showStudyFlow({ ...context, inputCatalog: state.inputCatalog }, state.records); },
     onModelChange: () => wizardWorkspace.openReview(),
-    onTemplateChange(value) {
+    onTemplateChange(value, { preview = false } = {}) {
+      wizardWorkspace.setTemplate(value);
       showTemplateSummary(value, { getDefinition: () => structuredClone(state.definition), getRecords: () => state.records,
         onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); } });
-      if (value) { wizardWorkspace.openCalculation(); technical(false); byId("study-template-summary").scrollIntoView({ behavior: "smooth", block: "start" }); }
+      if (value) technical(false);
+      if (value && preview) { wizardWorkspace.openInputs(); byId("study-template-summary").scrollIntoView({ behavior: "smooth", block: "start" }); }
     },
     onError: (message) => wizardWorkspace.showError(message),
     beforeRun: () => wizardWorkspace.beforeRun(),
@@ -620,5 +578,5 @@ boot().then(() => {
       showCheck((await request("./validate", definition)).check);
     },
   });
-  mountStudyLibrary({ openTemplate: (id, persist) => researchWorkspace.openTemplate(id, persist) });
 });
+await libraryReady;

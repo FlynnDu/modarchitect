@@ -62,9 +62,10 @@ export function showTemplateSummary(value, options = {}) {
 export function showStudyFlow(context, records = new Map()) {
   const section = document.getElementById("research-flow-section"), host = document.getElementById("public-research-flow");
   section.hidden = !context.definition?.composition?.nodes?.length;
-  if (section.hidden) { host.replaceChildren(); return; }
+  if (section.hidden) { host.classList.remove("research-flow-expanded"); host.replaceChildren(); return; }
   try { researchFlow(host, context.definition, records, context); }
   catch {
+    host.classList.remove("research-flow-expanded");
     const message = element("p", "流程暂无法显示，请先补齐输入和连接，再检查方案。", "research-flow-error");
     message.setAttribute("role", "alert"); host.replaceChildren(message);
   }
@@ -72,42 +73,55 @@ export function showStudyFlow(context, records = new Map()) {
 
 export async function mountStudyLibrary({ openTemplate }) {
   const host = document.getElementById("study-template-list"), status = document.getElementById("study-library-status");
-  try {
-    const response = await fetch(applicationPath("/api/v1/workspace/study-templates"), { signal: AbortSignal.timeout(15000) });
-    if (!response.ok) throw new Error("现成方案暂时无法读取，请刷新重试。");
-    const { items } = await response.json();
-    host.replaceChildren();
-    const filters = element("div", "", "study-topic-filters"); filters.setAttribute("aria-label", "按研究主题筛选");
-    for (const category of ["全部研究", ...new Set(items.map((item) => item.researcher?.category || "已有研究"))]) {
-      const button = element("button", category, "button button-secondary"); button.type = "button"; button.setAttribute("aria-pressed", String(category === "全部研究"));
-      button.addEventListener("click", () => {
-        for (const control of filters.querySelectorAll("button")) control.setAttribute("aria-pressed", String(control === button));
-        for (const card of host.children) card.hidden = category !== "全部研究" && card.dataset.category !== category;
-      }); filters.append(button);
-    }
-    host.parentElement.querySelector(".study-topic-filters")?.remove(); host.before(filters);
-    for (const value of items) {
-      const card = element("article", "", "study-template-card"); card.dataset.studyTemplate = value.id;
-      const info = value.researcher;
-      card.dataset.category = info?.category || "已有研究";
-      card.append(element("span", info?.category || "已有研究", "study-template-kind"), element("h3", value.title), element("p", info?.question || "查看该研究的数据、方法与成果"), element("p", info?.outcome || "查看研究结果", "study-template-result"));
-      let method = null;
-      if (value.method_options) {
-        const label = element("label", "研究方法" ); method = document.createElement("select"); method.setAttribute("aria-label", value.title + "的方法");
-        for (const item of value.method_options) method.add(new Option(item.name, item.id)); label.append(method); card.append(label);
+  const retry = document.getElementById("retry-study-library");
+  let loading = false;
+  async function load() {
+    if (loading) return;
+    loading = true; retry.hidden = true; retry.disabled = true;
+    status.textContent = "正在读取现成方案…"; status.dataset.state = "loading";
+    try {
+      const response = await fetch(applicationPath("/api/v1/workspace/study-templates"), { signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error("现成方案暂时无法读取，请刷新重试。");
+      const { items } = await response.json();
+      host.replaceChildren();
+      const filters = element("div", "", "study-topic-filters"); filters.setAttribute("aria-label", "按研究主题筛选");
+      for (const category of ["全部研究", ...new Set(items.map((item) => item.researcher?.category || "已有研究"))]) {
+        const button = element("button", category, "button button-secondary"); button.type = "button"; button.setAttribute("aria-pressed", String(category === "全部研究"));
+        button.addEventListener("click", () => {
+          for (const control of filters.querySelectorAll("button")) control.setAttribute("aria-pressed", String(control === button));
+          for (const card of host.children) card.hidden = category !== "全部研究" && card.dataset.category !== category;
+        }); filters.append(button);
       }
-      const actions = element("div", "", "research-actions");
-      for (const [save, label] of [[false, "查看研究流程"], [true, "使用这个方案"]]) {
-        const button = element("button", label, save ? "button button-primary" : "button button-secondary"); button.type = "button";
-        button.addEventListener("click", async () => {
-          for (const action of host.querySelectorAll("button")) action.disabled = true;
-          try { await openTemplate(method?.value || value.id, save); }
-          catch (error) { status.textContent = error.message; }
-          finally { for (const action of host.querySelectorAll("button")) action.disabled = false; }
-        }); actions.append(button);
+      host.parentElement.querySelector(".study-topic-filters")?.remove(); host.before(filters);
+      for (const value of items) {
+        const card = element("article", "", "study-template-card"); card.dataset.studyTemplate = value.id;
+        const info = value.researcher;
+        card.dataset.category = info?.category || "已有研究";
+        card.append(element("span", info?.category || "已有研究", "study-template-kind"), element("h3", value.title), element("p", info?.question || "查看该研究的数据、方法与成果"), element("p", info?.outcome || "查看研究结果", "study-template-result"));
+        let method = null;
+        if (value.method_options) {
+          const label = element("label", "研究方法" ); method = document.createElement("select"); method.setAttribute("aria-label", value.title + "的方法");
+          for (const item of value.method_options) method.add(new Option(item.name, item.id)); label.append(method); card.append(label);
+        }
+        const actions = element("div", "", "research-actions");
+        for (const [save, label] of [[false, "查看研究流程"], [true, "使用这个方案"]]) {
+          const button = element("button", label, save ? "button button-primary" : "button button-secondary"); button.type = "button";
+          button.addEventListener("click", async () => {
+            for (const action of host.querySelectorAll("button")) action.disabled = true;
+            try { await openTemplate(method?.value || value.id, save); }
+            catch (error) { status.textContent = error.message; }
+            finally { for (const action of host.querySelectorAll("button")) action.disabled = false; }
+          }); actions.append(button);
+        }
+        card.append(actions); host.append(card);
       }
-      card.append(actions); host.append(card);
-    }
-    status.textContent = "共 " + items.length + " 个研究主题。按研究问题选择方案，再设置数据、时间与方法。";
-  } catch (error) { status.textContent = error.message; }
+      status.textContent = "共 " + items.length + " 个研究主题。按研究问题选择方案，再设置数据、时间与方法。";
+      status.dataset.state = "ready";
+    } catch {
+      status.textContent = "现成方案读取失败，请点击重新读取方案。";
+      status.dataset.state = "error"; retry.hidden = false;
+    } finally { loading = false; retry.disabled = false; }
+  }
+  retry.onclick = load;
+  return load();
 }

@@ -67,7 +67,9 @@ def validate_research_input_bindings(
                     default=None,
                 )
                 columns[code, "table"] = TableColumns(
-                    {**left.observed, **right.observed}, after
+                    {**left.observed, **right.observed}, after,
+                    {**left.external, **right.external},
+                    left.date_columns | right.date_columns,
                 )
 
         request = requests.get(code)
@@ -152,7 +154,7 @@ def validate_research_input_bindings(
                             field,
                             "Logistic driver must use unit %s" % unit,
                         )
-                if value["operation"] == "fit" and not table.observed[variable_code]:
+                if value["operation"] == "fit" and not table.observed[variable_code] and not (field == "x_code" and variable_code in table.date_columns):
                     raise ResearchInputBindingError(
                         code,
                         port,
@@ -224,7 +226,7 @@ def _check_variable_fields(
                     % code,
                 )
             if spec.get("new_column"):
-                source_field = spec["source_field"]
+                source_field = spec.get("source_field")
                 source_variable = variables.get(value.get(source_field))
                 if (columns is not None and code in columns.observed) or (
                     source_field in value
@@ -248,7 +250,7 @@ def _check_variable_fields(
                         field,
                         "The upstream table does not supply variable %s" % code,
                     )
-                if spec.get("observed") and not columns.observed[code]:
+                if spec.get("observed") and not columns.observed[code] and not (spec.get("roles") == ["driver"] and code in columns.date_columns):
                     raise ResearchInputBindingError(
                         node,
                         port,

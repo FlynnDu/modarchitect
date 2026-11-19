@@ -1,42 +1,65 @@
 import assert from "node:assert/strict";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
+import vm from "node:vm";
 import { JSDOM } from "jsdom";
 
 // 以真实 DOM 事件驱动已部署页面；网络不替换成返回固定结果的桩。
 const option = (name, fallback) => process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : fallback;
-const base = option("--base-url", "http://192.168.3.249:18925");
+const base = option("--base-url", "http://127.0.0.1:8000");
 const output = option("--output", null);
 const designOnly = process.argv.includes("--design-only");
 const thirdParty = process.argv.includes("--third-party");
 const methodsOnly = process.argv.includes("--methods-only");
+const inventoryOnly = process.argv.includes("--inventory-only");
+const calendarOnly = process.argv.includes("--calendar-only");
+const verifyModuleLinks = process.argv.includes("--verify-module-links");
 const trainingMethod = option("--training-method", "multivariate_linear_training");
 const openRun = option("--open-run", null);
 const verifyInputProvision = process.argv.includes("--verify-input-provision");
 const reopenStudy = option("--reopen-study", null);
+const initialSection = option("--initial-section", "basic");
 const sessionFile = option("--session-file", null);
 if (!output) throw new Error("--output is required");
 if (designOnly && !sessionFile) throw new Error("--design-only requires --session-file in a private directory");
-if (reopenStudy && !designOnly && !thirdParty && !methodsOnly) throw new Error("--reopen-study requires a design or third-party acceptance mode");
+if (reopenStudy && !designOnly && !thirdParty && !methodsOnly && !calendarOnly) throw new Error("--reopen-study requires a design or third-party acceptance mode");
+if (calendarOnly && (!sessionFile || designOnly || thirdParty || methodsOnly || inventoryOnly)) throw new Error("--calendar-only requires --session-file and cannot combine other modes");
 if (methodsOnly && (!sessionFile || designOnly || thirdParty)) throw new Error("--methods-only requires --session-file and cannot combine other modes");
 if (openRun && (!thirdParty || !reopenStudy)) throw new Error("--open-run requires --third-party and --reopen-study");
 if (verifyInputProvision && !designOnly) throw new Error("--verify-input-provision requires --design-only");
 if (thirdParty && (!sessionFile || designOnly)) throw new Error("--third-party requires --session-file and cannot use --design-only");
 const nativeFetch = globalThis.fetch;
 const source = new URL("../modarchitect/web/designer/", import.meta.url);
-const html = await (await nativeFetch(base + "/designer/")).text();
+const pageResponse = await nativeFetch(base + "/designer/");
+const html = await pageResponse.text();
+if (verifyModuleLinks) assert.equal(pageResponse.headers.get("cache-control"), "no-cache");
 assert.equal(html, await readFile(new URL("index.html", source), "utf8"), "Deployed HTML differs from the acceptance source");
-for (const name of ["studio.js", "http-path.js", "wizard.js", "research.js", "study-library.js", "system-inputs.js", "input-provision.js", "observation-curves.js", "continuous-research.js", "source-data.js", "methods.js", "method-picker.js", "schema-fields.js", "research.css", "wizard.css"]) {
+for (const name of ["startup.js", "studio.js", "http-path.js", "wizard.js", "research.js", "study-library.js", "research-flow.js", "flow-overview.js", "study-library.css", "system-inputs.js", "input-provision.js", "observation-curves.js", "continuous-research.js", "source-data.js", "methods.js", "method-picker.js", "schema-fields.js", "request-schema.js", "calendar-axis.js", "research.css", "wizard.css"]) {
   const response = await nativeFetch(base + "/designer/" + name + "?v=wizard1");
   assert.equal(response.status, 200);
+  if (verifyModuleLinks) assert.equal(response.headers.get("cache-control"), "no-cache");
   assert.equal(await response.text(), await readFile(new URL(name, source), "utf8"), "Deployed asset differs: " + name);
 }
+if (verifyModuleLinks) {
+  assert.equal(typeof vm.SourceTextModule, "function", "Use node --experimental-vm-modules for HTTP module linking");
+  const cache = new Map();
+  async function loadModule(url) {
+    if (!cache.has(url)) cache.set(url, (async () => {
+      const response = await nativeFetch(url); assert.equal(response.status, 200);
+      return new vm.SourceTextModule(await response.text(), { identifier: url });
+    })());
+    return cache.get(url);
+  }
+  const root = new vm.SourceTextModule('import { requestProperties, variableCandidates } from "./schema-fields.js?v=continuous1"; import "./studio.js?v=loading2";', { identifier: base + "/designer/link-check.js" });
+  await root.link((specifier, parent) => loadModule(new URL(specifier, parent.identifier).href));
+  console.log("HTTP module linking passed", JSON.stringify({ modules: cache.size, cached_exports_compatible: true }));
+}
 const pageUrl = new URL(base + "/designer/#select");
-if (reopenStudy) { pageUrl.searchParams.set("study", reopenStudy); pageUrl.hash = "configure/basic"; }
+if (reopenStudy) { pageUrl.searchParams.set("study", reopenStudy); pageUrl.hash = "configure/" + initialSection; }
 const dom = new JSDOM(html, { url: pageUrl.href });
 Object.assign(globalThis, { window: dom.window, document: dom.window.document, location: dom.window.location,
   history: dom.window.history, localStorage: dom.window.localStorage, Option: dom.window.Option,
-  matchMedia: () => ({ matches: false }), ResizeObserver: class { observe() {} } });
+  matchMedia: () => ({ matches: false }), ResizeObserver: class { observe() {} disconnect() {} } });
 document.fonts = { ready: Promise.resolve() };
 dom.window.HTMLElement.prototype.scrollIntoView = function () {};
 let cookie = "", saved, model, lastRun, readModel;
@@ -74,13 +97,134 @@ async function until(condition, label, timeout = designOnly ? 15000 : 180000) {
     if (condition()) return;
     await new Promise((resolve) => setTimeout(resolve, 80));
   }
-  throw new Error("UI acceptance timed out: " + label + " · " + id("workspace-status").textContent + " · " + id("wizard-error").textContent);
+  throw new Error("UI acceptance timed out: " + label + " · " + id("workspace-status").textContent + " · " + id("wizard-error").textContent + " · " + id("method-message").textContent);
 }
 function section(name) { document.querySelector('[data-section="' + name + '"]').click(); events.push("configure/" + name); }
 
 try {
   await import(new URL("studio.js?live-wizard-acceptance", source));
-  if (methodsOnly) {
+  if (calendarOnly) {
+    if (reopenStudy) {
+      await until(() => saved?.design_id === reopenStudy && id("workspace-status").textContent.includes("已打开云端方案") && !id("cloud-save").disabled, "calendar study reopened", 15000);
+      assert.equal(document.querySelector('[data-section="' + initialSection + '"]').getAttribute("aria-current"), "step");
+    } else {
+      await until(() => id("workspace-status").textContent.includes("个人工作区已连接"), "calendar workspace connected", 15000);
+      click("empty-example");
+      await until(() => saved?.configuration?.definition.composition.nodes.some((node) => node.component.code === "research_calendar_axis") && !id("cloud-save").disabled, "platform calendar example saved", 15000);
+    }
+    section("inputs");
+    assert.ok(document.querySelector('[data-platform-date-axis="platform_calendar_day"]'));
+    assert.doesNotMatch(id("wizard-role-table").textContent, /未绑定来源/);
+    const plan = saved.configuration.definition;
+    assert.ok(plan.collection_requirements.every((requirement) => requirement.catalog_binding));
+    assert.ok(!plan.collection_requirements.some((requirement) => requirement.variable_code === "platform_calendar_day"));
+    document.querySelector('[data-stage="review"]').click(); click("wizard-check");
+    await until(() => !id("wizard-check").disabled && id("wizard-check-result").querySelector(".check-success"), "calendar definition validated by API", 15000);
+    assert.equal(exchanges.filter((request) => request.status >= 400).length, 0);
+    await mkdir(dirname(sessionFile), { recursive: true }); await writeFile(sessionFile, JSON.stringify({ base, cookie }) + "\n", { mode: 0o600 });
+    const proof = { service: base, method: "real DOM and live HTTP", native_browser_visual_check: false, design_id: saved.design_id,
+      revision: saved.revision, fresh_page_reopened: Boolean(reopenStudy), initial_section: initialSection, date_source: "platform", external_inputs: plan.collection_requirements.map((item) => item.variable_code),
+      definition_valid: true, http_error_count: 0, run_started: false };
+    await mkdir(dirname(output), { recursive: true }); await writeFile(output, JSON.stringify(proof, null, 2) + "\n");
+    console.log("Platform calendar UI acceptance passed", JSON.stringify({ design_id: saved.design_id, fresh_page_reopened: Boolean(reopenStudy) }));
+  } else if (inventoryOnly) {
+    await until(() => id("workspace-status").textContent.includes("个人工作区已连接") && document.querySelectorAll("[data-study-template]").length === 20, "inventory loaded", 15000);
+    const listing = await (await globalThis.fetch("/api/v1/workspace/study-templates")).json(), checked = [];
+    for (const entry of listing.items) for (const method of entry.method_options || [{ id: entry.id }]) {
+      const detail = await (await globalThis.fetch("/api/v1/workspace/study-templates/" + method.id)).json();
+      const visibleDetail = (item, host) => {
+        const selector = '[data-input-port="' + item.port + '"][data-variable-code="' + item.code + '"]';
+        const field = host.querySelector(selector);
+        assert.ok(field?.textContent.includes(item.name) && !field.closest("[hidden], details:not([open]), dialog"), "Hidden detail in wizard: " + method.id + ":" + item.code);
+        if (item.kind === "parameter") assert.equal(field.closest("[data-resource-input]").dataset.resourceInput, item.port);
+      };
+      const card = document.querySelector('[data-study-template="' + entry.id + '"]');
+      if (card.querySelector("select")) card.querySelector("select").value = method.id;
+      card.querySelector("button").click();
+      await until(() => id("wizard-name").value === detail.definition.name && id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "preview " + method.id, 15000);
+      assert.equal(location.hash, "#configure/inputs", method.id);
+      section("inputs");
+      assert.ok(document.querySelectorAll("#wizard-role-table tbody tr, #wizard-role-table [data-resource-input]").length, "Missing inputs: " + method.id);
+      for (const port of detail.definition.composition.inputs.filter((port) => detail.definition.input_recipes[port.code].kind === "artifact")) assert.ok(document.querySelector('[data-resource-input="' + port.code + '"]'), "Hidden artifact input: " + method.id);
+      for (const item of detail.input_requirements || []) {
+        if (item.kind !== "target") visibleDetail(item, id("wizard-role-table"));
+        const stage = document.querySelector('[data-flow-kind="input"][data-input-code="' + item.port + '"]');
+        assert.ok(stage?.textContent.includes(item.name) && stage.textContent.includes(item.use), "Missing detail in flow: " + method.id + ":" + item.code);
+      }
+      section("targets");
+      assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, detail.definition.composition.outputs.length);
+      for (const outcome of document.querySelectorAll("#wizard-output-table [data-product] > strong")) {
+        const stages = [...document.querySelectorAll('[data-flow-kind="product"]')];
+        assert.ok(stages.some((stage) => stage.textContent.includes(outcome.textContent)), "Missing product in flow: " + method.id + ":" + outcome.textContent + " · " + id("public-research-flow").textContent.slice(0, 200));
+      }
+      for (const target of (detail.input_requirements || []).filter((item) => item.kind === "target")) visibleDetail(target, id("wizard-output-table"));
+      document.querySelector('[data-stage="review"]').click(); click("wizard-check");
+      await until(() => !id("wizard-check").disabled && id("wizard-check-result").querySelector(".check-success, .check-issues"), "check " + method.id, 15000);
+      assert.ok(id("wizard-check-result").querySelector(".check-success"), id("wizard-check-result").textContent);
+      assert.doesNotMatch(id("wizard-review-summary").textContent, /按组件合同|已选择该研究所需的数据/);
+      checked.push({ id: method.id, input_ports: detail.definition.composition.inputs.length, input_details: detail.input_requirements?.length || 0, outputs: detail.definition.composition.outputs.length, valid: true });
+    }
+    assert.equal(checked.length, 22);
+    const canopy = document.querySelector('[data-study-template="canopy-temperature-rf"]');
+    canopy.querySelector("select").value = "canopy-temperature-rf";
+    canopy.querySelectorAll("button")[1].click();
+    await until(() => saved?.configuration?.definition.layout.study_template?.id === "canopy-temperature-rf" && !id("cloud-save").disabled, "canopy saved", 15000);
+    assert.match(document.querySelector('#wizard-role-table table[aria-label="模型输入"]').textContent, /空气温度/);
+    assert.equal(id("open-system-example").hidden, true);
+    assert.equal(id("study-input-example").open, false);
+    section("targets");
+    assert.match(id("wizard-output-table").textContent, /模型输出.*冠层温度.*独立留出预测/);
+    const oldPlan = saved;
+
+    document.querySelector('[data-stage="select"]').click();
+    const writes = () => exchanges.filter((call) => ["POST", "PUT"].includes(call.method) && call.path.includes("/workspace/plans"));
+    const writeCount = writes().length;
+    click("wizard-standard-example");
+    await until(() => id("workspace-status").textContent.includes("已打开双目标合成示例") && !id("cloud-save").disabled, "new example preview", 15000);
+    assert.match(id("wizard-role-table").textContent, /冠层覆盖度.*块茎干物质/);
+    assert.equal(new URL(location.href).searchParams.has("study"), false);
+    assert.equal(writes().length, writeCount);
+    assert.equal(id("open-system-example").hidden, false);
+    const exampleUrl = location.href, exampleFlow = id("public-research-flow").innerHTML, previousCalls = exchanges.length;
+    click("open-system-example");
+    assert.ok(id("study-input-example").open);
+    assert.match(id("study-input-example-content").textContent, /合成示例值.*块茎干物质/);
+    click("close-study-input-example");
+    await new Promise(setImmediate);
+    assert.equal(exchanges.length, previousCalls);
+    assert.equal(location.href, exampleUrl);
+    assert.equal(id("public-research-flow").innerHTML, exampleFlow);
+    const original = await (await globalThis.fetch("/api/v1/workspace/plans/" + oldPlan.design_id)).json();
+    assert.equal(original.revision, oldPlan.revision);
+    assert.deepEqual(original.configuration.definition, oldPlan.configuration.definition);
+    click("cloud-save");
+    await until(() => saved?.design_id !== oldPlan.design_id && !id("cloud-save").disabled, "independent sample saved on request", 15000);
+    assert.equal(writes().length, writeCount + 1);
+    assert.equal(saved.configuration.definition.composition.nodes[0].component.code, "multivariate_linear_training");
+
+    click("new-plan"); document.querySelector('[data-stage="review"]').click(); click("wizard-check");
+    await until(() => !id("wizard-check").disabled && id("wizard-check-result").querySelector(".check-issues"), "blank custom rejected", 15000);
+    assert.equal(id("wizard-check-result").querySelector(".check-success"), null);
+    document.querySelector('[data-study-template="soil-weather-lai"] button').click();
+    await until(() => location.hash === "#configure/inputs" && id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "catalog-bound example ready", 15000);
+    section("calculation");
+    click("choose-method");
+    assert.equal(document.querySelectorAll("[data-method]").length, 28);
+    document.querySelector('[data-method="logistic_growth_curve@4"] button').click();
+    let driver = document.querySelector('#method-detail [data-field="x_code"]');
+    assert.ok(driver && driver.readOnly); assert.match(driver.value, /平台观测日期/);
+    change(document.querySelector('#method-detail [data-field="axis_kind"]'), "growing_degree_days");
+    driver = document.querySelector('#method-detail [data-field="x_code"]');
+    assert.equal(driver.value, ""); assert.match(id("method-detail").textContent, /积温.*deg_c_day/);
+    change(document.querySelector('#method-detail [data-field="axis_kind"]'), "elapsed_days");
+    assert.equal(document.querySelector('#method-detail [data-field="x_code"]').readOnly, true); click("apply-method");
+    await until(() => !id("method-dialog").open, "logistic applied with valid day driver", 15000);
+    document.querySelector('[data-stage="review"]').click(); click("wizard-check");
+    await until(() => !id("wizard-check").disabled && id("wizard-check-result").querySelector(".check-success"), "logistic full API check", 15000);
+    const proof = { service: base, method: "real DOM and live HTTP", native_browser_visual_check: false, checked_templates: checked, catalog_models: 28, canopy_inputs_and_outputs_visible: true, preview_kept_plan_and_flow: true, independent_sample_requires_explicit_save: true, blank_custom_rejected: true, logistic_axis_change_clears_driver: true, logistic_valid_day_applied: true, run_started: false };
+    await mkdir(dirname(output), { recursive: true }); await writeFile(output, JSON.stringify(proof, null, 2) + "\n");
+    console.log("Designer inventory acceptance passed", JSON.stringify({ templates: checked.length, models: 28, blank_custom_rejected: true, logistic_applied: true }));
+  } else if (methodsOnly) {
     if (!reopenStudy) {
       await until(() => id("workspace-status").textContent.includes("个人工作区已连接"), "workspace connected");
       click("select-model-next"); section("calculation"); click("start-direct");
@@ -163,13 +307,13 @@ try {
       await until(() => id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "template preview");
       assert.ok(document.querySelectorAll(".research-stage-card").length > 0 || id("public-research-flow").children.length > 0);
       if (verifyInputProvision) {
-        click("open-indicator-library");
+        section("inputs"); click("open-indicator-library");
         document.querySelector('[data-category="platform_analysis"]').click();
         assert.match(document.querySelector('[data-category="platform_analysis"]').textContent, /已登记 21.*可添加 21/);
         for (const input of document.querySelectorAll(".input-catalog-card")) {
-          assert.equal(input.querySelector("button").textContent, "加入研究输入");
+          assert.equal(input.querySelector("button").textContent, "添加为模型输入");
           assert.equal(input.querySelector("button").disabled, false);
-          assert.equal(input.querySelectorAll("select").length, 1);
+          assert.equal(input.querySelectorAll("select").length, 0);
         }
         document.querySelector('[data-category="third_party"]').click();
         const weather = [...document.querySelectorAll(".input-catalog-card")].find((input) => input.querySelector("h3").textContent === "日最低气温");
@@ -190,8 +334,33 @@ try {
       assert.equal(saved.configuration.definition.name, planName);
       events.push("new-page/reopen");
     }
+    section("inputs");
+    assert.equal(document.querySelector('[data-wizard-section="inputs"]').hidden, false);
+    assert.equal(document.querySelector('[data-wizard-section="targets"]').hidden, true);
+    assert.equal(id("wizard-role-table").closest('[data-wizard-section]').dataset.wizardSection, "inputs");
+    assert.equal(id("wizard-output-table").closest('[data-wizard-section]').dataset.wizardSection, "targets");
+    click("open-indicator-library");
+    assert.equal(document.querySelectorAll('.input-catalog-card [data-input-role="target"]').length, 0);
+    click("close-indicator-library"); click("wizard-next");
+    assert.equal(location.hash, "#configure/targets");
+    assert.equal(document.querySelector('[data-wizard-section="inputs"]').hidden, true);
+    assert.equal(document.querySelector('[data-wizard-section="targets"]').hidden, false);
+    click("open-output-library");
+    assert.equal(document.querySelectorAll('.input-catalog-card [data-input-role="covariate"]').length, 0);
+    document.querySelector('[data-category="manual"]').click();
+    assert.ok([...document.querySelectorAll('.input-catalog-card button:disabled')].some((button) => button.textContent.includes("已选为研究资料")), "Existing input must be disabled in the target step");
+    click("close-indicator-library");
+    events.push("inputs/separate-page", "targets/separate-page", "catalog/step-scoped-adoption");
+    const overlap = structuredClone(saved.configuration.definition); overlap.schema_version = "1.5";
+    const overlapRequest = Object.values(overlap.input_recipes).find((recipe) => recipe.kind === "configuration" && recipe.value?.features && recipe.value?.targets);
+    overlapRequest.value.features.push(overlapRequest.value.targets[0]);
+    const overlapResponse = await globalThis.fetch(new URL("./validate", location.href), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(overlap) });
+    const overlapResult = await overlapResponse.json();
+    assert.equal(overlapResult.check.valid, false);
+    assert.equal(overlapResult.check.issues[0].type, "input_target_overlap");
+    events.push("catalog/duplicate-disabled", "api/reject-input-target-overlap");
     if (verifyInputProvision) {
-      const row = (name) => [...id("wizard-role-table").querySelectorAll("tr")].find((line) => line.querySelector("td")?.textContent === name);
+      const row = (name) => [...document.querySelectorAll("#wizard-role-table tr, #wizard-output-table tr")].find((line) => line.querySelector("td")?.textContent === name);
       assert.match(row("叶面积指数").textContent, /人工采集.*填写或导入/);
       assert.match(row("日最低气温").textContent, /气象.*Open-Meteo.*平台采集/);
       const requirement = saved.configuration.definition.collection_requirements.find((r) => r.variable_code === "temperature_minimum_daily");
@@ -223,7 +392,9 @@ try {
   } else {
   await until(() => id("workspace-status").textContent.includes("个人工作区已连接"), "workspace connected");
   if (process.argv.includes("--training-method")) {
-    click("select-model-next"); click("open-system-example");
+    click("wizard-standard-example");
+    await until(() => id("workspace-status").textContent.includes("已打开双目标合成示例") && !id("cloud-save").disabled, "explicit new synthetic example");
+    click("cloud-save");
     await until(() => saved?.design_id && id("data-summary").textContent.includes("60 条") && !id("cloud-save").disabled, "explicit synthetic standard-input example");
     change(id("wizard-name"), "原型界面：标准指标双目标工程验收");
     section("calculation"); click("choose-method");
@@ -232,16 +403,20 @@ try {
   change(id("wizard-name"), "原型界面：标准指标双目标工程验收");
   change(id("wizard-question"), "研究冠层覆盖度、块茎干物质与叶面积指数、地上生物量的预测关系（构造数据工程验收）");
   click("wizard-next"); events.push("configure/inputs");
-  click("open-indicator-library");
-  for (const [name, code, role] of [["叶面积指数", "lai", "target"], ["地上生物量", "agb_kg_ha", "target"], ["冠层覆盖度", "canopy_cover", "covariate"], ["块茎干物质", "tuber_dm_kg_ha", "covariate"]]) {
-    const card = [...document.querySelectorAll(".input-catalog-card")].find((element) => element.querySelector("h3").textContent === name);
-    assert.ok(card, "Missing catalog indicator: " + name);
-    card.querySelector("select").value = role;
-    card.querySelector("button").click();
-    await until(() => document.querySelector('[data-variable-role="' + code + '"]'), "adopted indicator " + code);
+  for (const [page, opener, role, indicators] of [
+    ["inputs", "open-indicator-library", "covariate", [["冠层覆盖度", "canopy_cover"], ["块茎干物质", "tuber_dm_kg_ha"]]],
+    ["targets", "open-output-library", "target", [["叶面积指数", "lai"], ["地上生物量", "agb_kg_ha"]]],
+  ]) {
+    section(page); click(opener);
+    for (const [name, code] of indicators) {
+      const card = [...document.querySelectorAll(".input-catalog-card")].find((element) => element.querySelector("h3").textContent === name);
+      assert.ok(card, "Missing catalog indicator: " + name);
+      card.querySelector('[data-input-role="' + role + '"]').click();
+      await until(() => document.querySelector('[data-variable-code="' + code + '"]'), "adopted indicator " + code);
+    }
+    click("close-indicator-library");
   }
-  click("close-indicator-library");
-  assert.equal(document.querySelectorAll("#wizard-role-table tr").length, 5);
+  assert.equal(document.querySelectorAll("#wizard-role-table tbody tr, #wizard-output-table tbody tr").length, 4);
   section("sources");
   const study = JSON.parse(await readFile(new URL("system-study.json", source), "utf8"));
   Object.defineProperty(id("observation-file"), "files", { configurable: true, value: [{ size: 100000, text: async () => JSON.stringify(study.observations) }] });

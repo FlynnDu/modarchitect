@@ -109,9 +109,12 @@ class ResearchDatasets:
         source_ids: tuple[UUID, ...],
         observations: ObservationTable | None,
         data_kind: str,
+        *,
+        study_id: UUID | None = None,
+        allow_prior_unbound: bool = False,
     ) -> dict:
         """事务外解析不可变来源并准备准确内容，交给普通或批次原子事务保存。"""
-        sources = self.sources.resolve(owner, source_ids)
+        sources = self.sources.resolve(owner, source_ids, study_id=study_id, allow_prior_unbound=allow_prior_unbound)
         if data_kind == "synthetic" and sources:
             raise ValueError(
                 "Synthetic labels cannot be promoted using real provider sources"

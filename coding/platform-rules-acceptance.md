@@ -1,6 +1,6 @@
 # 平台规则与研究流程验收
 
-2026-11-12。当前入口：`http://192.168.3.249:18925/designer/#select`。
+2026-11-12。当前入口：`http://127.0.0.1:8000/designer/#select`。
 
 ## 已交付
 
@@ -41,7 +41,7 @@ node scripts/verify_designer_ui.mjs --output .ops/flow-release/prediction-ui-acc
 - 数据库仍为 0007，无本批表结构迁移。最终切换前的 26 个模型和 89 个方案版本摘要均保持不变，运行注册表保持原字节。
 - 发布目录：`/mnt/sda1/modarchitect/releases/platform-rules-20261112-final/`。保留切换前数据库备份、Compose、准确版本对照与回退配置。继续使用 `compose.yaml` 加 `compose.studies.yaml` 启动，不操作旧项目。
 
-机器证据：[部署验收记录](deployments/modarchitect-249/platform-rules-acceptance.json)。规则说明：[研究平台规则](../docs/platform-rules.md)。设计：[规则实施](research-platform-rules.md)及[截图 API 差距](research-flow-cards.md)。
+机器证据：部署验收记录。规则说明：[研究平台规则](../docs/platform-rules.md)。设计：[规则实施](research-platform-rules.md)及[截图 API 差距](research-flow-cards.md)。
 
 ## 尚未交付的截图业务
 

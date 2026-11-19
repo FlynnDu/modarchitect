@@ -49,7 +49,8 @@ test("更换方法修改实际节点和公开成果，保留来源及原草稿�
   assert.deepEqual(changed.definition.composition.outputs.map((output) => output.source.port), ["forecast", "trained_model"]);
   assert.equal(original.composition.nodes[0].component.code, "multivariate_linear_training");
   assert.throws(() => prepareMethodDraft(chain.definition, recordMap, "multivariate_linear_training@1", "baseline"), /不能直接接入/);
-  assert.throws(() => prepareMethodDraft(standard.definition, recordMap, "historical_logistic_training@1", "regression"), /没有符合单位/);
+  const missingDriver = prepareMethodDraft(standard.definition, recordMap, "historical_logistic_training@1", "regression");
+  assert.equal(missingDriver.definition.input_recipes[missingDriver.request].value.x_code, undefined);
   const planned = prepareMethodDraft(standard.definition, recordMap, "historical_logistic_training@1", "regression", "", { deferParameters: true });
   assert.equal(planned.definition.input_recipes[planned.node.bindings.find((binding) => binding.port === "request").source.port].kind, "deferred");
   const fixed = structuredClone(original); fixed.input_recipes.original = { kind: "artifact" };
@@ -116,7 +117,7 @@ test("用途表逐项说明人工与第三方取数，示例和历史来源不�
     view.loaded();
     const host = document.getElementById("wizard-role-table");
     assert.match(host.querySelector("tr").textContent, /数据提供方式/);
-    const row = (name) => [...host.querySelectorAll("tr")].find((line) => line.querySelector("td")?.textContent === name);
+    const row = (name) => [...document.querySelectorAll("#wizard-role-table tr, #wizard-output-table tr")].find((line) => line.querySelector("td")?.textContent === name);
     assert.match(row("叶面积指数").textContent, /人工采集/);
     assert.match(row("叶面积指数").textContent, /填写或导入/);
     assert.match(row("日最低气温").textContent, /第三方平台 · 气象/);
@@ -185,13 +186,32 @@ test("原型的模型选择、配置导航与用途表修改同一份模型，�
   const dom = domEnvironment(); let plan = blankPlan(), checks = 0;
   const view = mountWizard({ getDefinition: () => structuredClone(plan), getRecords: () => recordMap,
     onEdit(value) { plan = value; view.render(); }, onExample() {}, onTechnical() {},
-    async validate() { checks++; return { valid: false, issues: [{ message: "请选择预测目标", path: ["evaluation", "target_codes"] }] }; } });
+    async validate() { checks++; return { valid: false, issues: [{ message: "配置不合法", path: plan.responsible_user_id === " " ? ["responsible_user_id"] : ["evaluation", "target_codes"] }] }; } });
   try {
     assert.equal(document.getElementById("wizard-select").hidden, false);
     document.getElementById("select-model-next").click();
     document.getElementById("wizard-next").click();
     assert.equal(document.querySelector('[data-wizard-section="basic"]').hidden, false);
     assert.match(document.getElementById("wizard-error").textContent, /填写/);
+    const basic = document.querySelector('[data-wizard-section="basic"]');
+    assert.equal(basic.querySelectorAll('.wizard-fields input, .wizard-fields textarea').length, 5);
+    const studyVersion = document.getElementById("wizard-study-version");
+    assert.equal(studyVersion.readOnly, false);
+    assert.equal(studyVersion.value, "");
+    assert.equal(document.getElementById("wizard-purpose"), null);
+    assert.doesNotMatch(basic.textContent, /当前计算对象|研究作物|样本单位|研究方式|主要输出/);
+    const owner = document.getElementById("wizard-responsible-user-id");
+    owner.value = "9007199254740993"; owner.dispatchEvent(new dom.window.Event("change"));
+    assert.equal(plan.responsible_user_id, "9007199254740993");
+    const version = document.getElementById("wizard-template-version");
+    assert.equal(version.readOnly, true); assert.equal(version.value, "自定义");
+    plan.layout.study_template = { id: "example-template", sha256: "exact-template" };
+    view.setTemplate({ id: "example-template", sha256: "exact-template", revision: 7, title: "作物生长研究" });
+    assert.equal(version.value, "作物生长研究 · v7");
+    view.setTemplate({ id: "example-template", sha256: "wrong", revision: 8, title: "其他版本" });
+    assert.equal(version.value, "模板版本待加载");
+    delete plan.layout.study_template; view.render();
+    assert.equal(version.value, "自定义");
     const name = document.getElementById("wizard-name"), question = document.getElementById("wizard-question");
     name.value = "原型交互验收"; name.dispatchEvent(new dom.window.Event("change"));
     question.value = "研究叶面积与生物量的预测关系"; question.dispatchEvent(new dom.window.Event("change"));
@@ -199,25 +219,79 @@ test("原型的模型选择、配置导航与用途表修改同一份模型，�
     assert.equal(document.querySelector('[data-wizard-section="inputs"]').hidden, false);
     assert.equal(plan.name, "原型交互验收");
     plan = structuredClone(standard.definition); view.loaded();
+    assert.equal(document.querySelector('[data-io-group="input"]').closest('[data-wizard-section]').dataset.wizardSection, "inputs");
+    assert.equal(document.querySelector('[data-io-group="output"]').closest('[data-wizard-section]').dataset.wizardSection, "targets");
+    assert.match(document.querySelector('[data-section="inputs"]').textContent, /研究资料与候选因素/);
+    assert.match(document.querySelector('[data-section="targets"]').textContent, /模型输出与研究成果/);
+    assert.match(document.querySelector('[data-io-group="input"]').textContent, /模型输入/);
+    assert.match(document.querySelector('[data-io-group="output"]').textContent, /预测输出/);
+    assert.equal(document.querySelectorAll('#wizard-role-table select').length, 0);
+    assert.doesNotMatch(document.getElementById("wizard-role-table").textContent, /已知因素 X|实测预测目标 Y|标签 Y|因素 X/);
     const control = document.querySelector('[data-variable-role="canopy_cover"]');
-    control.value = "target"; control.dispatchEvent(new dom.window.Event("change"));
+    control.click();
     assert.ok(studySettings(plan).parameters.targets.includes("canopy_cover"));
     assert.ok(!studySettings(plan).parameters.features.includes("canopy_cover"));
+    assert.ok(document.querySelector('[data-io-group="output"] [data-variable-code="canopy_cover"]'));
     const usage = inputUsageRows(plan).find((row) => row.variable.code === "canopy_cover");
     assert.equal(usage.application, false);
+    const beforeFailure = structuredClone(plan);
+    document.querySelector('[data-variable-role="tuber_dm_kg_ha"]').click();
+    assert.deepEqual(plan, beforeFailure);
+    assert.match(document.getElementById("wizard-error").textContent, /至少选择/);
+    assert.ok(document.querySelector('[data-io-group="input"] [data-variable-code="tuber_dm_kg_ha"]'));
     document.querySelector('[data-stage="review"]').click();
     assert.equal(await view.check(), false); view.setData(standard.observations, "synthetic");
     assert.match(document.getElementById("wizard-check-result").textContent, /目标变量/);
     assert.equal(checks, 1);
+    plan.responsible_user_id = " ";
+    assert.equal(await view.check(), false);
+    assert.match(document.getElementById("wizard-check-result").textContent, /负责人用户ID/);
+    assert.equal(checks, 2);
     assert.equal(document.querySelector('[data-template="simulation"]').disabled, true);
     assert.equal(document.querySelector('[data-template="vision"]').disabled, true);
     assert.throws(() => changeInputRole(plan, "tuber_dm_kg_ha", "target"), /至少选择/);
   } finally { dom.window.close(); }
 });
 
+test("未选基础模型时只采用已知因素也能继续配置来源和计算方法", () => {
+  const dom = domEnvironment(), plan = blankPlan();
+  plan.name = "土壤条件研究"; plan.question = "采用土壤指标后选择研究方法";
+  addSystemInput(plan, {
+    variable: { ...soilInput.variable, role: "covariate" },
+    requirement: { code: soilInput.variable.code, variable_code: soilInput.variable.code,
+      source: "third_party", unit_kind: "field_season", catalog_binding: soilInput.source.binding },
+  });
+  const original = structuredClone(plan);
+  mountWizard({ getDefinition: () => plan, getRecords: () => recordMap, getInputCatalog: () => inputCatalog,
+    onEdit() {}, onExample() {}, onTechnical() {}, validate() { throw new Error("导航不应提交完整设计检查"); } });
+  try {
+    document.querySelector('[data-section="inputs"]').click();
+    assert.match(document.getElementById("wizard-role-table").textContent, /土壤 pH/);
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#configure/targets", document.getElementById("wizard-error").textContent);
+    assert.equal(document.querySelector('[data-wizard-section="inputs"]').hidden, true);
+    assert.equal(document.querySelector('[data-wizard-section="targets"]').hidden, false);
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#configure/sources");
+    assert.equal(document.getElementById("wizard-error").hidden, true);
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#configure/calculation");
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#configure/calculation");
+    assert.match(document.getElementById("wizard-error").textContent, /从模型目录选择/);
+    assert.deepEqual(plan, original);
+  } finally { dom.window.close(); }
+});
+
 test("非训练研究发送分析操作，真实成果展示统计值且保留独立样本提示", async () => {
   const analysis = await sample("analysis"), dom = domEnvironment();
   try {
+    mountWizard({ getDefinition: () => analysis.definition, getRecords: () => recordMap,
+      onEdit() {}, onExample() {}, onTechnical() {}, validate() {} });
+    const outputGroup = document.querySelector('[data-io-group="output"]');
+    assert.match(outputGroup.textContent, /计算成果/);
+    assert.doesNotMatch(outputGroup.textContent, /预测输出|训练和验证时需要/);
+    assert.equal(outputGroup.querySelectorAll("button, select").length, 0);
     assert.deepEqual(runOperation(analysis.definition), { operation: "analyze" });
     assert.deepEqual(runOperation(direct.definition), {});
     const summary = JSON.parse(await readFile(new URL("../components/descriptive_statistics/examples/expected-summary.json", import.meta.url), "utf8"));
@@ -361,6 +435,30 @@ test("研究表单的真实勾选事件更新公式，并在无目标时恢复�
   dom.window.close();
 });
 
+test("公开方案目录不等待组件与个人工作区初始化", async () => {
+  const dom = domEnvironment(), previous = globalThis.fetch; let release;
+  const componentReply = new Promise((resolve) => { release = resolve; });
+  const reply = (value) => ({ ok: true, status: 200, json: async () => value });
+  globalThis.fetch = async (url) => {
+    const path = new URL(url, location.href).pathname;
+    if (path === "/api/v1/workspace/study-templates") return reply({ items: [{ id: "available-study", title: "可浏览的现成方案" }] });
+    if (path === "/api/v1/model-center/components") return componentReply;
+    if (path === "/api/v1/model-center/research-inputs") return reply(inputCatalog);
+    if (path === "/api/v1/model-center/research-rules") return reply({ rules: [] });
+    return reply({ items: [] });
+  };
+  const loading = import(new URL("studio.js?independent-directory", directory));
+  try {
+    for (let attempt = 0; attempt < 80 && !document.querySelector('[data-study-template="available-study"]'); attempt++) await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.ok(document.querySelector('[data-study-template="available-study"]'));
+    assert.equal(document.getElementById("study-library-status").dataset.state, "ready");
+    assert.match(document.getElementById("stage-loading").textContent, /正在读取组件目录/);
+  } finally {
+    release(reply({ total: records.length, page_size: 100, items: records }));
+    await loading; await new Promise(setImmediate); globalThis.fetch = previous; dom.window.close();
+  }
+});
+
 test("完整页面从引导入口载入、编辑并保存同一方案，组件视图保留实际五层", async () => {
   const dom = domEnvironment(); const calls = [], saved = new Map();
   const originalFetch = globalThis.fetch;
@@ -437,7 +535,7 @@ test("系统输入建立双目标模型，新增因素与目标同步实际参�
   const context = studySettings(plan);
   assert.deepEqual(context.parameters.targets, ["lai", "agb_kg_ha"]);
   assert.deepEqual(context.parameters.features, ["canopy_cover", "tuber_dm_kg_ha"]);
-  assert.equal(plan.schema_version, "1.4");
+  assert.equal(plan.schema_version, "1.5");
   assert.ok(plan.collection_requirements.every((r) => r.catalog_binding));
   assert.throws(() => add("lai", "target"), /已在方案/);
 });
@@ -456,7 +554,8 @@ test("四类输入真实点击选入固定指标，第三方属性必须逐项�
     assert.equal(document.querySelectorAll("#input-categories button").length, 4);
     const lai = [...document.querySelectorAll(".input-catalog-card")].find((card) => card.querySelector("h3").textContent === "叶面积指数");
     assert.equal(lai.querySelectorAll("input").length, 0);
-    lai.querySelector("select").value = "target"; lai.querySelector("button").click();
+    assert.equal(lai.querySelectorAll("select").length, 0);
+    lai.querySelector('[data-input-role="target"]').click();
     await new Promise((resolve) => setImmediate(resolve));
     assert.equal(plan.variables[0].code, "lai"); assert.equal(plan.variables[0].unit, "m2_m2");
     assert.equal(plan.variables[0].role, "target");
@@ -469,9 +568,61 @@ test("四类输入真实点击选入固定指标，第三方属性必须逐项�
     document.querySelector(".input-catalog-card button").click();
     await new Promise((resolve) => setImmediate(resolve));
     assert.deepEqual(calls.at(-1).selectors, { depth: "5-15cm", statistic: "mean" });
-    assert.equal(controls[2].options.length, 1);
+    assert.equal(document.querySelector('.input-catalog-card [data-input-role="target"]'), null);
     assert.match(messages.at(-1), /未接通/);
     view.render();
+  } finally { dom.window.close(); }
+});
+
+test("资料和目标各自打开指标库，只采用当前步骤的用途并保留准确来源", async () => {
+  const dom = domEnvironment(); let plan = blankPlan(), wizard; const calls = [];
+  const library = mountSystemInputs({ catalog: inputCatalog, getDefinition: () => plan, getRecords: () => recordMap,
+    onEdit(value) { plan = value; wizard.render(); }, notify() {},
+    async configure(value) {
+      calls.push(value); const code = value.key.split(":")[1].split("@")[0];
+      return { variable: { ...standard.definition.variables.find((v) => v.code === code), role: value.role },
+        requirement: standard.definition.collection_requirements.find((r) => r.variable_code === code) };
+    } });
+  wizard = mountWizard({ getDefinition: () => plan, getRecords: () => recordMap, getInputCatalog: () => inputCatalog,
+    onEdit(value) { plan = value; wizard.render(); }, onChooseIndicators: (role) => library.setAdoptionRole(role),
+    onExample() {}, onTechnical() {}, validate() {} });
+  try {
+    document.querySelector('[data-section="inputs"]').click();
+    document.getElementById("open-indicator-library").click();
+    assert.equal(document.querySelectorAll('.input-catalog-card [data-input-role="target"]').length, 0);
+    const card = (name) => [...document.querySelectorAll(".input-catalog-card")].find((item) => item.querySelector("h3").textContent === name);
+    card("冠层覆盖度").querySelector('[data-input-role="covariate"]').click(); await new Promise(setImmediate);
+    document.getElementById("close-indicator-library").click();
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#configure/targets");
+    document.getElementById("open-output-library").click();
+    assert.equal(document.querySelectorAll('.input-catalog-card [data-input-role="covariate"]').length, 0);
+    const duplicate = card("冠层覆盖度");
+    assert.equal(duplicate.querySelector("button").disabled, true);
+    assert.match(duplicate.textContent, /已选为研究资料/);
+    const callsBeforeDuplicate = calls.length;
+    duplicate.querySelector("button").click(); await new Promise(setImmediate);
+    assert.equal(calls.length, callsBeforeDuplicate);
+    card("叶面积指数").querySelector('[data-input-role="target"]').click(); await new Promise(setImmediate);
+    assert.deepEqual(calls.map((value) => value.role), ["covariate", "target"]);
+    assert.ok(document.querySelector('#wizard-role-table [data-variable-code="canopy_cover"]'));
+    assert.ok(document.querySelector('#wizard-output-table [data-variable-code="lai"]'));
+    assert.equal(document.querySelector('#wizard-role-table [data-variable-code="lai"]'), null);
+    assert.match(card("叶面积指数").textContent, /已选为目标指标/);
+    assert.equal(card("叶面积指数").querySelector("button").disabled, true);
+    document.getElementById("close-indicator-library").click();
+    document.querySelector('[data-section="inputs"]').click();
+    document.getElementById("open-indicator-library").click();
+    assert.equal(card("叶面积指数").querySelector("button").disabled, true);
+    assert.match(card("叶面积指数").textContent, /已选为目标指标/);
+    document.getElementById("close-indicator-library").click();
+    document.querySelector('[data-section="targets"]').click();
+    document.getElementById("open-output-library").click();
+    assert.equal(document.getElementById("indicator-dialog").closest('[data-wizard-section]'), null);
+    document.querySelector('[data-category="third_party"]').click();
+    assert.equal(card("土壤 pH").querySelector('[data-input-role]'), null);
+    assert.match(card("土壤 pH").textContent, /不是实测/);
+    assert.match(document.querySelector('[data-category="third_party"]').textContent, /可添加 0/);
   } finally { dom.window.close(); }
 });
 

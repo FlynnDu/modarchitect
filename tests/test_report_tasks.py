@@ -51,13 +51,14 @@ def test_sparse_scene_gap_waits_for_same_observation_day_and_has_bounded_recover
     manual = {"columns": [{"code": "lai", "name": "叶面积指数", "unit": "m2_m2", "value_kind": "observed"}], "rows": [{"object": obj, "business_date": "2025-05-12", "values": {"lai": 2}}]}
     old_scene = {"columns": [{"code": "sentinel2_red_reflectance", "name": "red", "unit": "dimensionless", "value_kind": "estimated"}], "rows": [{"object": obj, "business_date": "2025-05-11", "values": {"sentinel2_red_reflectance": .2}}]}
 
-    def prepare(owner, definition, ids, table, kind):
+    def prepare(owner, definition, ids, table, kind, *, study_id, allow_prior_unbound):
         """使用真实装配缺口检测，只替换存储/传输。"""
+        assert study_id == task["task_id"] and allow_prior_unbound
         return {"observations": assemble_tables([old_scene], base=table.model_dump(mode="json")), "data_kind": kind}
 
     sources = SimpleNamespace(read=lambda *args: {"status": "succeeded", "snapshot_ids": [str(uuid4())]})
     service = ReportTasks(SimpleNamespace(sources=sources, datasets=SimpleNamespace(prepare=prepare)), None)
-    task = {"definition_json": template("soil-weather-satellite-lai")["definition"], "settings_json": {"business_selection": None, "model_id": None}, "observation_start": date(2025,5,1)}
+    task = {"task_id": uuid4(), "definition_json": template("soil-weather-satellite-lai")["definition"], "settings_json": {"business_selection": None, "model_id": None}, "observation_start": date(2025,5,1)}
     batch = {"observation_day": date(2025,5,12), "manual_json": manual, "run_id": None, "acquisition_ids": [str(uuid4())], "attempts_json": [{}], "created_at": current, "error": None}
     result, delay = service._advance(None, task, batch, "lease")
     assert result["status"] == "waiting_data" and delay >= 1800

@@ -102,6 +102,8 @@ class ResearchRuntime:
         if request.dataset_snapshot_id is None:
             return request.observations, request.data_kind, request.source_snapshot_ids
         content = self.datasets.resolve(owner, request.dataset_snapshot_id)
+        if "study_id" in content:
+            raise ValueError("Applied study datasets must be used through their study operations")
         return (ObservationTable.model_validate(content["observations"]), content["data_kind"],
                 tuple(UUID(value) for value in content["source_snapshot_ids"]))
 
@@ -153,6 +155,8 @@ class ResearchRuntime:
             key=key,
             design_id=design_id,
             revision=body.expected_revision,
+            version_name=body.version_name,
+            replace_candidate="version_name" in body.model_fields_set,
             source_snapshot_ids=source_ids,
         )
 

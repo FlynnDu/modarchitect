@@ -1,0 +1,106 @@
+{
+  "manifest_version": "1.1",
+  "component": {
+    "code": "research_calendar_axis",
+    "revision": 1,
+    "name": "平台观测日期驱动",
+    "category": "transform"
+  },
+  "contract": {
+    "summary": "从实际观测日期自动生成精确时间坐标，保持对象、来源与稀疏日期。",
+    "method": "t = business_date − 1970-01-01；不按批次首日重新归零。",
+    "requirements": [
+      "每条记录必须保留准确对象与business_date。"
+    ],
+    "limitations": [
+      "不代表播种后天数、定植后天数或积温。",
+      "日期坐标不能当作实测训练目标。"
+    ],
+    "inputs": [
+      {
+        "code": "observations",
+        "name": "带对象与日期的研究资料",
+        "description": "只读取实际已有记录，不补造日期。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "code": "table",
+        "name": "含平台日期驱动的研究资料",
+        "description": "继承原指标并增加精确日期坐标；该坐标不具备实测标签资格。",
+        "data_type": {
+          "semantic": "research_observation_table",
+          "version": 1,
+          "shape": "table",
+          "unit": "column_definitions",
+          "alignment": "business_date"
+        }
+      }
+    ],
+    "request_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "output_code": {
+          "type": "string",
+          "title": "日期坐标",
+          "default": "platform_calendar_day",
+          "pattern": "^[a-z][a-z0-9_]{0,95}$",
+          "x-research-variables": {
+            "table_port": "observations",
+            "roles": [
+              "driver"
+            ],
+            "unit": "day",
+            "new_column": true
+          }
+        },
+        "origin_date": {
+          "type": "string",
+          "title": "平台日历基准",
+          "const": "1970-01-01",
+          "default": "1970-01-01",
+          "format": "date"
+        }
+      },
+      "required": [
+        "output_code",
+        "origin_date"
+      ]
+    },
+    "execution": {
+      "operations": [
+        "train",
+        "predict",
+        "analyze",
+        "simulate",
+        "calibrate"
+      ],
+      "input_uses": {
+        "output_code": {
+          "role": "derived",
+          "phases": [
+            "training",
+            "application",
+            "analysis"
+          ]
+        }
+      }
+    }
+  },
+  "artifact": {
+    "kind": "oci_image",
+    "manifest_digest": "sha256:b93aa396408ee012975d4d1e8e20451e4544da5d23db747df07c0e4b55831301"
+  },
+  "runtime": {
+    "protocol_version": "1.0",
+    "profile_code": "offline_cpu"
+  }
+}

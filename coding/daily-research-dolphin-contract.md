@@ -230,7 +230,7 @@ Token 认证的 [LoginHandlerInterceptor](https://github.com/apache/dolphinsched
 
 ### 已确认要求和实际版本
 
-用户指定取数账户统一取自海豚环境名 **`sumfen-mlgrowth`**，不在代码中写账户。以下外部合同直接核对官方 **3.4.0** 源码，与第十节已经读取的实际部署 JAR 版本对应；不是把3.4.1的推论直接当成部署事实。本节调查未读取或展示该环境的配置正文，也未修改 DS 环境、任务、用户或新旧数据库。
+用户指定取数账户统一取自海豚环境名 **`research-environment`**，不在代码中写账户。以下外部合同直接核对官方 **3.4.0** 源码，与第十节已经读取的实际部署 JAR 版本对应；不是把3.4.1的推论直接当成部署事实。本节调查未读取或展示该环境的配置正文，也未修改 DS 环境、任务、用户或新旧数据库。
 
 2026-11-13 使用既有 `scripts/remote_release.py` 的 `connect()`（本机 `.venv-ops/Scripts/python.exe`）尝试在249只输出环境 `name/code/id`，SSH 连接超时。因此 **尚未确认该名称在本项目专属 DS 地址18927中存在，更未取得实际 code**；不能默认旧 mlgrowth 连接的 DS 与本项目专属实例拥有同一条环境记录。接入时必须使用部署指定的凭据来源 DS，先完成元数据与权限核验，不得为了查不到而复制旧数据库配置或改写旧环境。
 
@@ -240,7 +240,7 @@ Token 认证的 [LoginHandlerInterceptor](https://github.com/apache/dolphinsched
 
 | 用途 | HTTP合同 | 返回及约束 |
 | --- | --- | --- |
-| 按名称搜索并分页 | `GET /environment/list-paging?searchVal=sumfen-mlgrowth&pageNo=1&pageSize=100` | `data.totalList` 为环境 DTO 数组，`data.total` 为总数。搜索为 SQL `LIKE`，必须完整分页后以 `name == "sumfen-mlgrowth"` 精确匹配唯一记录，不能直接取首条。 |
+| 按名称搜索并分页 | `GET /environment/list-paging?searchVal=research-environment&pageNo=1&pageSize=100` | `data.totalList` 为环境 DTO 数组，`data.total` 为总数。搜索为 SQL `LIKE`，必须完整分页后以 `name == "research-environment"` 精确匹配唯一记录，不能直接取首条。 |
 | 取得可见环境列表 | `GET /environment/query-environment-list` | `data` 为环境 DTO 数组，受当前用户可见资源限制；仍须精确名称匹配。 |
 | 复核选中的 code | `GET /environment/query-by-code?environmentCode=<code>` | `data` 为单个环境 DTO；ID是数据库行身份，`code` 才是执行参数，不能混用。 |
 
@@ -269,7 +269,7 @@ DS任务Shell（仅本进程有DS环境）
           └─execute_acquisition → 来源适配器
 ```
 
-证据为 `.ops/source-release/setup_scheduler.py` 的 `rawScript`、`modarchitect/runtime/worker.py` 的 `/acquire`、`modarchitect/input_sources/service.py` 的来源装配和 `coding/deployments/modarchitect-249/compose.yaml` 的独立Worker。现状Shell未把DS环境加入HTTP请求；HTTP本身也不携带发起进程的环境。仅修改 `environmentCode`，**不能**让适配器中的 `os.getenv()` 获得DS账户。当前 `runtime/scheduler.py` 传 `environmentCode=-1`，源工作流安装脚本又复制旧任务的该字段，这两点都须在实际改造中核验。
+证据为 `.ops/source-release/setup_scheduler.py` 的 `rawScript`、`modarchitect/runtime/worker.py` 的 `/acquire`、`modarchitect/input_sources/service.py` 的来源装配和 `coding/deployments/examples/compose.yaml` 的独立Worker。现状Shell未把DS环境加入HTTP请求；HTTP本身也不携带发起进程的环境。仅修改 `environmentCode`，**不能**让适配器中的 `os.getenv()` 获得DS账户。当前 `runtime/scheduler.py` 传 `environmentCode=-1`，源工作流安装脚本又复制旧任务的该字段，这两点都须在实际改造中核验。
 
 ### 建议的最小接入：Worker内注入按来源限定的凭据提供器
 

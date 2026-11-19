@@ -1,0 +1,35 @@
+{
+  "inputs": {
+    "observations": {
+      "columns": [],
+      "rows": [
+        {
+          "object": {
+            "field_ref": "a",
+            "crop_code": "potato",
+            "season_ref": "1970"
+          },
+          "business_date": "1970-01-01",
+          "values": {}
+        },
+        {
+          "object": {
+            "field_ref": "a",
+            "crop_code": "potato",
+            "season_ref": "1970"
+          },
+          "business_date": "1970-01-04",
+          "values": {}
+        }
+      ],
+      "source_sha256": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    }
+  },
+  "parameters": {
+    "output_code": "calendar_day",
+    "origin_date": "2026-01-01"
+  },
+  "expected_error": "Calendar coordinate origin differs"
+}

@@ -11,6 +11,8 @@
 .input-catalog-card h3 { font-size: 16px; }
 .input-catalog-card label { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .input-catalog-card .button { margin-top: auto; }
+.input-adopt-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+.input-adopt-actions .button { margin-top: 0; }
 .input-channel-ready { color: var(--green); }
 .input-channel-pending { color: var(--gold); }
 .input-model-build { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 16px; }

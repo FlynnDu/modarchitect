@@ -17,7 +17,7 @@
 - 本机 Chrome 从空白设置 4 个输入和 2 个目标，填采样间隔，按回归合同选择训练后的模型和预测表。校验、保存后刷新、导入导出、漏选观测列提示、触屏连线及逻辑斯蒂样例均通过。
 - 独立 PostgreSQL 从空库应用 `0001`，再由迁移角色升级 `0002` 并确认 4 条历史定义和 1 条新增定义。低权限角色下执行 `./.venv/Scripts/python.exe -m pytest -q`，10 项通过，含 148 个输入和两个目标的校验。Ruff 和 12 个自有 Python 文件的文件头检查通过。
 - `./.venv/Scripts/python.exe -m components.multivariate_regression.verify --image modarchitect-multivariate-regression:1` 通过单目标、双目标、秩不足、重复观测与篡改输入验证。OCI manifest 摘要为 `sha256:732fc176466acd38bcb57e4d8518fb6c132d07a2da5531ee1563a0d5f0356bbc`。OCI 归档及 SHA-256 保存在工作区的 `dist/components/multivariate-regression-v1/`。 [组件复跑方式](../components/README.md#多变量线性回归参考组件)
-- 249 用独立回归容器计算双目标合成观测并核对输出摘要。Chrome 在 249 重跑 4 个输入、2 个目标的搭建、校验、保存恢复、配置往返和旧样例。另添加第二个模型节点，验证两节点共享观测表并各自保存目标选择。 [249 发布记录](deployments/modarchitect-249/README.md#多变量与多目标更新)
+- 249 用独立回归容器计算双目标合成观测并核对输出摘要。Chrome 在 249 重跑 4 个输入、2 个目标的搭建、校验、保存恢复、配置往返和旧样例。另添加第二个模型节点，验证两节点共享观测表并各自保存目标选择。 249 发布记录
 
 ## 首版逻辑斯蒂原型记录
 
@@ -49,10 +49,10 @@
 
 - 独立逻辑斯蒂 wheel 通过数值协议拟合 11 个合成观测并对 101 个日期点求值。样例结果的饱和值为 100.02 cm，速率为 0.101 / 天，拐点为 49.91 天，样本内 RMSE 为 1.01 cm。图表和参数从同一份 `example.json` 读取。
 - 本机独立 PostgreSQL 验收执行 `python -m pytest -q`，9 项通过。Ruff 和本次 5 个自有 Python 文件的文件头检查通过。安装后的容器响应 HTML、脚本、样式和样例文件。
-- Chrome 浏览器验证五个画布节点、时间轴单位冲突与恢复、画布缩放、键盘选择变量、JSON 导出和再导入、V3 版本保留以及 390 像素布局。 [249 演示](http://192.168.3.249:18925/designer/) · [249 发布记录](deployments/modarchitect-249/README.md#设计器演示更新)
+- Chrome 浏览器验证五个画布节点、时间轴单位冲突与恢复、画布缩放、键盘选择变量、JSON 导出和再导入、V3 版本保留以及 390 像素布局。 [249 演示](http://127.0.0.1:8000/designer/) · 249 发布记录
 
 ## 空白画布验收
 
 - 2026-11-11 在本机和 249 的全新 Chrome 会话复测。使用 Playwright 从空白添加观测表、拟合设置和 V4 组件，核对两路连线、错误类型提示、成果增减、新增观测变量和目标绑定。服务端校验通过，断开必需连线后校验失败。
 - 拖动模型、保存到浏览器并刷新后，方案名称、连线和绑定恢复。导出的 JSON 摘要与保存草稿一致，重新导入通过校验。主动载入样例后可返回已保存草稿，390 像素触屏可添加节点并连线。
-- 本机 `.venv\Scripts\python.exe -m pytest -q` 为 6 项通过、3 项依赖独立 PostgreSQL 的测试跳过。249 的候选镜像通过真实数据库连接、演示校验和私有接口 401 检查。 [249 发布记录](deployments/modarchitect-249/README.md#空白画布更新)
+- 本机 `.venv\Scripts\python.exe -m pytest -q` 为 6 项通过、3 项依赖独立 PostgreSQL 的测试跳过。249 的候选镜像通过真实数据库连接、演示校验和私有接口 401 检查。 249 发布记录

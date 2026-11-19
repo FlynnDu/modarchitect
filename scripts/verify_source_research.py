@@ -17,7 +17,7 @@ import httpx
 def main() -> None:
     """新建独立验收空间，使用真实平台因素及明确构造的工程标签。"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base", default="http://192.168.3.249:18925")
+    parser.add_argument("--base", default="http://127.0.0.1:8000")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     proof = {"label_data": "constructed_engineering_labels_not_field_measurements", "base": args.base, "acquisitions": [], "runs": []}

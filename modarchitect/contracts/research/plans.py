@@ -6,7 +6,7 @@
 
 from typing import Annotated, Literal
 
-from pydantic import Field, StrictBool, model_validator
+from pydantic import Field, SerializerFunctionWrapHandler, StrictBool, model_serializer, model_validator
 
 from modarchitect.contracts.model_center.components import (
     Code,
@@ -162,8 +162,9 @@ class ResearchPlan(Contract):
     """保存点位方案时核验所选地块，实际观测与业务授权仍在实例内绑定。"""
 
     schema_version: Literal["1.0", "1.1", "1.2", "1.3", "1.4", "1.5"] = "1.0"
-    name: Annotated[str, Field(min_length=1, max_length=128)]
+    name: Annotated[str, Field(min_length=1, max_length=128, pattern=r"\S")]
     question: Text
+    responsible_user_id: Annotated[str, Field(strict=True, min_length=1, max_length=128, pattern=r"^\S+$")] | None = None
     objective: Literal["association", "prediction", "treatment_effect", "mechanistic"]
     purpose: Purpose
     variables: tuple[Variable, ...]
@@ -174,6 +175,14 @@ class ResearchPlan(Contract):
     evaluation: EvaluationPolicy
     report: ReportOptions | None = None
     layout: dict = Field(default_factory=dict)
+
+    @model_serializer(mode="wrap")
+    def serialized_definition(self, handler: SerializerFunctionWrapHandler) -> dict:
+        """历史方案不补负责人空键，保留原文件和既有科学合同的准确格式。"""
+        result = handler(self)
+        if self.responsible_user_id is None:
+            result.pop("responsible_user_id", None)
+        return result
 
     def requires_source_selection_evidence(
         self, requirement: CollectionRequirement

@@ -1,11 +1,19 @@
 import { addConfiguration, addDeferredInput, addModel, addObservationInput, connectInput, inputChoices, nodeRecord, recordKey, requestInput, setOutput, sourceKey } from "./editor.js?v=continuous1";
-import { defaults } from "./schema-fields.js?v=continuous1";
+import { defaults, requestProperties, variableCandidates } from "./request-schema.js?v=continuous1";
+import { ensureCalendarAxis } from "./calendar-axis.js?v=continuous1";
 
 const capability = (record) => record?.research_contract.capabilities || record?.definition.configuration.research_model?.execution;
 const sameType = (expected, actual) => Object.entries(expected).every(([key, value]) => actual?.[key] === value);
 
 export function methodRecords(records) {
-  return [...records.values()].filter((record) => record.available_for_new_design && record.definition.composable);
+  return [...records.values()].filter((record) => record.available_for_new_design && record.definition.composable && !record.definition.configuration.research_model?.automatic_date_axis);
+}
+
+export function methodNodes(plan, records) {
+  return plan.composition.nodes.filter((node) => {
+    const record = nodeRecord(node, records);
+    return record && !record.definition.configuration.research_model?.automatic_date_axis;
+  });
 }
 
 export function methodRestriction(record) {
@@ -14,14 +22,18 @@ export function methodRestriction(record) {
 }
 
 export function synchronizeLabels(plan, records) {
-  if (plan.purpose !== "train") return;
+  let configured = false;
   const targets = [...new Set(plan.composition.nodes.flatMap((node) => {
     const record = nodeRecord(node, records), request = requestInput(plan, node);
     const value = request && plan.input_recipes[request].value;
-    return Object.entries(capability(record)?.input_uses || {}).filter(([, use]) => use.role === "label")
+    return requestProperties(record?.research_contract.request_schema, value).filter(([field, property]) => {
+      const label = capability(record)?.input_uses?.[field]?.role === "label" || property["x-research-variables"]?.roles?.join() === "target";
+      if (label && value) configured = true;
+      return label;
+    })
       .flatMap(([field]) => value?.[field] === undefined ? [] : Array.isArray(value[field]) ? value[field] : [value[field]]);
   }))];
-  if (targets.length) plan.evaluation.target_codes = targets;
+  if (configured) plan.evaluation.target_codes = targets;
 }
 
 export function prepareMethodDraft(plan, records, key, nodeCode = null, trainingEnd = "", { deferParameters = false } = {}) {
@@ -57,20 +69,24 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
     }
   }
   const schema = record.research_contract.request_schema || {}, values = defaults(schema) || {};
-  for (const [field, property] of Object.entries(deferParameters ? {} : schema.properties || {})) {
-    if (Object.hasOwn(previous, field)) values[field] = structuredClone(previous[field]);
-    else if (property["x-research-variables"] && !property["x-research-variables"].new_column) {
-      const spec = property["x-research-variables"], use = capability(record)?.input_uses?.[field];
-      const binding = node.bindings.find((item) => item.port === spec.table_port)?.source;
-      const recipe = binding && !binding.node && draft.input_recipes[binding.port];
-      const allowed = draft.variables.filter((v) => (!recipe || recipe.variable_codes.includes(v.code)) && (!spec.unit || v.unit === spec.unit)
-        && (!spec.observed || !draft.collection_requirements.some((r) => r.variable_code === v.code && r.catalog_binding?.value_nature && r.catalog_binding.value_nature !== "observed")));
-      const preferred = use?.role === "label" ? previous.targets || plan.evaluation.target_codes
-        : use?.role === "driver" ? allowed.map((v) => v.code) : previous.features || allowed.filter((v) => !plan.evaluation.target_codes.includes(v.code)).map((v) => v.code);
+  for (const [field] of requestProperties(schema)) if (Object.hasOwn(previous, field)) values[field] = structuredClone(previous[field]);
+  if (!deferParameters) for (const [field, property] of requestProperties(schema, values)) {
+    const spec = property["x-research-variables"];
+    if (spec?.roles?.join() === "driver" && spec.unit === "day" && !spec.new_column && !variableCandidates(draft, node, spec).some((variable) => variable.code === values[field])) {
+      const code = ensureCalendarAxis(draft, records, node, spec);
+      if (code) values[field] = code;
+    }
+  }
+  for (const [field, property] of deferParameters ? [] : requestProperties(schema, values)) {
+    if (property["x-research-variables"] && !property["x-research-variables"].new_column) {
+      const spec = property["x-research-variables"], use = capability(record)?.input_uses?.[field] || record.research_contract.input_uses?.[field];
+      const role = use?.role || (spec.roles?.join() === "target" ? "label" : spec.roles?.join() === "driver" ? "driver" : "feature");
+      const allowed = variableCandidates(draft, node, spec);
+      const preferred = Object.hasOwn(values, field) ? (Array.isArray(values[field]) ? values[field] : [values[field]]) : role === "label" ? previous.targets || plan.evaluation.target_codes
+        : ["driver", "analysis"].includes(role) ? allowed.map((v) => v.code) : previous.features || allowed.filter((v) => !plan.evaluation.target_codes.includes(v.code)).map((v) => v.code);
       const chosen = preferred.filter((code) => allowed.some((v) => v.code === code));
-      if (!allowed.length && schema.required?.includes(field)) throw new Error("「" + (property.title || field) + "」没有符合单位、来源与输入要求的指标。");
       if (property.type === "array") values[field] = chosen;
-      else if (chosen.length) values[field] = chosen[0];
+      else values[field] = chosen[0];
     } else if (property.format === "date" && !values[field]) values[field] = trainingEnd || previous.training_end || previous.fit_through || "";
   }
   if (previousRequest && !draft.composition.nodes.some((item) => item.bindings.some((binding) => !binding.source.node && binding.source.port === previousRequest))) {
@@ -95,6 +111,15 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
     if (draft.layout?.designer_positions) delete draft.layout.designer_positions["input:" + input.code];
     return false;
   });
+  if (methodNodes(draft, records).length === 1) {
+    const operation = { explore: "analyze", simulate: "simulate", fit: "calibrate", train: "train", predict: "predict", evaluate: "analyze" }[draft.purpose];
+    const operations = capability(record)?.operations;
+    if (operations?.length && !operations.includes(operation)) {
+      draft.purpose = { train: "train", analyze: "explore", simulate: "simulate", predict: "predict", calibrate: "fit" }[operations[0]];
+      for (const requirement of draft.collection_requirements) requirement.required_for = [draft.purpose];
+      if (draft.purpose !== "train") draft.evaluation.target_codes = [];
+    }
+  }
   synchronizeLabels(draft, records);
   return { definition: draft, node, record, request: requestInput(draft, node) };
 }

@@ -41,7 +41,7 @@ export function mountModeling({ getDefinition, getRecords, onEdit, onExample, on
     const observed = plan.input_recipes[context.observed].variable_codes;
     const targets = observed.filter((code) => code !== history?.x_code && !plan.collection_requirements.some((r) => r.variable_code === code && r.catalog_binding && r.catalog_binding.value_nature !== "observed"));
     const factors = observed.filter((code) => !parameters.targets.includes(code) && code !== history?.target_code);
-    host.append(element("h3", "", "定义这项研究"), element("p", "modeling-muted", "勾选目标和已知因素即可，底层连接保持同步。"));
+    host.append(element("h3", "", "定义这项研究"), element("p", "modeling-muted", "配置模型输入和预测输出，底层连接保持同步。"));
     for (const [key, title] of [["name", "研究名称"], ["question", "想回答的研究问题"]]) {
       const wrapper = element("label", "modeling-date", title), input = element(key === "name" ? "input" : "textarea");
       input.value = plan[key]; input.maxLength = key === "name" ? 128 : 2000;
@@ -51,8 +51,8 @@ export function mountModeling({ getDefinition, getRecords, onEdit, onExample, on
       });
       wrapper.append(input); host.append(wrapper);
     }
-    host.append(checkboxGroup("想预测什么？可多选", targets, parameters.targets, (values) => change({ targets: values }), plan));
-    host.append(checkboxGroup("预测时，哪些因素已知？", factors, parameters.features, (values) => change({ features: values }), plan));
+    host.append(checkboxGroup("预测输出（可多选）", targets, parameters.targets, (values) => change({ targets: values }), plan));
+    host.append(checkboxGroup("模型输入（预测时可提供）", factors, parameters.features, (values) => change({ features: values }), plan));
     if (alignment) host.append(element("p", "modeling-derived", "另一个因素来自上一步：" + variableLabel(plan, alignment.output_code) + "。它是模型估计值。"));
     const model = getRecords().get(context.model.component.code + "@" + context.model.component.revision);
     host.append(element("p", "modeling-muted", "方法：" + (model?.definition.name || "当前训练方法") + "。每个目标分别训练；增加因素不需要增加模型节点。"));

@@ -9,10 +9,12 @@ import os
 from components.template.file_protocol import main
 from .weather import conditions
 from .ndvi import derive_ndvi
+from .calendar import calendar_axis
 
 OPERATIONS = {
     "catalog_weather_conditions": (("observations",), conditions),
     "sentinel_ndvi_features": (("observations", "soil", "satellite"), derive_ndvi),
+    "research_calendar_axis": (("observations",), calendar_axis),
 }
 
 

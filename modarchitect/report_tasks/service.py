@@ -161,7 +161,8 @@ class ReportTasks:
         execution_profiles(definition)
         if body.model_id is not None:
             model = self.runtime.store.model(owner, body.model_id)
-            if model["model_json"]["plan"] != definition:
+            trained = self.runtime.store.read(owner, model["run_id"])
+            if trained["design_version_id"] != body.design_version_id or model["model_json"]["plan"] != definition:
                 raise ValueError("Daily prediction model and exact plan version differ")
             cutoffs = [
                 date.fromisoformat(value)
@@ -450,7 +451,8 @@ class ReportTasks:
         )
         try:
             content = self.runtime.datasets.prepare(
-                owner, definition, tuple(source_ids), manual, "user_supplied"
+                owner, definition, tuple(source_ids), manual, "user_supplied",
+                study_id=task["task_id"], allow_prior_unbound=True,
             )
         except SourceCoverageMissing:
             return self._retry_sources(owner, task, batch)
@@ -468,7 +470,7 @@ class ReportTasks:
                 content["data_kind"],
                 owner.subject,
                 profiles(),
-                self.runtime.sources.resolve(owner, tuple(source_ids)),
+                self.runtime.sources.resolve(owner, tuple(source_ids), study_id=task["task_id"], allow_prior_unbound=True),
             )
             operation = "predict"
         else:
@@ -479,7 +481,7 @@ class ReportTasks:
                 content["data_kind"],
                 owner.subject,
                 execution_profiles,
-                source_snapshots=self.runtime.sources.resolve(owner, tuple(source_ids)),
+                source_snapshots=self.runtime.sources.resolve(owner, tuple(source_ids), study_id=task["task_id"], allow_prior_unbound=True),
             )
         payload = {
             **prepared.payload,
@@ -494,7 +496,7 @@ class ReportTasks:
             owner, batch["batch_id"], token, identity_sha256(batch["manual_json"])
         ) as tx:
             dataset = self.runtime.datasets.store.save(
-                owner, task["design_id"], content, transaction=tx
+                owner, task["design_id"], content, transaction=tx, study_id=task["task_id"]
             )
             payload["dataset_snapshot_id"] = str(dataset["dataset_id"])
             run = self.runtime.store.enqueue(
@@ -505,6 +507,8 @@ class ReportTasks:
                 "report:" + str(batch["batch_id"]),
                 payload,
                 transaction=tx,
+                study_id=task["task_id"],
+                dataset_snapshot_id=dataset["dataset_id"],
             )
             self.store.bind_run(
                 tx, batch["batch_id"], dataset["dataset_id"], run["run_id"]
@@ -574,6 +578,7 @@ class ReportTasks:
                     request_sha,
                     payload,
                     frozen_version_id=task["design_version_id"],
+                    study_id=task["task_id"],
                 )
             results.append(result["acquisition_id"])
         return results

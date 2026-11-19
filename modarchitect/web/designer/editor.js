@@ -8,7 +8,7 @@ export const nodeRecord = (node, records) => records.get(recordKey(node.componen
 
 export function blankPlan() {
   return {
-    schema_version: "1.4", name: "未命名研究方案", question: "",
+    schema_version: "1.5", name: "未命名研究方案", question: "",
     objective: "prediction", purpose: "train", variables: [], collection_requirements: [],
     composition: { schema_version: "1.0", object_scope: "field_crop_season", inputs: [], nodes: [], outputs: [] },
     input_recipes: {},
@@ -146,32 +146,6 @@ export function removeNode(definition, key) {
     composition.outputs = composition.outputs.filter((item) => item.code !== code);
   }
   if (definition.layout?.designer_positions) delete definition.layout.designer_positions[key];
-}
-
-export function addObservation(definition, derived = false) {
-  if (!derived) throw new Error("请从系统目录选择研究输入。");
-  const code = availableCode([...definition.variables, ...definition.collection_requirements], "forecast_feature");
-  definition.variables.push({
-    code, name: "预测因子", definition_version: "1.0.0",
-    description: "来自上游模型的预测值",
-    value_type: "number", unit: "1", role: "covariate",
-  });
-  return code;
-}
-
-export function updateVariable(definition, code, name, value) {
-  const variable = definition.variables.find((item) => item.code === code);
-  if (name !== "role" && definition.collection_requirements.some((r) => r.variable_code === code)) {
-    throw new Error("外部输入的定义与单位由系统目录固定，请重新选择指标。");
-  }
-  variable[name] = value;
-  if (name !== "role") return;
-  const evaluation = definition.evaluation;
-  const current = new Set(evaluation.target_codes);
-  if (value === "target") current.add(code);
-  else if (value !== "validation") current.delete(code);
-  evaluation.target_codes = [...current];
-  if (evaluation.numeric_gate && !current.has(evaluation.numeric_gate.target_code)) evaluation.numeric_gate = null;
 }
 
 export function requestInput(definition, node) {

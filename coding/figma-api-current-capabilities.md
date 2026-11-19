@@ -14,7 +14,7 @@
 
 **本次实际只读核验：**
 
-- 249 新项目 [OpenAPI](http://192.168.3.249:18925/openapi.json) 返回 HTTP 200，OpenAPI 3.1.0，应用版本 0.1.0，**40 个路径、48 个操作**；正文 SHA-256 为 `93fa2ccdd7b8420b505b2ce4123a99cce8397034b2147e7430eac48fa434d748`。
+- 249 新项目 [OpenAPI](http://127.0.0.1:8000/openapi.json) 返回 HTTP 200，OpenAPI 3.1.0，应用版本 0.1.0，**40 个路径、48 个操作**；正文 SHA-256 为 `93fa2ccdd7b8420b505b2ce4123a99cce8397034b2147e7430eac48fa434d748`。
 - 核对时点：`2026-11-12T03:49:27Z` 附近，即北京时间 11:49。随后重复读取路由，集合未变。
 - 从当前 `routes.py`、`runtime/routes.py` 的装饰器及健康入口提取方法/路径，与线上 48 个操作逐项比较，`LOCAL_ONLY=[]`、`REMOTE_ONLY=[]`。这证明路由集合相同，不证明每份部署源码逐字节相同。
 - 公开健康检查、组件目录、系统输入目录返回 200；无凭据访问个人方案列表、企业草稿列表均返回 401。没有新建工作区 Cookie、提供身份凭据或调用任何写操作。
@@ -242,4 +242,3 @@ OpenAPI 当前没有把这些全部表达为 `securitySchemes/security`。企业
 [T07]: E:/python/modarchitect/tests/test_design_api.py:109
 [T08]: E:/python/modarchitect/tests/test_research_runtime.py:252
 [T09]: E:/python/modarchitect/tests/test_modeling.mjs:213
-[D01]: E:/python/modarchitect/coding/deployments/modarchitect-249/README.md:150

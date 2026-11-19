@@ -9,14 +9,24 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .contracts.research.drafts import draft_file
 from .validation import check_definition, load_configuration
 
+class DesignerAssets(StaticFiles):
+    """设计器更新时重新校验静态资源，避免旧页面与新模块混用。"""
+
+    async def get_response(self, path: str, scope: dict) -> Response:
+        """保留ETag及304语义，要求浏览器采用前先核对当前制品。"""
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 router = APIRouter(include_in_schema=False)
-assets = StaticFiles(directory=Path(__file__).parent / "web" / "designer", html=True)
+assets = DesignerAssets(directory=Path(__file__).parent / "web" / "designer", html=True)
 # 为接近规范草稿大小上限的文件保留外部信封空间。
 MAX_JSON_BYTES = 1_048_576
 

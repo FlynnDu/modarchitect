@@ -15,6 +15,7 @@ class TableColumns:
     observed: dict[str, bool]
     after: date | None = None
     external: dict[str, frozenset[str]] = field(default_factory=dict)
+    date_columns: frozenset[str] = frozenset()
 
 
 def project_tables(
@@ -47,13 +48,14 @@ def project_tables(
                 raise ValueError("Table output columns overlap")
             parent = TableColumns({**parent.observed, **other.observed},
                                   max((value for value in (parent.after, other.after) if value), default=None),
-                                  {**parent.external, **other.external})
+                                  {**parent.external, **other.external}, parent.date_columns | other.date_columns)
         if parent is not None and declaration.get("computed"):
             codes = [parameters[field] for field in declaration["computed"]]
             if set(codes) & set(parent.observed):
                 raise ValueError("Computed table column must have a new identity")
             parent = TableColumns({**parent.observed, **{code: False for code in codes}}, parent.after,
-                                  {**parent.external, **{code: frozenset() for code in codes}})
+                                  {**parent.external, **{code: frozenset() for code in codes}},
+                                  parent.date_columns | frozenset(parameters[field] for field in declaration.get("exact_dates", [])))
         if "append" not in declaration:
             if parent is not None:
                 outputs[port] = parent
@@ -69,5 +71,6 @@ def project_tables(
             {**parent.observed, code: source.observed[original]},
             max(cutoffs, default=None),
             {**parent.external, code: source.external.get(original, frozenset())},
+            parent.date_columns | (frozenset({code}) if original in source.date_columns else frozenset()),
         )
     return outputs

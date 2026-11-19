@@ -70,7 +70,7 @@
 | Open-Meteo 端点 | [script.py:39](E:/python/mlgrowth/src/pymlgrowth/openmeteo_weather/script.py:39) 的 `ARCHIVE_URL`、`FORECAST_URL` 是源码常量；请求函数没有 API Key 参数 | 不能宣称旧代码已有天气 URL/Key 环境变量。新项目若要求运行配置可替换，应在统一 settings 明确新增，而非编造旧配置名或散落 `getenv` |
 | SoilGrids 端点 | [script.py:335](E:/python/mlgrowth/src/pymlgrowth/isric_soilgrids/script.py:335) 的 WCS 地址在函数内固定；[profile.py:19](E:/python/mlgrowth/src/pymlgrowth/isric_soilgrids/profile.py:19) 固定 WCS 方法版本与 CRS | 参考真实 WCS 获取方式，但将可部署服务地址收束为集中设置；CRS、单位、土层与准确算法属于版本化合同，不能任意改值冒充同一来源 |
 | 通用应用设置 | [configuration.py:216](E:/python/mlgrowth/src/pymlgrowth/configuration.py:216) 的 `_values` 默认读 `os.environ`；`:823` 的 `load_application_configuration` 组合数据库、OSS、数据根和 API 地址 | 仅借鉴统一配置入口，不能复制整套旧基础设施；天气/土壤脚本导入时加载旧应用配置这一耦合也不照搬 |
-| 海豚环境名 | [api/configuration.py:54](E:/python/mlgrowth/api/configuration.py:54) 定义 `MLGROWTH_DS_ENVIRONMENT_NAME`；[api/config.py:241](E:/python/mlgrowth/api/config.py:241) 映射为 settings，源码默认 `sumfen-mlgrowth` | 环境名来自部署配置，不能为每个研究或来源节点写死；现有名称不等于已经注入新执行进程 |
+| 海豚环境名 | [api/configuration.py:54](E:/python/mlgrowth/api/configuration.py:54) 定义 `MLGROWTH_DS_ENVIRONMENT_NAME`；[api/config.py:241](E:/python/mlgrowth/api/config.py:241) 映射为 settings，源码默认 `research-environment` | 环境名来自部署配置，不能为每个研究或来源节点写死；现有名称不等于已经注入新执行进程 |
 | 海豚连接 | [api/configuration.py:55](E:/python/mlgrowth/api/configuration.py:55) 定义 `MLGROWTH_DS_ENDPOINT`、`MLGROWTH_DS_TOKEN` 等 | 调度服务自己的连接配置与第三方数据账户分开，禁止当成来源证据封存 |
 
 本次没有发现旧 Open-Meteo 公共接口或 SoilGrids WCS 读取账户密钥；这两个实现使用公开请求。若当前天气商业接入需要新账户，必须显式定义对应设置和验收，不以 Sentinel 账户代替，也不声称旧代码已有商业账号支持。
@@ -101,7 +101,7 @@ API settings.MLGROWTH_DS_ENVIRONMENT_NAME
 
 本次核到新项目 [runtime/worker.py:44](E:/python/modarchitect/modarchitect/runtime/worker.py:44) 通过 HTTP `/acquire` 进入来源执行；[input_sources/worker.py:15](E:/python/modarchitect/modarchitect/input_sources/worker.py:15) 从内部 API 领取封存任务后调用采集；[runtime/scheduler.py:61](E:/python/modarchitect/modarchitect/runtime/scheduler.py:61) 的启动参数仍为 `environmentCode=-1`。
 
-即使把海豚任务改为绑定 `sumfen-mlgrowth`，环境也只影响执行那段任务的进程。**如果任务只是 HTTP 调用另一个常驻 Worker 容器，后者不会获得这些变量。** 请求携带任务 ID 不会转移进程环境，不能把密钥塞入 HTTP 业务参数“补齐”。
+即使把海豚任务改为绑定 `research-environment`，环境也只影响执行那段任务的进程。**如果任务只是 HTTP 调用另一个常驻 Worker 容器，后者不会获得这些变量。** 请求携带任务 ID 不会转移进程环境，不能把密钥塞入 HTTP 业务参数“补齐”。
 
 实施前应明确选择并验证一种方式：
 

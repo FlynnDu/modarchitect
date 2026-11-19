@@ -53,11 +53,28 @@ def principal(token: str) -> VerifiedPrincipal:
     )
 
 
+def local_subject(request: Request) -> str | None:
+    """仅为明确启用且客户端和入口均为本机回环的验收环境固定主体。"""
+    subject = os.getenv("MODARCHITECT_LOCAL_WORKSPACE_SUBJECT", "")
+    if not subject:
+        return None
+    loopback = {"127.0.0.1", "localhost", "::1"}
+    if (
+        not re.fullmatch(r"[a-f0-9]{32}", subject)
+        or request.url.hostname not in loopback
+        or request.client is None
+        or request.client.host not in loopback
+    ):
+        raise HTTPException(503, "Local workspace requires a valid subject and loopback access")
+    return subject
+
+
 def session(request: Request, response: Response) -> dict:
     """重新访问时复用个人空间，首次访问只创建无企业权限的空间。"""
     token = request.cookies.get(COOKIE)
-    if not token:
-        message = uuid4().hex + "." + str(int(time.time()))
+    fixed_subject = local_subject(request)
+    if fixed_subject or not token:
+        message = (fixed_subject or uuid4().hex) + "." + str(int(time.time()))
         signature = hmac.new(
             signing_key(), message.encode("ascii"), hashlib.sha256
         ).hexdigest()
@@ -86,4 +103,8 @@ def owner(request: Request) -> VerifiedPrincipal:
     token = request.cookies.get(COOKIE)
     if not token:
         raise HTTPException(401, "Open the workspace session first")
-    return principal(token)
+    verified = principal(token)
+    fixed_subject = local_subject(request)
+    if fixed_subject and verified.subject != fixed_subject:
+        raise HTTPException(401, "Reopen the configured local workspace session")
+    return verified

@@ -152,7 +152,7 @@ def verify_parameters(client: httpx.Client, baseline: dict, updates: dict) -> di
 def main() -> None:
     """逐方案落盘进度；报告不保存 Cookie、实际业务快照或登录凭据。"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default="http://192.168.3.249:18925")
+    parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     proof = {"service": args.base_url, "scenarios": []}

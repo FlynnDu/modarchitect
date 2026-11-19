@@ -18,10 +18,10 @@
 
 ## 当前事实基线
 
-本地应用生成的 OpenAPI 与 `http://192.168.3.249:18925/openapi.json` 只读比较：均为 40 个路径、48 个操作，路径/方法集合相同。接口存在不等于已配置外部身份、真实数据或执行制品。详细事实清单见 [API 能力核对](figma-api-current-capabilities.md)。
+本地应用生成的 OpenAPI 与 `http://127.0.0.1:8000/openapi.json` 只读比较：均为 40 个路径、48 个操作，路径/方法集合相同。接口存在不等于已配置外部身份、真实数据或执行制品。详细事实清单见 [API 能力核对](figma-api-current-capabilities.md)。
 
 - 已有完整图的节点、端口、连线、参数及布局保存，草稿修订冲突检测、检查、不可变方案版本。五步表单可以编辑同一份方案，不需要另建一份独立配置。 [方案服务](../modarchitect/designs.py) · [组合合同](../modarchitect/contracts/model_center/components.py)
-- 已有标准输入目录及准确来源校验、个人工作区保存、训练、结果、模型登记和预测；验证证据包括真实海豚执行。 [输入规则](system-input-components.md) · [验收记录](deployments/modarchitect-249/input-components-acceptance.json)
+- 已有标准输入目录及准确来源校验、个人工作区保存、训练、结果、模型登记和预测；验证证据包括真实海豚执行。 [输入规则](system-input-components.md) · 验收记录
 - 当前在线新设计目录返回 8 个计算组件，其中 5 项声明本部署执行可用；不包含随机森林。输入目录 63 项，但当前工作区仅 4 项标准人工 `field_season` 输入有通道。不能把全部目录画成可直接取数和训练。 [目录](../modarchitect/catalog.py) · [输入来源](../modarchitect/system_inputs.py)
 - 个人工作区使用签名 Cookie，企业草稿/发布使用业务凭据及企业委托。二者不是完整的统一企业研究运行入口，也不是团队共享权限。 [工作区身份](../modarchitect/runtime/workspace.py) · [企业入口](../modarchitect/routes.py)
 

@@ -39,6 +39,8 @@ runs = Table(
     Column("run_id", Uuid, primary_key=True),
     Column("design_id", ForeignKey("research_designs.design_id"), nullable=False),
     Column("design_version_id", Uuid, nullable=False),
+    Column("study_id", Uuid),
+    Column("dataset_snapshot_id", Uuid),
     Column("request_key", String(128), nullable=False),
     Column("kind", String(16), nullable=False),
     Column("input_json", JSON, nullable=False),
@@ -60,6 +62,11 @@ runs = Table(
             "research_design_versions.design_id",
         ],
     ),
+    ForeignKeyConstraint(["study_id", "design_id", "design_version_id"],
+                         ["research_studies.study_id", "research_studies.design_id", "research_studies.design_version_id"], name="fk_run_study_version"),
+    ForeignKeyConstraint(["dataset_snapshot_id", "study_id"],
+                         ["research_dataset_snapshots.dataset_id", "research_dataset_snapshots.study_id"], name="fk_run_study_dataset"),
+    CheckConstraint("(study_id IS NULL) = (dataset_snapshot_id IS NULL)", name="ck_run_study_dataset"),
     CheckConstraint(
         "kind IN ('train','predict','analyze','simulate','calibrate')",
         name="ck_research_run_kind",
@@ -131,6 +138,8 @@ def run_view(row: dict) -> dict:
             "run_id",
             "design_id",
             "design_version_id",
+            "study_id",
+            "dataset_snapshot_id",
             "kind",
             "status",
             "attempt_id",
@@ -179,6 +188,8 @@ class RuntimeStore:
         payload: dict,
         *,
         transaction: DesignTransaction | None = None,
+        study_id: UUID | None = None,
+        dataset_snapshot_id: UUID | None = None,
     ) -> dict:
         """锁定方案根后原子建立运行和待调度记录，重复请求核对原摘要。"""
         if transaction is not None:
@@ -205,6 +216,8 @@ class RuntimeStore:
                 run_id=identity,
                 design_id=design_id,
                 design_version_id=version_id,
+                study_id=study_id,
+                dataset_snapshot_id=dataset_snapshot_id,
                 request_key=key,
                 kind=kind,
                 input_json=payload,
@@ -242,13 +255,15 @@ class RuntimeStore:
         key: str | None = None,
         design_id: UUID | None = None,
         revision: int = 1,
+        version_name: str | None = None,
+        replace_candidate: bool = False,
         source_snapshot_ids: tuple = (),
     ) -> dict:
         """配置与观测原子保存，任一变化推进共享修订并拒绝旧页面覆盖。"""
         with self.store.transaction(owner) as tx:
             created = False
             if design_id is None:
-                row, created = tx.create_draft(key, configuration)
+                row, created = tx.create_draft(key, configuration, version_name=version_name)
                 design_id = row["design_id"]
             tx.lock_design(design_id)
             previous = (
@@ -270,7 +285,8 @@ class RuntimeStore:
                     raise DesignConflict("Research creation observations differ")
             else:
                 row = tx.save_draft(
-                    design_id, revision, configuration, force_revision=changed
+                    design_id, revision, configuration, force_revision=changed,
+                    version_name=version_name, replace_candidate=replace_candidate,
                 )
             if table is None:
                 return draft_view(row)
@@ -420,7 +436,8 @@ class RuntimeStore:
         with self.store.transaction(owner) as tx:
             row = (
                 tx.connection.execute(
-                    select(models).where(models.c.model_id == model_id)
+                    select(models, runs.c.study_id, runs.c.design_version_id, runs.c.dataset_snapshot_id)
+                    .join(runs, runs.c.run_id == models.c.run_id).where(models.c.model_id == model_id)
                 )
                 .mappings()
                 .first()

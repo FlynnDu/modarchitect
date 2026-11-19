@@ -6,7 +6,7 @@
 
 ## 用户入口
 
-[打开研究方案库](http://192.168.3.249:18925/designer/#select)。也可[直接采用 658b 案例](http://192.168.3.249:18925/designer/?template=survey-658b#configure/calculation)。
+[打开研究方案库](http://127.0.0.1:8000/designer/#select)。也可[直接采用 658b 案例](http://127.0.0.1:8000/designer/?template=survey-658b#configure/calculation)。
 
 1. 点击“查看流程”预览；此操作不保存方案。
 2. 点击“采用并保存”，得到当前浏览器工作区内的独立草稿。实际组件图默认展开，输入、并行支路和输出由准确合同生成。

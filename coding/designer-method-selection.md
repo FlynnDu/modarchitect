@@ -8,7 +8,7 @@
 
 - 引导页的方法横幅只有文本；buildInputModel固定采用multivariate_linear_training@1。模型组件目录与引导入口没有连通。
 - 随机森林、XGBoost、高斯过程及LSTM/ConvLSTM当前是原生资料的方法评估组件，操作为analyze，无可复用训练状态；不能直接冒充任意观测表的多目标训练组件。
-- 生物所已启用catalog_weather_conditions@1运行，其他目录组件目前为design_only。目录采用、适配当前研究、实际运行分别判断。
+- 部署环境已启用catalog_weather_conditions@1运行，其他目录组件目前为design_only。目录采用、适配当前研究、实际运行分别判断。
 
 ## 本次改动
 
@@ -23,15 +23,73 @@
 
 ## 验收
 
-真实DOM可打开目录、看到随机森林等方法及具体限制；修改兼容方法进入真实节点和参数，保存/重开保留。无匹配输入、不兼容下游及结构检查失败均保留原配置。前端回归、历史方案及生物所实际HTTP验证。
+真实DOM可打开目录、看到随机森林等方法及具体限制；修改兼容方法进入真实节点和参数，保存/重开保留。无匹配输入、不兼容下游及结构检查失败均保留原配置。前端回归、历史方案及部署环境实际HTTP验证。
 
-## 2026-11-16生物所结果
+## 2026-11-17：未选模型时的输入步骤
+
+用户通过指标库添加输入后，点击下一步出现“请从指标库选择至少一个实测目标和一个已知因素”。本次复现边界为现有设计器的真实DOM：采用目录指标、点击输入步骤下一步，观察导航与错误，不以私有函数返回值代替用户行为。
+
+新建blankPlan默认purpose=train，但此时尚未选择基础模型。wizard.js的canLeave在输入步骤无节点时提前要求目标和因素齐全，会阻止只采用因素的草稿继续配置来源并选择分析、模拟或其他方法。该阶段不能据默认操作预先套监督训练合同。
+
+最小改动只取消输入步骤的这一通用导航门槛。模型配置仍复用准确请求Schema、服务端设计检查及正式保存复检；尚未选择模型不能通过计算步骤。既有监督训练缺少目标或因素仍须在方法参数/完整设计校验中拒绝，不允许以取消导航检查取得执行资格。来源定义、角色、准确绑定与历史配置保持不变，无Python、数据库或Worker修改。
+
+验收：采用一个已知因素且未设置目标，可以从输入进入来源，再进入计算并选择方法；选择/配置模型前不能离开计算步骤；原完整方案的用途修改及错误展示保持；公开配置检查仍拒绝监督训练缺失的目标与因素。
+
+- 修复前运行`node --test --test-name-pattern='未选基础模型时只采用已知因素' tests/test_modeling.mjs`：1项失败，错误文本与用户一致，导航停留在`#configure/inputs`，预期为`#configure/sources`。
+- 取消4行过早检查后运行`npm test`：44/44通过。新增用例还确认来源、计算导航不改动方案；未选模型仍不能离开计算步骤。
+- 使用当前`.venv/Scripts/python.exe`与FastAPI TestClient读取已登记的`multivariable-study.json`，分别将`features`和`targets`设为空，通过`POST /designer/validate`验证：两者均返回`valid=false`，问题准确定位到`input_recipes/regression_config/value/features`或`targets`。此次仅做无持久化校验，首次试用示例入口未取得所需回归配置，随后改用明确的文件样例复验。
+- `node --check modarchitect/web/designer/wizard.js`及`git diff --check`通过。无Python文件修改，不适用Python文件头检查。
+- 本次验证为本地真实DOM事件及本地API测试客户端，不包括线上发布、像素布局、数据库保存或调度运行，不以这些结果声称线上已更新。
+
+## 2026-11-17：用输入和输出配置替代X/Y选择
+
+用户希望直接设置模型输入和输出，不理解逐行X/Y选择。界面以“模型输入”“预测输出”分区展示，指标库为准确来源提供“添加为模型输入”“添加为预测输出”动作，不再让用户选择数学符号。来源属性仍按目录配置；预测输出仅允许实测来源，训练阶段说明需提供实测值，应用阶段由模型计算。
+
+入口为wizard.js的指标用途区、system-inputs.js的目录采用动作及现有modeling-view.js参数说明。模型输入对应已有features/节点用途，预测输出对应已有targets/标签绑定；不新增并行input/output配置字段，不改API、模型端口或历史配置。已知引导结构继续通过changeInputRole/editStudy修改真实节点；不支持的图保持按组件合同只读，辅助资料单独展示，不能强行当输入或预测输出。非训练方案展示研究输入及真实声明的模型输出，不伪造预测目标。
+
+验收沿用公开DOM事件：双目标方案分区正确、点击移动用途同步模型、失败保留原方案；目录两种添加动作传递现有role值且保留来源属性，估计来源不提供预测输出动作；历史串联、完整页面保存、来源与方法回归继续通过。同步维护真实UI联验脚本和两份对接说明。仅新增前端代码与测试，不新增依赖或Python文件。
+
+本地结果：更新现有DOM行为用例后，修复前两项失败（缺少输入/输出分区，目录仍有角色下拉），实现后`npm test`44/44通过。用例确认移动指标同步实际features/targets，移动最后一个输入失败时原方案与分区保持，非训练方案只展示真实模型输出，目录保留土壤深度/统计属性且估计来源没有预测输出动作。修改的JS及真实UI联验脚本`node --check`通过，`git diff --check`通过。沿用既有前端依赖，无Python文件修改。
+
+交互采用原生按钮、表格与现有dialog，区域有可访问标题，动作包含指标名称，两种添加动作在请求期间一起禁用。UI路由工具选择了interface-affordances约定；既有颜色与样式体系保持。浏览器预览工具首次初始化返回“failed to write kernel assets”，因此没有像素布局验收，也没有借此声称线上已发布。真实UI联验脚本本轮仅检查语法并更新选择器，未对生产发起保存或运行。
+
+## 2026-11-17：拆分资料选择与研究目标两个步骤
+
+用户在运行预览后明确要求两个独立步骤，标题从农业研究语境出发。导航使用“研究资料与候选因素”和“目标指标与预期成果”，前者选择土壤、气象、遥感及作物观测资料，后者确定关注的株高、叶面积、生物量等目标；基础模型确定后展示其真实声明的成果，不预先伪造输出端口。
+
+配置顺序改为基础信息→研究资料与候选因素→目标指标与预期成果→数据来源→计算与评价→结果与版本。保留既有inputs和outputs路由含义，新增targets导航标识但不新增API或方案字段。输入与输出各有独立页面及添加入口，复用一个指标库弹窗；由页面入口限定添加用途，不让用户在另一页添加相反用途。估计来源仍不能成为实测训练目标，未定义部分允许继续配置，正式保存仍全量检查。
+
+wizard负责导航和分区挂载，system-inputs负责目录采用的用途上下文，studio只连接回调；配置仍修改现有节点与准确来源，资料与目标不保存成两份变量表。更新DOM导航、目录动作、历史方案重开及真实HTTP联验脚本；沿用本地18937预览，静态资源更新后以新页面验证，不修改生产。
+
+结果：拆分前两项DOM回归分别因输出仍挂载输入页、下一步跳过目标页而失败；实现后`npm test`45/45通过。新用例通过真实按钮分别采用输入与目标，证明两页不显示相反用途的添加动作、预估土壤来源不能作为实测目标；角色、单位和来源继续沿用同一配置。保留了无模型时允许继续填写、应用模型失败保持原配置等既有行为。
+
+本地服务`http://127.0.0.1:18937`已运行，工作区连接隔离验收数据库。真实HTTP+DOM采用公共模板、添加天气、保存、导出导入并在新进程重开均通过，记录`.ops/ui-preview/split-created.json`与`split-reopened.json`，两个页面独立显示、添加用途受当前页面限制，HTTP错误0。联验命令为`node scripts/verify_designer_ui.mjs --base-url http://127.0.0.1:18937 --design-only --verify-input-provision --session-file .ops/ui-preview/split-session.private.json --output .ops/ui-preview/split-created.json`，重开追加`--reopen-study <研究方案ID>`并使用重开输出路径。只保存设计，不启动计算或调度。
+
+修改的JS及脚本语法检查、git diff --check通过。本批未修改Python，不重复数据库迁移和运行回归；没有像素布局验收或生产发布。用户可刷新本地预览并从第二步进入第三步验收。
+
+## 2026-11-17：资料与目标互斥及服务端防止自我预测
+
+用户要求02已采用的指标不能在03重复选择，并要求页面也验证。核对发现addSystemInput已按变量code拒绝重复，但目录动作仍可点击、点击前还会请求04；ResearchPlan也拒绝重复变量。然而1.5节点用途方案可在同一模型features和targets同时引用同一列，公开检查实测valid=true，存在直接使用标签作为预测因素的缺口。
+
+本批按同一输入变量身份（variable.code）在目录显示已选用途并禁用，不能只比较entry.key而放过同一指标的其他来源或版本。添加动作在调用04前检查最新方案，旧按钮或异步期间变化也不重复采用；addSystemInput继续作为提交结果的第二道检查。用途显式调整保持原子移除旧用途，不形成两份变量。
+
+服务端在共用input_usages按准确组件input_uses和training阶段检查：同一节点、同一绑定数据源、同一列不能同时用于feature/driver和label。通过ContractViolation定位到请求的目标字段，在10检查、正式保存复验和执行准备共用；不把某个变量在不同节点的不同用途一概拒绝，不禁止上游派生结果作为下游输入。04保持单项采用接口，不增加整份方案或页面步骤参数。
+
+验收先通过DOM复现已选条目仍可点击，再通过HTTP复现同节点自我预测。修复后目录提前标识/禁用、重复点击不调用API、重复结果不改原方案；公开10与正式11拒绝输入目标重合且无保存回执，已有跨节点用途与串联仍通过。所有错误不暴露凭据，元数据及准确旧合同不静默改写。
+
+结果：实现前目录已选按钮仍启用，DOM用例失败；1.5方案输入包含自身目标时公开检查valid=true，对应Python用例先失败。修复后`npm test`45/45通过；设置MODARCHITECT_PYTEST_ARGS为execution_contracts、api_design_loop、design_api、study_templates、designer_demo、research_runtime这6个测试文件并运行`.venv/Scripts/python.exe .ops/verify_local_database.py`，新隔离库非特权角色46/46通过。API10返回input_target_overlap并定位请求字段，11正式保存返回422且原请求回执不存在；原跨节点label/feature用途仍通过，合法串联无影响。
+
+本地18937预览已只重启本任务服务，重启前核对监听端口和进程脚本归属。预览数据库配置单独封存在忽略目录的database.private.json，后续新建验收库不切换用户正在看的预览数据。真实DOM/HTTP新增与新进程重开通过，`.ops/ui-preview/exclusive-created.json`、exclusive-reopened.json中记录目录重复项禁用及真实接口自我预测拒绝，HTTP错误0。
+
+本批Ruff通过，Python文件头检查4个文件通过（execution_contracts.py、test_execution_contracts.py、test_api_design_loop.py及本地预览启动脚本）；修改的JS与联验脚本语法、git diff --check通过。没有新增API、数据库迁移或业务字段，没有生产发布、真实海豚执行或像素验收。
+
+## 2026-11-16部署环境结果
 
 - `npm test`：40/40通过，包含方法替换、失败保留、校验期间修改参数、已有串联/来源/结果展示回归。`node --check scripts/verify_designer_ui.mjs`通过。
-- 生物所真实HTTP/DOM：从合成工程样例采用多因素研究，打开方法目录，随机森林显示评估限制；切换历史生长曲线、服务端检查、保存、新进程重开，准确组件与配置摘要一致，HTTP错误0。此项只验证设计保存，没有启动训练或生成模型。
-- `node scripts/verify_designer_ui.mjs --base-url http://172.16.1.122:18925 --methods-only --session-file .ops/method-selection/private/session.json --output coding/deployments/modarchitect-biology/method-selection-created.json`；新进程加`--reopen-study 01a1e436-5881-7d8d-ab27-11f40c579c63`重开。
+- 部署环境真实HTTP/DOM：从合成工程样例采用多因素研究，打开方法目录，随机森林显示评估限制；切换历史生长曲线、服务端检查、保存、新进程重开，准确组件与配置摘要一致，HTTP错误0。此项只验证设计保存，没有启动训练或生成模型。
+- `node scripts/verify_designer_ui.mjs --base-url https://research.example.com --methods-only --session-file .ops/method-selection/private/session.json --output ./method-selection-created.json`；新进程加`--reopen-study <研究方案ID>`重开。
 - 原纯第三方研究新页面重查真实历史运行，报告和7点曲线正常。未重复提交调度任务。
-- API Job版本8，SR850；部署successful，Consul 1 passing；安装包137个文件逐项摘要一致。只改8个界面文件，科学合同/Python执行代码不变；独立执行Job版本2、海豚Worker版本36不变。API密钥、工作区签名密钥和运行注册表保留，无数据库迁移。
+- API Job版本8，；部署successful，Consul 1 passing；安装包137个文件逐项摘要一致。只改8个界面文件，科学合同/Python执行代码不变；独立执行Job版本2、海豚Worker版本36不变。API密钥、工作区签名密钥和运行注册表保留，无数据库迁移。
 - 私有发布工具rollout.py复用既有Nomad规划/并发更新入口；Ruff通过，Python文件头检查1个文件通过。原生浏览器运行环境未能初始化，没有像素布局验收。
 
-[首次保存](deployments/modarchitect-biology/method-selection-created.json) · [新页面重开](deployments/modarchitect-biology/method-selection-reopened.json) · [气象结果回归](deployments/modarchitect-biology/method-selection-weather-regression.json) · [部署及准确包](deployments/modarchitect-biology/method-selection-deployment.json)。
+首次保存 · 新页面重开 · 气象结果回归 · 部署及准确包。

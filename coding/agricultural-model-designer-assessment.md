@@ -23,7 +23,7 @@ JMP Pro 的 Fit Model 先给数据列分配角色，再定义模型项和拟合�
 | 农业观测与样本配对 | 领域合同能描述地块、点位、样株、处理或分组。当前可执行观测构表只接收 `field_season` 级数值，方案编译拒绝目录来源绑定及部分报告配置。日期相同也无法自动证明影像像元与人工取样覆盖相同。 | 优先接通一个真实地块日观测来源。随后按实际用例接通样株、样方或温室小时数据。配对明确对象、空间支持、日期或时刻、容差、汇总方法、缺配原因。用同日不同地块拒绝、样株误配拒绝和明确的汇总结果验证。 [对象和变量](../modarchitect/contracts/research/variables.py) · [适配限制](../modarchitect/validation.py) |
 | 组件连接与数据语义 | 已按端口版本、形态及合同编译，跟踪已知表列、实测性质及基线截点。串联样例按对象和日期对齐。若新增约束继续分散在组件代码名的条件分支里，每增加方法都可能改通用校验器。 | 把模型需要的列、支持的角色和粒度、输出的值性质、时间截点及适用范围写入版本化声明。通用规则统一判断，算法特有规则由组件校验。验收增加一个采用既有端口合同的用户组件，能生成配置并正确接线。 [输入绑定](../modarchitect/contracts/research/input_bindings.py) · [表列来源传播](../modarchitect/contracts/research/table_lineage.py) · [串联记录](model-composition.md) |
 | 独立评价和结果比较 | 评价策略可以表达多目标和按时间或对象划分，数值门槛目前只有一个可选目标，适用于时间切分。已核对的串联样例返回模型和预测表，当前缺统一的多候选对照。 | 独立保存每个候选的切分、配对覆盖、验证预测、误差和诊断。选择模型使用验证集，对外宣称精度时使用未参与选择的独立测试。不同目标分别评价，相同目标和同一评价样本上的模型才直接对比。 [评价策略与规则](../modarchitect/contracts/research/plans.py) · [门槛合同](../modarchitect/contracts/research/evaluation.py) |
-| 实际运行、复现和采用 | 方案发布可冻结组件版本及合同。249 已有三组件隔离串联的工程验收。公开入口与 OpenAPI 当前提供设计校验与草稿发布，运行接口仍缺。组件包有清单预检，正式用户上传、隔离执行和采用闭环待验收。 | 先跑通独立库内一次正式研究运行，记录封存输入、候选定义、组件制品、数据划分及成果摘要，贯通 DolphinScheduler 实例和 Worker 结果。然后验收用户制品上传、复跑、获准采用、权限范围内执行和旧版复现。 [249 记录](deployments/modarchitect-249/README.md) · [清单预检](../modarchitect/package_preflight.py) · [运行验收规划](model-designer-dolphin-acceptance.md) |
+| 实际运行、复现和采用 | 方案发布可冻结组件版本及合同。249 已有三组件隔离串联的工程验收。公开入口与 OpenAPI 当前提供设计校验与草稿发布，运行接口仍缺。组件包有清单预检，正式用户上传、隔离执行和采用闭环待验收。 | 先跑通独立库内一次正式研究运行，记录封存输入、候选定义、组件制品、数据划分及成果摘要，贯通 DolphinScheduler 实例和 Worker 结果。然后验收用户制品上传、复跑、获准采用、权限范围内执行和旧版复现。 249 记录 · [清单预检](../modarchitect/package_preflight.py) · [运行验收规划](model-designer-dolphin-acceptance.md) |
 
 优先级最高的缺口是，用户目前能组成计算，却无法在同一研究里完成「比较候选、查看独立证据、启动正式运行」。现有端口、合成串联和版本冻结为这个闭环提供了基础。
 
@@ -96,5 +96,5 @@ flowchart LR
 ## 本次验证范围
 
 - 本机执行 `./.venv/Scripts/python.exe -m pytest -q -rs`，9 项通过，3 项因未配置专用 PostgreSQL 测试库而跳过。此前串联批次记录了带隔离 PostgreSQL 的 12 项通过。 [串联复跑记录](model-composition.md#复跑记录)
-- 249 健康检查正常，公开串联样例返回 200。将样例提交 `/designer/validate` 返回 `valid=true`，编译顺序为 `baseline → merge → regression`。访客访问私有草稿返回 401，OpenAPI 未列出研究运行或启动路由。历史容器复跑得到合成株高预测 91.48452580 cm。正式业务身份、实测数据配对及从页面启动到调度结果回传仍待闭环验收。 [公开样例](http://192.168.3.249:18925/designer/?example=chain) · [249 部署记录](deployments/modarchitect-249/README.md#串联样例可见性更新)
+- 249 健康检查正常，公开串联样例返回 200。将样例提交 `/designer/validate` 返回 `valid=true`，编译顺序为 `baseline → merge → regression`。访客访问私有草稿返回 401，OpenAPI 未列出研究运行或启动路由。历史容器复跑得到合成株高预测 91.48452580 cm。正式业务身份、实测数据配对及从页面启动到调度结果回传仍待闭环验收。 [公开样例](http://127.0.0.1:8000/designer/?example=chain) · 249 部署记录
 - 本次交付为架构评估文档。代码、数据库及部署均未改动。

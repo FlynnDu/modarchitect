@@ -17,7 +17,7 @@ from modarchitect.contracts.research.plans import ResearchPlan
 from modarchitect.execution_contracts import compile_execution
 from modarchitect.runtime.containers import Artifact, ContainerRunner, archive, invocation_files
 from modarchitect.runtime.executor import execute
-from modarchitect.study_templates import frozen_inputs, template, templates, template_view, validate_native_inputs
+from modarchitect.study_templates import _template_rows, frozen_inputs, matches_template, template, templates, template_view, validate_native_inputs
 from modarchitect.validation import compile_plan
 
 from test_research_runtime import runtime_clients  # noqa: F401
@@ -27,8 +27,17 @@ def test_templates_compile_and_public_metadata_excludes_real_case_inputs(monkeyp
     """十套准确方案可检查；真实档案不进入公开元数据或可下载静态模板。"""
     rows = templates()
     assert len(rows) == 20
+    variants = [template(method["id"]) for row in rows for method in row.get("method_options", [])]
+    assert len({row["id"] for row in rows + variants}) == 22
+    for variant in variants:
+        compile_plan(ResearchPlan.model_validate(variant["definition"]), adopted=True)
+        view = template_view(variant, include_definition=True)
+        targets = [item for item in view.get("input_requirements", []) if item["kind"] == "target"]
+        assert targets and targets[0]["code"] == "canopy_temperature"
     for row in rows:
         compile_plan(ResearchPlan.model_validate(row["definition"]), adopted=True)
+        owned = {**deepcopy(row["definition"]), "responsible_user_id": "business-user-17"}
+        assert matches_template(row, owned)
         if "bundles" in row:
             validate_native_inputs(row["definition"], frozen_inputs(row))
     survey = template("survey-658b")
@@ -45,6 +54,41 @@ def test_templates_compile_and_public_metadata_excludes_real_case_inputs(monkeyp
         assert "snapshot" not in detail and "bundles" not in detail
         assert detail["definition"]["layout"]["study_template"]["sha256"] == survey["sha256"]
         assert client.get("/api/v1/workspace/study-templates/unknown").status_code == 404
+
+
+def test_each_template_projects_input_port_details_and_declared_products(monkeypatch):
+    """库内方案与历史版本保留可追溯的输入资料组，不公开原始案例。"""
+    registered = catalog()
+    for filename in ("study-templates-v1.json", "study-templates-archive-v1.json",
+                     "study-templates-archive-v2.json", "study-templates-archive-v3.json"):
+        for row in _template_rows(filename):
+            detail = template_view(row, include_definition=True)
+            definition = detail["definition"]
+            recipes = definition["input_recipes"]
+            expected = {port for port, recipe in recipes.items() if recipe["kind"] == "artifact"}
+            descriptors = detail.get("input_requirements", [])
+            assert {item["port"] for item in descriptors} == expected, row["id"]
+            assert len({(item["port"], item["code"]) for item in descriptors}) == len(descriptors)
+            assert all(item["name"] and item["use"] and item["source"] for item in descriptors)
+            assert all(set(item) == {"port", "code", "name", "unit", "kind", "use", "source"} for item in descriptors)
+            assert "bundles" not in detail
+            assert definition["composition"]["outputs"], row["id"]
+            nodes = {node["code"]: node["component"] for node in definition["composition"]["nodes"]}
+            for output in definition["composition"]["outputs"]:
+                source = output["source"]
+                component = nodes[source["node"]]
+                ports = registered[component["code"], component["revision"]].definition.outputs
+                assert any(port.code == source["port"] and port.name for port in ports)
+
+    monkeypatch.setenv("MODARCHITECT_WORKSPACE_KEY", "test-templates-" * 4)
+    with TestClient(create_app()) as client:
+        client.get("/api/v1/workspace/session")
+        detail = client.get("/api/v1/workspace/study-templates/greenhouse-water-use").json()
+    projection = {item["code"]: item["port"] for item in detail["input_requirements"]}
+    assert projection["net_radiation_mj_m2_d"] == "node_1_request"
+    assert projection["ground_area_m2"] == projection["start_mass_g"] == "node_2_request"
+    assert projection["kc"] == "node_3_request"
+    assert len(detail["definition"]["composition"]["outputs"]) == 3
 
 
 def test_native_bundle_rejects_tampering_and_false_training(monkeypatch, tmp_path):

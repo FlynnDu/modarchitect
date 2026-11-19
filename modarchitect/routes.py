@@ -33,7 +33,7 @@ from .contracts.model_center.component_packages import (
     ComponentPackageValidation,
 )
 from .contracts.research.drafts import draft_file
-from .contracts.research.design_saves import DesignSave, DesignReference
+from .contracts.research.design_saves import DesignSave, DesignReference, VersionName
 from .contracts.research.field_selection import FieldSelectionQuery
 from .contracts.research.plan_file import (
     plan_sha256,
@@ -102,10 +102,21 @@ def principal(
         return VerifiedPrincipal(CompanyIdentity(scope.provider_name, scope.company_id),
                                  "business_api", "modarchitect_api", "api_key_v1",
                                  now, now + timedelta(minutes=10))
+    return delegated_principal(request)
+
+
+def delegated_principal(request: Request) -> VerifiedPrincipal:
+    """复用历史部署的签名委托核验。"""
     delegation = request.headers.get("X-Enterprise-Delegation")
     if not delegation or len(delegation) > 8192:
         raise HTTPException(401, "Enterprise delegation is required")
     return request.app.state.gateway.identify(delegation)
+
+
+def require_platform_template_access(request: Request) -> None:
+    """平台目录在 API Key 模式下只依赖路由的业务凭据校验。"""
+    if request.app.state.authentication_mode == "delegation":
+        delegated_principal(request)
 
 
 def design_service(request: Request) -> ResearchDesigns:
@@ -126,6 +137,7 @@ class SaveDraft(PublishDraft):
     """使用草稿修订及完整配置文件更新。"""
 
     configuration: dict
+    version_name: VersionName = None
 
 
 Principal = Annotated[VerifiedPrincipal, Depends(principal)]
@@ -147,14 +159,14 @@ research = APIRouter(
 )
 
 
-@research.get("/study-templates")
-def business_templates(owner: Principal) -> dict:
-    """企业前端读取同一方案目录，身份失败不退回个人工作区。"""
+@research.get("/study-templates", dependencies=[Depends(require_platform_template_access)])
+def business_templates() -> dict:
+    """返回平台可采用的默认方案目录。"""
     return {"items": [template_view(row) for row in templates()]}
 
 
-@research.get("/study-templates/{template_id}")
-def business_template(template_id: str, owner: Principal, sha256: str | None = None) -> dict:
+@research.get("/study-templates/{template_id}", dependencies=[Depends(require_platform_template_access)])
+def business_template(template_id: str, sha256: str | None = None) -> dict:
     """复用准确模板投影，不向浏览器发送受限原生资料。"""
     return template_view(template(template_id, sha256), include_definition=True)
 
@@ -341,9 +353,10 @@ def create_draft(
     owner: Principal,
     service: DesignService,
     key: RequestKey,
+    version_name: VersionName = None,
 ) -> dict:
     """幂等创建私有草稿。"""
-    value, created = service.create(owner, key, body)
+    value, created = service.create(owner, key, body, version_name=version_name)
     response.status_code = 201 if created else 200
     return value
 
@@ -380,7 +393,8 @@ def update_draft(
     design_id: UUID, body: SaveDraft, owner: Principal, service: DesignService
 ) -> dict:
     """核对修订后保存草稿。"""
-    return service.save(owner, design_id, body.expected_revision, body.configuration)
+    return service.save(owner, design_id, body.expected_revision, body.configuration, version_name=body.version_name,
+                        replace_candidate="version_name" in body.model_fields_set)
 
 
 @research.post("/design-drafts/{design_id}/check")
@@ -397,6 +411,18 @@ def publish_draft(
 ) -> dict:
     """发布当前草稿修订。"""
     return service.publish(owner, design_id, body.expected_revision)
+
+
+@research.get("/design-drafts/{design_id}/versions")
+def list_applicable_versions(design_id: UUID, owner: Principal, service: DesignService) -> dict:
+    """按方案读取供应用选择的准确版本。"""
+    return {"items": service.versions(owner, design_id)}
+
+
+@research.get("/design-versions/{version_id}")
+def get_design_version(version_id: UUID, owner: Principal, service: DesignService) -> dict:
+    """按系统 UUID 回读准确版本名称、修订及冻结定义。"""
+    return service.version(owner, version_id=version_id)
 
 
 @research.get("/design-versions/{version_id}/configuration")

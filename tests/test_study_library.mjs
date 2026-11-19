@@ -18,6 +18,40 @@ function environment() {
   return dom;
 }
 
+test("旧页面导入的参数入口继续兼容，避免混合缓存阻断模块加载", async () => {
+  const old = await import("../modarchitect/web/designer/schema-fields.js");
+  const current = await import("../modarchitect/web/designer/request-schema.js?v=continuous1");
+  assert.equal(typeof old.requestProperties, "function");
+  assert.equal(old.requestProperties, current.requestProperties);
+  assert.equal(old.variableCandidates, current.variableCandidates);
+});
+
+test("入口模块加载失败会显示重新加载操作，结束永久等待", async () => {
+  const dom = environment();
+  try {
+    const source = await readFile(new URL("../modarchitect/web/designer/startup.js", import.meta.url), "utf8");
+    // data入口无法解析相对模块，实际触发动态导入失败的同一错误边界。
+    await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+    assert.equal(document.getElementById("designer-startup-error").hidden, false);
+    assert.doesNotMatch(document.getElementById("study-library-status").textContent, /正在读取/);
+    assert.match(document.getElementById("stage-loading").textContent, /重新加载/);
+  } finally { dom.window.close(); }
+});
+
+test("方案目录失败不保留加载文案，可在当前页面重试恢复", async () => {
+  const dom = environment(), previous = globalThis.fetch; let failed = true;
+  globalThis.fetch = async () => ({ ok: !failed, json: async () => ({ items: rows.map(view) }) });
+  try {
+    await mountStudyLibrary({ openTemplate() {} });
+    const retry = document.getElementById("retry-study-library");
+    assert.ok(retry && !retry.hidden && !retry.disabled);
+    assert.doesNotMatch(document.getElementById("study-library-status").textContent, /正在读取/);
+    failed = false; retry.click(); await new Promise(setImmediate);
+    assert.equal(document.querySelectorAll("[data-study-template]").length, 20);
+    assert.equal(retry.hidden, true);
+  } finally { globalThis.fetch = previous; dom.window.close(); }
+});
+
 test("代理路径下导航和研究目录请求保留应用前缀及查询参数", async () => {
   const dom = new JSDOM(html, { url: "http://localhost:17000/modarchitect/designer/?template=example" });
   const previous = globalThis.fetch, calls = [];
@@ -49,7 +83,7 @@ test("研究目录按问题拆分，预览与采用分开，流程不暴露验�
     const text = document.getElementById("study-template-list").textContent + document.getElementById("study-template-summary").textContent;
     assert.doesNotMatch(text, /658b|冻结|封存|工程验收|SHA-256/);
     assert.equal(document.querySelectorAll("#public-research-flow rect").length, 4);
-    assert.equal(document.querySelectorAll(".research-stage-card").length, 5);
+    assert.equal(document.querySelectorAll(".research-stage-card").length, 3);
     assert.equal(document.querySelector(".research-component-flow").open, false);
     assert.match(document.querySelector('[data-flow-stage="products"]').textContent, /等待产出/);
     const filter = [...document.querySelectorAll(".study-topic-filters button")].find((button) => button.textContent === "气象与风险"); filter.click();
@@ -60,7 +94,7 @@ test("研究目录按问题拆分，预览与采用分开，流程不暴露验�
 
 test("独立研究方案可保存重开，数据说明面向研究者，执行时保留数据来源", async () => {
   const dom = environment(), previous = globalThis.fetch, row = view(rows.find((value) => value.id === "greenhouse-water-use")), requests = [];
-  let plan = row.definition, saved = null;
+  let plan = row.definition, saved = null, version = null;
   globalThis.fetch = async (url, options = {}) => {
     const path = String(url).replace("/api/v1/workspace", ""), body = options.body && JSON.parse(options.body);
     requests.push({ path, body });
@@ -70,8 +104,11 @@ test("独立研究方案可保存重开，数据说明面向研究者，执行�
     else if (path === "/check-execution") value = { can_execute: true, issues: [] };
     else if (path === "/runs/run/plan") value = plan;
     else if (path.startsWith("/study-templates/")) value = row;
-    else if ((path === "/plans" && options.method === "POST") || (path === "/plans/study" && options.method === "PUT")) value = saved = { design_id: "study", revision: saved ? 2 : 1, configuration: { definition: body.definition } };
-    else if (path === "/plans/study") value = { ...saved, observations: null, data_kind: "user_supplied" };
+    else if ((path === "/plans" && options.method === "POST") || (path === "/plans/study" && options.method === "PUT")) value = saved = {
+      design_id: "study", revision: saved ? 2 : 1, version_name: body.version_name || saved?.version_name, configuration: { definition: body.definition },
+    };
+    else if (path === "/plans/study/publish") value = version = { design_version_id: "version", version_name: saved.version_name || "1.0.0" };
+    else if (path === "/plans/study") value = { ...saved, latest_version: version, observations: null, data_kind: "user_supplied" };
     else if (path === "/template-runs") value = { run_id: "run", kind: "simulate", status: "succeeded", input_sha256: "input", result_sha256: "output", result_json: { outputs: {}, metrics: [], pipeline: null, receipts: [] } };
     else value = { items: [] };
     return { ok: true, json: async () => value };
@@ -80,6 +117,11 @@ test("独立研究方案可保存重开，数据说明面向研究者，执行�
     const runtime = mountResearch({ getDefinition: () => plan, openDefinition: async (value) => { plan = value; }, notify() {}, onTemplateChange: showTemplateSummary, onFlowChange: showStudyFlow });
     await new Promise((resolve) => setTimeout(resolve, 20));
     await runtime.openTemplate(row.id, true);
+    const versionInput = document.getElementById("wizard-study-version"), currentVersion = document.getElementById("wizard-study-version-current");
+    assert.match(currentVersion.textContent, /保存为可应用版本/);
+    assert.equal("version_name" in requests.find((item) => item.path === "/plans" && item.body).body, false);
+    versionInput.value = "春季采样基线";
+    await runtime.publishConfiguration();
     assert.equal(document.getElementById("study-run").disabled, false);
     assert.match(document.getElementById("data-summary").textContent, /示例/);
     assert.doesNotMatch(document.getElementById("data-summary").textContent, /冻结|封存|SHA/);
@@ -89,13 +131,17 @@ test("独立研究方案可保存重开，数据说明面向研究者，执行�
     const request = requests.find((item) => item.path === "/template-runs");
     assert.equal(request.body.template_sha256, row.sha256);
     assert.equal(request.body.expected_revision, 2);
+    assert.equal(requests.find((item) => item.path === "/plans/study" && item.body).body.version_name, "春季采样基线");
+    assert.match(currentVersion.textContent, /最近保存的可应用版本 · 春季采样基线/);
+    assert.equal(versionInput.value, "");
     assert.ok(requests.findIndex((item) => item.path === "/check-execution") < requests.findIndex((item) => item.path === "/template-runs"));
-    assert.match(document.querySelector('[data-flow-stage="execution"]').textContent, /计算完成/);
+    assert.match(document.querySelector('[data-node-code="node_1"]').textContent, /已完成/);
     assert.equal("observations" in request.body, false);
     const select = document.getElementById("cloud-plans"); select.add(new Option("saved", "study")); select.value = "study";
     select.dispatchEvent(new window.Event("change")); await new Promise((resolve) => setTimeout(resolve, 20));
     assert.equal(document.getElementById("study-run").disabled, false);
     assert.equal(document.getElementById("study-template-summary").hidden, false);
+    assert.match(currentVersion.textContent, /最近保存的可应用版本 · 春季采样基线/);
   } finally { globalThis.fetch = previous; dom.window.close(); }
 });
 
@@ -136,15 +182,15 @@ test("全部研究使用有序卡片，准确成果与误差分别显示，无�
   try {
     for (const item of rows) {
       const row = view(item); showStudyFlow({ definition: row.definition, template: row });
-      assert.equal(document.querySelectorAll(".research-stage-list > li").length, 5);
-      assert.equal(document.querySelectorAll(".research-stage-connector").length, 4);
-      assert.match(document.querySelector('[data-flow-stage="products"]').textContent, /等待产出/);
+      assert.equal(document.querySelectorAll("[data-node-code]").length, row.definition.composition.nodes.length);
+      for (const node of row.definition.composition.nodes) assert.ok(document.querySelector('[data-node-code="' + node.code + '"]'));
+      assert.match(document.querySelector('[data-flow-kind="product"]').textContent, /等待产出/);
       assert.doesNotMatch(document.getElementById("public-research-flow").textContent, /验证通过|持续入库|312 条|24 组/);
     }
     const row = view(rows[0]);
-    const run = { kind: "train", status: "succeeded", result_json: { outputs: { model: {}, predictions: {} }, metrics: [{ status: "evaluated", target: "lai", rows: 5, rmse: 0.01, unit: "1" }] } };
+    const run = { kind: "train", status: "succeeded", result_json: { outputs: { trained_model: {}, predictions: {}, unrelated: {} }, metrics: [{ output: "predictions", status: "evaluated", target: "lai", rows: 5, rmse: 0.01, unit: "1" }] } };
     showStudyFlow({ definition: row.definition, template: row, run });
-    assert.match(document.querySelector('[data-flow-stage="execution"]').textContent, /计算完成/);
+    assert.match(document.querySelector('[data-node-code="regression"]').textContent, /已完成/);
     assert.match(document.querySelector('[data-flow-stage="products"]').textContent, /2 项成果/);
     assert.match(document.querySelector('[data-flow-stage="evaluation"]').textContent, /5 条配对/);
     document.querySelector(".research-component-flow").open = true;
@@ -188,7 +234,7 @@ test("串联卡片按五个外部指标逐项展示，与用途表一致，真�
     const input = document.querySelector('[data-flow-stage="inputs"]');
     assert.equal(input.querySelector(".research-stage-headline").textContent, "5 项输入指标");
     assert.equal(input.querySelector(".research-stage-description").textContent, "1 张观测表 · 90 条记录");
-    const labels = [...input.querySelectorAll(".research-stage-body > dl > dt")].map((node) => node.textContent);
+    const labels = [...input.querySelectorAll(".research-source-variable")].map((node) => node.textContent);
     assert.deepEqual(labels, inputUsageRows(row.definition).map((entry) => entry.variable.name));
     assert.deepEqual(labels, ["定植后天数", "株高", "NDVI", "土壤体积含水率", "气温"]);
     assert.equal(labels.includes("历史曲线估计株高"), false);
@@ -197,7 +243,7 @@ test("串联卡片按五个外部指标逐项展示，与用途表一致，真�
     const branch = document.querySelector(".research-data-branch");
     assert.equal(branch.dataset.branchSource, "dataset"); assert.equal(branch.dataset.branchTarget, "evaluation");
     assert.match(branch.getAttribute("aria-label"), /不参与训练/);
-    assert.equal(document.querySelectorAll(".research-stage-connector").length, 4);
+    assert.ok(document.querySelectorAll(".research-overview-edge").length > 4);
     assert.equal(document.querySelectorAll(".research-stage-eyebrow, .research-stage-recommendation").length, 0);
     assert.doesNotMatch(document.querySelector('[data-flow-stage="evaluation"] h3').textContent, /独立/);
     const draft = structuredClone(row.definition), data = structuredClone(row.observations);
@@ -219,12 +265,12 @@ test("预测输入、无留出记录和原生资料不沿用训练口径或虚�
     const row = view(rows.find((item) => item.id === "growth-trend-and-environment"));
     showStudyFlow({ definition: row.definition, template: row, run: { kind: "predict", status: "queued" } });
     assert.equal(document.querySelector('[data-flow-stage="inputs"] .research-stage-headline').textContent, "4 项输入指标");
-    const labels = [...document.querySelectorAll('[data-flow-stage="inputs"] .research-stage-body > dl > dt')].map((node) => node.textContent);
+    const labels = [...document.querySelectorAll('[data-flow-stage="inputs"] .research-source-variable')].map((node) => node.textContent);
     assert.equal(labels.includes("株高"), false);
     assert.equal(document.querySelector(".research-data-branch"), null);
     const earlier = structuredClone(row.observations); earlier.rows = earlier.rows.filter((record) => record.business_date <= "2026-06-09");
     showStudyFlow({ definition: row.definition, data: earlier });
-    assert.equal(document.querySelector(".research-data-branch"), null);
+    assert.match(document.querySelector(".research-data-branch").getAttribute("aria-label"), /待补留出实测/);
     const native = view(rows.find((item) => item.id === "crop-low-temperature"));
     showStudyFlow({ definition: native.definition, template: native });
     assert.equal(document.querySelector('[data-flow-stage="inputs"] .research-stage-headline').textContent, "1 项输入指标");

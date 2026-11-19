@@ -50,8 +50,8 @@ def template(template_id: str, checksum: str | None = None) -> dict:
 
 
 def scientific_definition(definition: dict) -> dict:
-    """名称、问题说明和画布位置可编辑；冻结案例的科学输入与依赖不得替换。"""
-    return {key: value for key, value in definition.items() if key not in {"name", "question", "layout"}}
+    """名称、负责人和展示说明不改变科学输入；冻结案例的依赖不得替换。"""
+    return {key: value for key, value in definition.items() if key not in {"name", "question", "layout", "responsible_user_id"}}
 
 
 def matches_template(row: dict, definition: dict) -> bool:

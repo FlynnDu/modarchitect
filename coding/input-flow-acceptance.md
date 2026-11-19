@@ -33,8 +33,8 @@ node scripts/verify_study_library_ui.mjs --output .ops/input-release/researcher-
 
 API 镜像：`modarchitect:0.1.0-input-view-eb9971db6d9f`；wheel SHA-256：`eb9971db6d9f391bf32e59f8d0edd1216ad1c89ae62fa13abeda7b89598b4931`。Worker 和调度服务继续采用平台规则批次。数据库仍为 0007。
 
-发布目录：`/mnt/sda1/modarchitect/releases/input-flow-20261112/`。证据：[机器记录](deployments/modarchitect-249/input-flow-acceptance.json)，[设计说明](research-flow-cards.md)。
+发布目录：`/mnt/sda1/modarchitect/releases/input-flow-20261112/`。证据：机器记录，[设计说明](research-flow-cards.md)。
 
 这是既有内置模型的时间留出评价分支，没有新增独立数据集实体、开发验证三分法或可拖拽的独立地块验证组件。通用组件连接本身支持多下游分支；完整复刻独立地块验证还需实现对应数据划分、隔离、授权、评价组件与运行规则，不能靠画线宣称完成。
 
-![实际组件布局](deployments/modarchitect-249/research-input-flow.png)
+!实际组件布局

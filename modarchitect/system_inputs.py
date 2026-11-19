@@ -220,6 +220,7 @@ def _configure(entry: dict, selectors: dict, role: str, *, required_for: tuple[s
 
 def validate_input_bindings(definition: dict, *, require_catalog: bool = False) -> None:
     """对所有调用方核验固定定义，普通新运行拒绝私有外部输入。"""
+    current_design = definition.get("schema_version") == "1.5"
     raw_variables = definition.get("variables", [])
     requirements = definition.get("collection_requirements", [])
     if not isinstance(raw_variables, list) or not isinstance(requirements, list):
@@ -234,8 +235,12 @@ def validate_input_bindings(definition: dict, *, require_catalog: bool = False) 
         requirement = CollectionRequirement.model_validate(raw)
         binding = requirement.catalog_binding
         if binding is None:
-            if require_catalog:
-                raise ValueError("Select external inputs from the system input catalog")
+            if require_catalog or current_design:
+                raise ContractViolation(
+                    "Select external inputs from the system input catalog",
+                    ["collection_requirements", index, "catalog_binding"],
+                    "unregistered_indicator",
+                )
             continue
         try:
             entry = resolve_input(binding.model_dump(mode="json"), requirement.method.model_dump(mode="json"))
@@ -252,13 +257,14 @@ def validate_input_bindings(definition: dict, *, require_catalog: bool = False) 
             raise ContractViolation(str(exc), ["collection_requirements", index, "catalog_binding"], "invalid_source") from exc
         expected_variable = expected["variable"]
         actual_variable = variable.model_dump(mode="json")
-        for field in ("minimum", "maximum"):
-            standard, chosen = expected_variable[field], actual_variable[field]
-            if standard is not None and (chosen is None or (
-                chosen < standard if field == "minimum" else chosen > standard
-            )):
-                raise ValueError("System input cannot loosen its scientific bounds")
-            expected_variable[field] = chosen
+        if not current_design:
+            for field in ("minimum", "maximum"):
+                standard, chosen = expected_variable[field], actual_variable[field]
+                if standard is not None and (chosen is None or (
+                    chosen < standard if field == "minimum" else chosen > standard
+                )):
+                    raise ValueError("System input cannot loosen its scientific bounds")
+                expected_variable[field] = chosen
         if actual_variable != expected_variable:
             field = next(key for key in expected_variable if actual_variable.get(key) != expected_variable[key])
             variable_index = next(i for i, item in enumerate(raw_variables) if item["code"] == variable.code)

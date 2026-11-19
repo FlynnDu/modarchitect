@@ -88,7 +88,11 @@ def _requests(plan: ResearchPlan, *, for_execution: bool = True) -> dict[str, tu
             raise ValueError("Research request configuration must be explicit")
         recipe = plan.input_recipes[binding.source.port]
         if recipe.kind == "deferred" and not for_execution:
-            continue
+            raise ContractViolation(
+                "Required model parameters are not configured",
+                ["input_recipes", binding.source.port],
+                "incomplete_configuration", node=node.code, port="request",
+            )
         if recipe.kind == "artifact":
             # 原生请求由服务端批准的封存案例提供，启动时校验准确字节及请求 Schema。
             continue

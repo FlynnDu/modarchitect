@@ -12,6 +12,7 @@ from pydantic import Field, model_validator
 
 from ..contracts.identifiers import identity_sha256
 from ..contracts.model_center.components import Code, Contract, Text
+from ..contracts.research.design_saves import VersionName
 from ..contracts.research.variables import Finite
 from ..contracts.research.execution import ResearchOperation
 
@@ -44,7 +45,7 @@ class Observation(Contract):
 class ObservationTable(Contract):
     """首批日尺度构表合同；输入来源摘要由服务端重新计算。"""
 
-    columns: Annotated[tuple[Column, ...], Field(min_length=1, max_length=256)]
+    columns: Annotated[tuple[Column, ...], Field(max_length=256)]
     rows: Annotated[tuple[Observation, ...], Field(min_length=1, max_length=5000)]
     source_sha256: tuple[str, ...] = ()
 
@@ -93,6 +94,7 @@ class SavePlan(ResearchDataInput):
     """未完成配置与观测共用一个并发修订，完整校验留给发布执行。"""
 
     definition: dict
+    version_name: VersionName = None
     expected_revision: Annotated[int, Field(strict=True, ge=1)] = 1
 
 
@@ -147,6 +149,8 @@ class RunView(Contract):
     run_id: UUID
     design_id: UUID
     design_version_id: UUID
+    study_id: UUID | None = None
+    dataset_snapshot_id: UUID | None = None
     kind: ResearchOperation
     status: Literal[
         "queued",

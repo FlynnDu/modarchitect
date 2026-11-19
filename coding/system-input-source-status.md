@@ -1,6 +1,6 @@
 # 系统输入来源复核
 
-本文件保留改造前的审计基线。最新第三方采集已完成，当前通道为4项人工录入和18项准确来源快照；其余来源缺口仍保留。以[249 最新验收](deployments/modarchitect-249/source-inputs-acceptance.md)为当前状态，下面的“未接通”是当时的复核事实。
+本文件保留改造前的审计基线。最新第三方采集已完成，当前通道为4项人工录入和18项准确来源快照；其余来源缺口仍保留。以249 最新验收为当前状态，下面的“未接通”是当时的复核事实。
 
 2026-11-12。复核当前项目合同、来源校验、运行输入、公开研究方案及 249 在线接口。未修改组件定义、来源策略、业务代码或数据库，未访问旧库，也未宣称完成外部提供方联验。
 
@@ -51,7 +51,7 @@
 3. 研究 API 只引用必要的准确来源及记录资源，复用统一采集资源，不将全部设备配置或展示字段塞入研究请求。
 4. 用真实授权对象验收取数、单位/时空对齐、质量与修订、缺数拒绝、封存复跑及来源随模型保留，才能标为可运行来源。
 
-相关实现：`modarchitect/system_inputs.py`、`modarchitect/runtime/contracts.py`、`modarchitect/runtime/preparation.py`、`modarchitect/study_templates.py`。规则依据：[固定来源设计](system-input-components.md)、[平台规则](../docs/platform-rules.md)。机器证据：[本次逐项复核](deployments/modarchitect-249/input-source-review.json)。下附与在线目录逐项对应的清单。
+相关实现：`modarchitect/system_inputs.py`、`modarchitect/runtime/contracts.py`、`modarchitect/runtime/preparation.py`、`modarchitect/study_templates.py`。规则依据：[固定来源设计](system-input-components.md)、[平台规则](../docs/platform-rules.md)。机器证据：本次逐项复核。下附与在线目录逐项对应的清单。
 
 ## 63 项逐项清单
 

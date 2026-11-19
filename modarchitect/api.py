@@ -19,7 +19,7 @@ from .catalog import CatalogConflict
 from .contracts.enterprise.identity import EnterpriseAccessError
 from .designer import assets, router as designer_router
 from .designs import ResearchDesigns
-from .persistence.design_store import DesignConflict, DesignStore
+from .persistence.design_store import DesignConflict, DesignStore, StudyVersionConflict
 from .routes import compatibility, directory, research
 from .runtime.routes import internal, workspace
 from .runtime.service import ResearchRuntime
@@ -31,6 +31,7 @@ from .input_sources.service import InputAcquisition
 from .persistence.source_store import SourceStore
 from .runtime.dataset_routes import router as dataset_router
 from .report_tasks.routes import workspace as report_workspace, business as report_business, internal as report_internal
+from .study_routes import workspace as study_workspace, business as study_business
 from .report_tasks.service import ReportTasks
 from .persistence.report_store import ReportStore
 
@@ -66,6 +67,8 @@ async def _domain_error(_request: Request, exc: Exception) -> JSONResponse:
     body = {"detail": detail}
     if isinstance(exc, (ExecutionRejected, DesignValidationError)):
         body["issues"] = exc.issues
+    elif isinstance(exc, StudyVersionConflict):
+        body["issues"] = [{"rule": "study_version_conflict", "path": ["version_name"], "message": str(exc)}]
     elif isinstance(exc, (RequestValidationError, ValidationError)):
         body["issues"] = [{"rule": "plan_contract", "path": list(item["loc"]),
                            "message": item["msg"]}
@@ -178,6 +181,8 @@ def create_app(
         application.add_exception_handler(error, _domain_error)
     for router in (directory, compatibility, research, designer_router, workspace, internal, source_workspace, source_internal, dataset_router, report_workspace, report_business, report_internal):
         application.include_router(router)
+    application.include_router(study_workspace)
+    application.include_router(study_business)
     application.mount("/designer", assets, name="designer")
     return application
 

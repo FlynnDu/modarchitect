@@ -1,0 +1,754 @@
+{
+  "definition": {
+    "schema_version": "1.5",
+    "name": "作物生物量随观测日期的生长曲线研究",
+    "question": "使用平台日期驱动拟合地上生物量生长趋势，保留后续观测检验与可复用模型。",
+    "objective": "prediction",
+    "purpose": "train",
+    "variables": [
+      {
+        "code": "agb_kg_ha",
+        "name": "地上生物量",
+        "definition_version": "1.0.0",
+        "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+        "value_type": "number",
+        "unit": "kg_ha",
+        "role": "target",
+        "minimum": 0.0,
+        "maximum": null,
+        "categories": []
+      },
+      {
+        "code": "platform_calendar_day",
+        "name": "观测日期坐标",
+        "definition_version": "1.0.0",
+        "description": "平台从实际观测日期按固定日历基准换算的时间坐标；不表示播种后或定植后天数。",
+        "value_type": "number",
+        "unit": "day",
+        "role": "driver",
+        "minimum": null,
+        "maximum": null,
+        "categories": []
+      }
+    ],
+    "collection_requirements": [
+      {
+        "code": "agb_kg_ha",
+        "variable_code": "agb_kg_ha",
+        "method": {
+          "protocol_code": "system_manual_record",
+          "protocol_version": "1.0.0",
+          "method_code": "standard_manual_entry",
+          "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "evidence_required": true
+        },
+        "unit_kind": "field_season",
+        "requires_sampling_points": false,
+        "required_for": [
+          "train"
+        ],
+        "source": "manual",
+        "catalog_binding": {
+          "kind": "sampling_indicator",
+          "code": "agb_kg_ha",
+          "definition_version": "1.0.0",
+          "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+          "value_nature": "observed",
+          "source_system": null,
+          "selectors": {}
+        },
+        "start_offset_days": 0,
+        "end_offset_days": null,
+        "interval_days": null,
+        "minimum_observations_per_unit": 1,
+        "minimum_independent_units": 1
+      }
+    ],
+    "composition": {
+      "schema_version": "1.0",
+      "object_scope": "field_crop_season",
+      "inputs": [
+        {
+          "code": "observations",
+          "name": "系统标准人工记录",
+          "role": "context",
+          "data_type": {
+            "semantic": "research_observation_table",
+            "version": 1,
+            "shape": "table",
+            "unit": "column_definitions",
+            "alignment": "business_date"
+          }
+        },
+        {
+          "code": "calendar_config",
+          "name": "平台观测日期驱动设置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "research_calendar_axis_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        },
+        {
+          "code": "growth_config",
+          "name": "历史曲线训练与预测设置",
+          "role": "parameter",
+          "data_type": {
+            "semantic": "historical_logistic_forecast_request",
+            "version": 1,
+            "shape": "bundle",
+            "unit": "native_contract",
+            "alignment": "context"
+          }
+        }
+      ],
+      "nodes": [
+        {
+          "code": "calendar",
+          "component": {
+            "code": "research_calendar_axis",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": null,
+                "port": "observations"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "calendar_config"
+              }
+            }
+          ],
+          "selections": {}
+        },
+        {
+          "code": "growth",
+          "component": {
+            "code": "historical_logistic_training",
+            "revision": 1
+          },
+          "bindings": [
+            {
+              "port": "observations",
+              "source": {
+                "node": "calendar",
+                "port": "table"
+              }
+            },
+            {
+              "port": "request",
+              "source": {
+                "node": null,
+                "port": "growth_config"
+              }
+            }
+          ],
+          "selections": {}
+        }
+      ],
+      "outputs": [
+        {
+          "code": "forecast",
+          "source": {
+            "node": "growth",
+            "port": "forecast"
+          }
+        },
+        {
+          "code": "trained_model",
+          "source": {
+            "node": "growth",
+            "port": "trained_model"
+          }
+        }
+      ]
+    },
+    "input_recipes": {
+      "observations": {
+        "kind": "observations",
+        "variable_codes": [
+          "agb_kg_ha"
+        ]
+      },
+      "calendar_config": {
+        "kind": "configuration",
+        "value": {
+          "output_code": "platform_calendar_day",
+          "origin_date": "1970-01-01"
+        }
+      },
+      "growth_config": {
+        "kind": "configuration",
+        "value": {
+          "x_code": "platform_calendar_day",
+          "target_code": "agb_kg_ha",
+          "fit_through": "2026-05-26"
+        }
+      }
+    },
+    "evaluation": {
+      "target_codes": [
+        "agb_kg_ha"
+      ],
+      "purpose": "exploratory",
+      "split_unit": "time",
+      "success_criteria": "按留出日期核对每个目标的误差、样本与覆盖；合成样例仅验证工程计算。",
+      "update_policy": "manual_candidate",
+      "numeric_gate": null
+    },
+    "layout": {}
+  },
+  "observations": {
+    "columns": [
+      {
+        "code": "agb_kg_ha",
+        "name": "地上生物量",
+        "unit": "kg_ha",
+        "value_kind": "observed"
+      }
+    ],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-01",
+        "values": {
+          "agb_kg_ha": 263.63889237684793
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-03",
+        "values": {
+          "agb_kg_ha": 325.00020288741644
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-04",
+        "values": {
+          "agb_kg_ha": 360.51990104404575
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-06",
+        "values": {
+          "agb_kg_ha": 442.6898796147918
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-07",
+        "values": {
+          "agb_kg_ha": 489.96153276956795
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-09",
+        "values": {
+          "agb_kg_ha": 598.5029347181109
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-10",
+        "values": {
+          "agb_kg_ha": 660.4354461750181
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-12",
+        "values": {
+          "agb_kg_ha": 801.2503351992747
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-13",
+        "values": {
+          "agb_kg_ha": 880.7420388082943
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-15",
+        "values": {
+          "agb_kg_ha": 1059.2116486747002
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-16",
+        "values": {
+          "agb_kg_ha": 1158.5921053992986
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-18",
+        "values": {
+          "agb_kg_ha": 1378.2063057203889
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-19",
+        "values": {
+          "agb_kg_ha": 1498.439366429294
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-21",
+        "values": {
+          "agb_kg_ha": 1759.0666734385945
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-22",
+        "values": {
+          "agb_kg_ha": 1898.874637582106
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-24",
+        "values": {
+          "agb_kg_ha": 2195.186453935196
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-25",
+        "values": {
+          "agb_kg_ha": 2350.4458155209136
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-27",
+        "values": {
+          "agb_kg_ha": 2671.3245893567114
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-28",
+        "values": {
+          "agb_kg_ha": 2835.166173932438
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-04-30",
+        "values": {
+          "agb_kg_ha": 3164.8338260675623
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-01",
+        "values": {
+          "agb_kg_ha": 3328.6754106432886
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-03",
+        "values": {
+          "agb_kg_ha": 3649.554184479086
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-04",
+        "values": {
+          "agb_kg_ha": 3804.813546064804
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-06",
+        "values": {
+          "agb_kg_ha": 4101.1253624178935
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-07",
+        "values": {
+          "agb_kg_ha": 4240.933326561406
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-09",
+        "values": {
+          "agb_kg_ha": 4501.560633570706
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-10",
+        "values": {
+          "agb_kg_ha": 4621.793694279611
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-12",
+        "values": {
+          "agb_kg_ha": 4841.407894600701
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-13",
+        "values": {
+          "agb_kg_ha": 4940.7883513253
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-15",
+        "values": {
+          "agb_kg_ha": 5119.257961191705
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-16",
+        "values": {
+          "agb_kg_ha": 5198.749664800725
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-18",
+        "values": {
+          "agb_kg_ha": 5339.564553824981
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-19",
+        "values": {
+          "agb_kg_ha": 5401.497065281889
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-21",
+        "values": {
+          "agb_kg_ha": 5510.038467230433
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-22",
+        "values": {
+          "agb_kg_ha": 5557.310120385208
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-24",
+        "values": {
+          "agb_kg_ha": 5639.480098955954
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-25",
+        "values": {
+          "agb_kg_ha": 5674.999797112584
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-27",
+        "values": {
+          "agb_kg_ha": 5736.361107623153
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-28",
+        "values": {
+          "agb_kg_ha": 5762.737322694282
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-30",
+        "values": {
+          "agb_kg_ha": 5808.093615062801
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-05-31",
+        "values": {
+          "agb_kg_ha": 5827.509024440759
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-02",
+        "values": {
+          "agb_kg_ha": 5860.782371126135
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-03",
+        "values": {
+          "agb_kg_ha": 5874.9819328879175
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-05",
+        "values": {
+          "agb_kg_ha": 5899.256111479117
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-06",
+        "values": {
+          "agb_kg_ha": 5909.592061136443
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-08",
+        "values": {
+          "agb_kg_ha": 5927.229390094354
+        }
+      },
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-09",
+        "values": {
+          "agb_kg_ha": 5934.727139897556
+        }
+      }
+    ]
+  },
+  "prediction_observations": {
+    "columns": [],
+    "rows": [
+      {
+        "object": {
+          "field_ref": "calendar-example",
+          "crop_code": "potato",
+          "season_ref": "2026"
+        },
+        "business_date": "2026-06-15",
+        "values": {}
+      }
+    ]
+  },
+  "description": "采用平台固定指标与自动日期驱动的合成科学样例，不代表真实田间观测。"
+}

@@ -89,7 +89,7 @@ def analyze(client: httpx.Client) -> dict:
 def main() -> None:
     """只写不含 Cookie 的验收记录，明确所有科学数据均为工程构造。"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base-url", default="http://192.168.3.249:18925")
+    parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     with httpx.Client(base_url=args.base_url, timeout=30) as client:

@@ -12,6 +12,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    ForeignKeyConstraint,
     JSON,
     String,
     Table,
@@ -32,10 +33,14 @@ datasets = Table(
     metadata,
     Column("dataset_id", Uuid, primary_key=True),
     Column("design_id", ForeignKey("research_designs.design_id"), nullable=False),
+    Column("study_id", Uuid),
     Column("content_json", JSON, nullable=False),
     Column("content_sha256", String(64), nullable=False),
     Column("created_at", DateTime(timezone=True), nullable=False),
     UniqueConstraint("design_id", "content_sha256", name="uq_research_dataset_content"),
+    UniqueConstraint("dataset_id", "study_id", name="uq_dataset_study"),
+    ForeignKeyConstraint(["study_id", "design_id"],
+                         ["research_studies.study_id", "research_studies.design_id"], name="fk_dataset_study"),
     CheckConstraint(
         "content_sha256 ~ '^[a-f0-9]{64}$'", name="ck_research_dataset_sha"
     ),
@@ -56,10 +61,12 @@ class DatasetStore:
         content: dict,
         *,
         transaction: DesignTransaction | None = None,
+        study_id: UUID | None = None,
     ) -> dict:
         """锁定受权方案后保存准确内容，相同内容返回原身份。"""
         if transaction is not None:
             self.store.validate_transaction(owner, transaction)
+        content = {**content, "study_id": str(study_id)} if study_id is not None else content
         digest = identity_sha256(content)
         with (
             self.store.transaction(owner)
@@ -72,6 +79,7 @@ class DatasetStore:
                 .values(
                     dataset_id=new_uuid7(),
                     design_id=design_id,
+                    study_id=study_id,
                     content_json=content,
                     content_sha256=digest,
                     created_at=now(),

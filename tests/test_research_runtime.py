@@ -52,6 +52,7 @@ class ScientificRunner:
         from components.descriptive_statistics.component import summarize
         from components.field_research.weather import conditions
         from components.field_research.ndvi import derive_ndvi
+        from components.field_research.calendar import calendar_axis
 
         code = component["code"]
         functions = {
@@ -63,6 +64,7 @@ class ScientificRunner:
             "research_descriptive_statistics": summarize,
             "catalog_weather_conditions": conditions,
             "sentinel_ndvi_features": derive_ndvi,
+            "research_calendar_axis": calendar_axis,
         }
         self.calls.append(code)
         results = functions[code](

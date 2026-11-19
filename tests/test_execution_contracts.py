@@ -16,8 +16,29 @@ from modarchitect.contracts.model_center.component_packages import (
 )
 from modarchitect.contracts.research.plans import ResearchPlan
 from modarchitect.validation import compile_plan
+from modarchitect.validation import check_definition
+from modarchitect.study_templates import template
 
 ROOT = Path(__file__).parents[1]
+
+
+def test_full_design_check_rejects_deferred_request_but_keeps_planned_data():
+    """未配置参数不能检查通过；未接通数据仍可凭准确类型完成设计。"""
+    plan = deepcopy(template("canopy-temperature-forecast")["definition"])
+    plan["input_recipes"]["request"] = {"kind": "deferred"}
+    result = check_definition(plan)
+    assert not result["valid"]
+    assert result["issues"][0]["type"] == "incomplete_configuration"
+    assert result["issues"][0]["path"] == ["input_recipes", "request"]
+    assert result["issues"][0]["port"] == "request"
+
+
+def test_empty_or_whitespace_research_cannot_pass_full_check():
+    """合法模板预置定义可通过，但清空名称、问题或模型不能冒充完整方案。"""
+    plan = deepcopy(template("crop-growth-prediction")["definition"])
+    assert check_definition(plan)["valid"]
+    plan["name"] = "  "
+    assert not check_definition(plan)["valid"]
 
 
 def test_one_variable_can_be_label_and_feature_in_different_nodes():
@@ -56,6 +77,19 @@ def test_one_variable_can_be_label_and_feature_in_different_nodes():
         for u in compiled["variable_usages"]
         if u["role"] == "label"
     )
+
+
+def test_training_input_cannot_include_its_target_in_the_same_node():
+    """节点用途自由配置仍拒绝自我预测，问题定位到准确节点与目标字段。"""
+    plan = json.loads((ROOT / "modarchitect/web/designer/system-study.json").read_bytes())["definition"]
+    plan["schema_version"] = "1.5"
+    request = plan["input_recipes"]["regression_config"]["value"]
+    request["features"].append(request["targets"][0])
+    result = check_definition(plan)
+    assert not result["valid"]
+    assert result["issues"][0]["type"] == "input_target_overlap"
+    assert result["issues"][0]["path"] == ["input_recipes", "regression_config", "value", "targets"]
+    assert result["issues"][0]["node"] == "regression"
 
 
 def test_package_versions_keep_old_payload_and_reject_false_capabilities():

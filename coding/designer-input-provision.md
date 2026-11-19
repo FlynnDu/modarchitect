@@ -30,10 +30,10 @@
 - `npm test`：37项通过，包含新增土壤属性、准确绑定及历史版本反例。`node --check scripts/verify_designer_ui.mjs` 通过。
 - API wheel对比已部署3805897175a1基线，仅input-provision.js/studio.js/system-inputs.js/wizard.js/wizard.css五项变化；全部计算代码、合同与数据库逻辑逐字节相同。新wheel摘要54f2fc90d02aba3d6c4a3299637163c986b0ed9d3f23bb0619c179f31f40f22f。
 - 线上API安装包134个文件逐项摘要核对，差异0；上一API Job及模板已在新制品目录以0600备份，可单独回退API。
-- `node scripts/verify_designer_ui.mjs --base-url http://172.16.1.122:18925 --design-only --verify-input-provision --session-file <私有目录>/session.json --output <证据路径>`通过；另起进程加`--reopen-study 01a1e3ca-364b-742d-9cf1-be61957bb2ee`通过。新增气温进入真实模型参数，来源绑定保存、重开、导出及导入均保留。
-- 生物所API Job4，Nomad deployment successful、Consul passing、health 200；模板workspace_key引用保留，未改运行密钥。Worker Job36未滚动，数据库未迁移。
+- `node scripts/verify_designer_ui.mjs --base-url https://research.example.com --design-only --verify-input-provision --session-file <私有目录>/session.json --output <证据路径>`通过；另起进程加`--reopen-study <研究方案ID>`通过。新增气温进入真实模型参数，来源绑定保存、重开、导出及导入均保留。
+- 部署后的 API 健康检查通过。
 - 发布辅助脚本 `.ops/input-provision-release/deploy.py` Ruff通过、文件头检查1项通过。无Python产品代码改动。
 - 线上目录65项，当前UI可添加24项；平台分析未接入指标configure仍422。人工采集及Open-Meteo最低温的configure来源/方法字段在线核验。
 - 原生浏览器工具无法初始化；已完成真实DOM与线上HTTP验收，未做像素布局验收。平台分析21项、物联网9项的正式取数接入及其科学尺度适配仍待后续实施，本次不授予可执行资格。
 
-证据见[部署记录](deployments/modarchitect-biology/input-provision-deployment-20261116.json)、[添加保存](deployments/modarchitect-biology/input-provision-created.json)、[新页面重开](deployments/modarchitect-biology/input-provision-reopened.json)。
+证据见部署记录、添加保存、新页面重开。

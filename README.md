@@ -12,11 +12,10 @@
 - [设计器易用性与节点规划报告](coding/model-designer-usability-report.md)
 - [成熟建模产品对照研究](coding/modeling-usability-product-research.md)
 - [组件开发模板与复跑方式](components/README.md)
-- [249 部署与验收记录](coding/deployments/modarchitect-249/README.md)
 - [前端对接：curl](docs/frontend-integration.md)
 - [业务接入、数据库字段与重试：curl](docs/business-api-integration.md)
 - [模型设计器API入口与完整闭环流程图](docs/model-designer-api-flow.md)
-- [生物所SR850部署与验收](coding/deployments/modarchitect-biology/README.md)
+- [研究方案版本与实例对接](docs/research-version-integration.md)
 - [初始化设计](coding/project-bootstrap.md)
 - [Codex 项目规则](AGENTS.md)
 
@@ -31,13 +30,13 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn modarchitect.api:app --host 127.0.0.1 --port 8000
 ```
 
-运行后打开空白研究工作区，从系统指标库采用准确变量和来源、设置研究目标，再从目录选择计算模型。已登记指标和模型允许设计组合；未接通的来源、资料或参数可明确保留待配置，实际运行另行检查取数与制品。`/health` 提供存活检查，`/docs` 提供版本化 API 文档。运行安装可用 `python -m pip install .`。 [本机设计器](http://127.0.0.1:8000/designer/) · [249 设计器](http://192.168.3.249:18925/designer/)
+运行后打开空白研究工作区，从系统指标库采用准确变量和来源、设置研究目标，再从目录选择计算模型。已登记指标和模型允许设计组合；未接通的来源、资料或参数可明确保留待配置，实际运行另行检查取数与制品。`/health` 提供存活检查，`/docs` 提供版本化 API 文档。运行安装可用 `python -m pip install .`。 [本机设计器](http://127.0.0.1:8000/designer/)
 
-## 在 249 使用研究与预测
+## 本地运行研究与预测
 
-打开 [多变量研究](http://192.168.3.249:18925/designer/?research=multivariable) 或 [串联研究](http://192.168.3.249:18925/designer/?research=chain)。样例会保存到当前浏览器的个人工作区。可编辑方案、修改观测或上传同格式 JSON，再点击“运行研究”。运行成功后点击“保存为模型”，填写新的日期及因子并“开始预测”。多变量样例同时输出株高和叶面积；串联样例先用历史生长模型生成因子，再合并其他变量预测株高。
+打开 [多变量研究](http://127.0.0.1:8000/designer/?research=multivariable) 或 [串联研究](http://127.0.0.1:8000/designer/?research=chain)。样例会保存到当前浏览器的个人工作区。可编辑方案、修改观测或上传同格式 JSON，再点击“运行研究”。运行成功后点击“保存为模型”，填写新的日期及因子并“开始预测”。多变量样例同时输出株高和叶面积；串联样例先用历史生长模型生成因子，再合并其他变量预测株高。
 
-默认界面按公开原型分为“选择模型 → 模型配置 → 检查与确认”。配置页依次设置基础信息、输入与建模关系、数据来源、计算与评价、结果与版本。指标从系统目录选择，用途表与实际模型参数同步；完成后可训练、保存候选模型并输入新因素预测。数据配对的含义与规则有单独说明；点击“查看组件与连线”仍可编辑准确拓扑、版本和节点设置，按依赖自动整理后从左到右读取。
+默认界面按公开原型分为“选择模型 → 模型配置 → 检查与确认”。配置页依次设置基础信息、研究资料与候选因素、目标指标与预期成果、数据来源、计算与评价、结果与版本。资料与目标分为独立步骤，共用系统目录和准确指标定义，实际模型参数保持同步；完成后可训练、保存候选模型并输入新因素预测。数据配对的含义与规则有单独说明；点击“查看组件与连线”仍可编辑准确拓扑、版本和节点设置，按依赖自动整理后从左到右读取。
 
 方案、观测、运行及训练状态均持久化在研究库。刷新后可从三个选择框重开方案、运行与模型。当前个人工作区使用签名 Cookie，需在同一浏览器保留该工作区；企业身份接口仍按原授权协议接入。示例为合成数据，预测结果用于工程闭环验证。
 
@@ -49,7 +48,7 @@ python -m venv .venv
 2. 用迁移角色设置 `MODARCHITECT_MIGRATION_DATABASE_URL` 并运行 `modarchitect-db`，或运行 `python -m modarchitect.persistence.migrate`。连接串格式为 `postgresql+psycopg://用户:密码@地址/研究库`。
 3. 用数据库管理员为已创建的应用登录角色授权。下面以 `modarchitect_app` 为例，并假定应用已有该库的连接权限。
 
-执行[应用角色授权](coding/deployments/modarchitect-249/app-grants.sql)，按实际角色名替换`modarchitect_app`。当前迁移为0011，已包含不可变保存回执及新增基础回归合同；应用角色不能修改或删除回执。
+执行[应用角色授权](coding/deployments/examples/app-grants.sql)，按实际角色名替换 `modarchitect_app`。本版迁移至 0015，包含方案版本名称、固定版本与研究实例关联，以及旧服务短时并行写入的兼容逻辑。应用角色仅可读取和新增保存回执。
 
 4. 配置应用连接 `MODARCHITECT_DATABASE_URL`。设置 `MODARCHITECT_API_KEY`，默认`MODARCHITECT_AUTH_MODE=api_key`。企业范围由业务后端传`provider_name/company_id`；不调用用户登录身份端。启用选地时另配置 `MODARCHITECT_SELECTION_URL`、`MODARCHITECT_SELECTION_AUDIENCE`、`MODARCHITECT_SELECTION_KEY`。两个业务端点使用 HTTPS 和既有身份及选地协议。配置后重新启动应用。
 

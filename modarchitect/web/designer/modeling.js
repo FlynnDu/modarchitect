@@ -1,5 +1,6 @@
 import { requestInput, sourceFor } from "./editor.js?v=continuous1";
 import { dependencyLayers } from "./graph-layout.js?v=continuous1";
+import { requestProperties } from "./request-schema.js?v=continuous1";
 
 const is = (node, code) => node?.component.code === code && node.component.revision === 1;
 const reference = (source) => source ? `${source.node || ""}:${source.port}` : "";
@@ -37,8 +38,10 @@ export function inputUsageRows(plan, records = new Map()) {
   };
   for (const node of plan.composition.nodes) {
     const record = records.get(node.component.code+"@"+node.component.revision);
-    for (const [field, use] of Object.entries(record?.research_contract?.input_uses || {})) {
-      const spec = record.research_contract.request_schema?.properties?.[field]?.["x-research-variables"];
+    for (const [field, property] of requestProperties(record?.research_contract?.request_schema)) {
+      const spec = property["x-research-variables"];
+      const use = record.research_contract.input_uses?.[field] || record.research_contract.capabilities?.input_uses?.[field]
+        || (spec?.roles?.join() === "target" ? { role: "label", phases: ["training"] } : spec ? { role: "feature", phases: ["application"] } : null);
       if (!spec || spec.new_column) continue;
       const value = nodeSettings(plan, node)?.[field];
       for (const code of (Array.isArray(value) ? value : [value])) for (const original of origins(sourceFor(node, spec.table_port), code)) {
@@ -52,11 +55,51 @@ export function inputUsageRows(plan, records = new Map()) {
     if (!context && usages.length) return { variable, role: usages.some((u) => u.role === "label") ? "target" : "covariate", train: usages.some((u) => u.phases.includes("training")), application: usages.some((u) => u.phases.includes("application")), analysis: usages.some((u) => u.phases.includes("analysis")), used: true, editable: false };
     const pending = !plan.composition.nodes.length;
     const target = context ? context.parameters.targets.includes(variable.code) : pending && variable.role === "target";
-    const feature = context ? context.parameters.features.includes(variable.code) : pending && ["covariate", "driver"].includes(variable.role);
+    const feature = context ? context.parameters.features.includes(variable.code) || variable.code === context.history?.x_code : pending && ["covariate", "driver"].includes(variable.role);
     const historical = context?.history && [context.history.x_code, context.history.target_code].includes(variable.code);
     return { variable, role: target ? "target" : feature ? "covariate" : "other", train: target || feature || historical, used: Boolean(target || feature || historical),
       application: Boolean(feature || variable.code === context?.history?.x_code),
       editable: plan.purpose === "train" && (!plan.composition.nodes.length || Boolean(context)) && !historical };
+  });
+}
+
+export function resourceInputs(plan, records = new Map()) {
+  return plan.composition.inputs.filter((port) => plan.input_recipes[port.code]?.kind !== "observations").map((port) => {
+    const recipe = plan.input_recipes[port.code], consumers = plan.composition.nodes.flatMap((node) => node.bindings.filter((binding) => !binding.source.node && binding.source.port === port.code)
+      .map((binding) => ({ node, port: binding.port, record: records.get(node.component.code + "@" + node.component.revision) })));
+    return { port, recipe, consumers, parameter: consumers.every((consumer) => consumer.port === "request") };
+  });
+}
+
+export function matchesStudyTemplate(plan, template) {
+  const marker = plan.layout?.study_template;
+  return Boolean(marker && template?.id === marker.id && template.sha256 === marker.sha256);
+}
+
+export function studyInputDetails(plan, template) {
+  const byPort = new Map();
+  if (!matchesStudyTemplate(plan, template)) return byPort;
+  const sources = resourceInputs(plan).filter(({ recipe }) => recipe.kind === "artifact");
+  for (const { port, consumers } of sources) {
+    const selections = consumers.filter((consumer) => consumer.port === "series")
+      .map(({ node }) => nodeSettings(plan, node)?.variables).filter(Array.isArray);
+    const selected = selections.length ? new Set(selections.flat()) : null;
+    const details = (template.input_requirements || []).filter((item) => item.port === port.code && (!selected || selected.has(item.code)));
+    if (details.length) byPort.set(port.code, details);
+  }
+  return byPort;
+}
+
+export function inputDetailLabel(item) {
+  return [formatUnit(item.unit), item.use, item.source].filter(Boolean).join(" · ");
+}
+
+export function productRows(plan, records = new Map()) {
+  return plan.composition.outputs.map((output) => {
+    const node = plan.composition.nodes.find((node) => node.code === output.source.node);
+    const record = node && records.get(node.component.code + "@" + node.component.revision);
+    const port = record?.definition.outputs.find((port) => port.code === output.source.port);
+    return { code: output.code, name: port?.name || output.code, description: port?.description || "准确组件声明的成果" };
   });
 }
 
@@ -158,8 +201,9 @@ export function modelingSteps(plan, records) {
   const { layers } = dependencyLayers(nodes, edges);
   return { context: null, steps: layers.flat().map(({ node }) => {
     const record = records.get(`${node.component.code}@${node.component.revision}`)?.definition;
+    const boundPorts = new Set(node.bindings.map((binding) => binding.port));
     return { key: node.code, title: record?.name || node.component.code, method: "当前方案的实际计算步骤",
-      inputs: (record?.inputs || []).filter((p) => p.code !== "request").map((p) => p.name),
+      inputs: (record?.inputs || []).filter((p) => p.code !== "request" && boundPorts.has(p.code)).map((p) => p.name),
       outputs: (record?.outputs || []).map((p) => p.name), formula: [], note: "该自定义方法的参数与连接可在组件视图中查看。" };
   }) };
 }
@@ -170,7 +214,10 @@ export function predictionColumns(pipeline, records = new Map()) {
     ...context.parameters.features.filter((code) => code !== context.alignment?.output_code),
     ...(context.history ? [context.history.x_code] : []),
   ]) : null;
-  return pipeline.input_columns.filter((column) => needed ? needed.has(column.code)
+  const declared = inputUsageRows(pipeline.plan, records);
+  const actual = pipeline.plan.composition.nodes.every((node) => records.has(node.component.code + "@" + node.component.revision)) && declared.some((row) => row.used)
+    ? new Set(declared.filter((row) => row.application).map((row) => row.variable.code)) : null;
+  return pipeline.input_columns.filter((column) => needed ? needed.has(column.code) : actual ? actual.has(column.code)
     : !pipeline.plan.variables.some((v) => v.code === column.code && ["target", "validation"].includes(v.role)));
 }
 

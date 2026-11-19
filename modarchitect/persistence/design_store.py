@@ -32,6 +32,10 @@ class DesignConflict(ValueError):
     """请求身份、草稿修订或方案版本与已有状态冲突。"""
 
 
+class StudyVersionConflict(DesignConflict):
+    """本方案曾使用过该版本号。"""
+
+
 class DesignStore:
     """负责连接生命周期，按可信主体建立短事务。"""
 
@@ -59,12 +63,13 @@ class DesignStore:
                   AND c.relname IN ('resource_scopes','research_designs','research_design_drafts',
                                     'research_design_versions','research_design_components',
                                     'research_dataset_snapshots','research_report_tasks',
-                                    'research_report_batches','research_design_saves')
+                                    'research_report_batches','research_design_saves',
+                                    'research_draft_versions','research_studies')
                   AND c.relrowsecurity AND c.relforcerowsecurity
                   AND NOT pg_has_role(c.relowner, 'MEMBER')
             """)
             ).scalar_one()
-            if unsafe or protected != 9:
+            if unsafe or protected != 11:
                 raise RuntimeError(
                     "The research runtime role or row security configuration is unsafe"
                 )
@@ -153,31 +158,29 @@ class DesignTransaction:
         ).scalar_one()
         return existing_id, False
 
-    def create_draft(self, key: str, configuration: dict) -> tuple[RowMapping, bool]:
-        """以首次配置摘要验证创建重放。"""
+    def create_draft(self, key: str, configuration: dict, *, version_name: str | None = None) -> tuple[RowMapping, bool]:
+        """以首次配置和候选名称验证创建重放。"""
         design_id, created = self.create_design(key)
         digest = identity_sha256(configuration)
         if not created:
             row = self.get_draft(design_id)
-            if row["initial_sha256"] != digest:
+            if row["initial_sha256"] != digest or row["initial_version_name"] != version_name:
                 raise DesignConflict("Research draft creation content differs")
             return row, False
-        row = (
-            self.connection.execute(
-                insert(drafts)
-                .values(
-                    design_id=design_id,
-                    revision=1,
-                    configuration_json=configuration,
-                    configuration_sha256=digest,
-                    initial_sha256=digest,
-                )
-                .returning(drafts)
-            )
-            .mappings()
-            .one()
-        )
+        row = self.connection.execute(
+            insert(drafts).values(
+                design_id=design_id, revision=1, configuration_json=configuration,
+                configuration_sha256=digest, initial_sha256=digest,
+                version_name=version_name, initial_version_name=version_name,
+            ).returning(drafts)
+        ).mappings().one()
         return row, True
+
+    def version_names(self, design_id: UUID) -> set[str]:
+        """读取同一方案已确认的名称集合，用于预查和默认分配。"""
+        return set(self.connection.execute(select(versions.c.version_name).where(
+            versions.c.design_id == design_id,
+        )).scalars())
 
     def find_creation(self, key: str) -> RowMapping | None:
         """仅在当前主体隔离范围内查找首次创建身份，不用客户端声明历史采用资格。"""
@@ -206,7 +209,7 @@ class DesignTransaction:
         """读取当前主体的草稿，写入时锁住同一草稿。"""
         query = select(drafts).where(drafts.c.design_id == design_id)
         if lock:
-            query = query.with_for_update()
+            query = query.with_for_update(of=drafts)
         row = self.connection.execute(query).mappings().one_or_none()
         if row is None:
             raise LookupError("Research draft was not found")
@@ -219,29 +222,30 @@ class DesignTransaction:
         configuration: dict,
         *,
         force_revision: bool = False,
+        version_name: str | None = None,
+        replace_candidate: bool = False,
     ) -> RowMapping:
         """核对修订并保存，重复保存原内容保留当前修订。"""
         row = self.get_draft(design_id, lock=True)
         if row["revision"] != revision:
             raise DesignConflict("Research draft revision has changed")
         digest = identity_sha256(configuration)
-        if row["configuration_sha256"] == digest and not force_revision:
+        unchanged = row["configuration_sha256"] == digest
+        if unchanged and not force_revision and (not replace_candidate or version_name == row["version_name"]):
             return row
-        return (
-            self.connection.execute(
-                update(drafts)
-                .where(drafts.c.design_id == design_id)
-                .values(
-                    configuration_json=configuration,
-                    configuration_sha256=digest,
-                    revision=revision + 1,
-                    updated_at=func.now(),
-                )
-                .returning(drafts)
-            )
-            .mappings()
-            .one()
-        )
+        published_names = self.version_names(design_id)
+        if version_name in published_names:
+            raise StudyVersionConflict("This study version name has already been used")
+        candidate = row["version_name"]
+        if candidate in published_names:
+            candidate = None
+        return self.connection.execute(
+            update(drafts).where(drafts.c.design_id == design_id).values(
+                configuration_json=configuration, configuration_sha256=digest,
+                revision=revision + 1, updated_at=func.now(),
+                version_name=version_name if replace_candidate else candidate,
+            ).returning(drafts)
+        ).mappings().one()
 
     def latest_version(self, design_id: UUID) -> RowMapping | None:
         """读取准确方案身份的最新版本。"""
@@ -334,24 +338,30 @@ class DesignTransaction:
         design_id: UUID,
         publication: DesignPublication,
         contract_digests: dict[tuple[str, int], str],
+        *,
+        version_name: str | None = None,
     ) -> RowMapping:
         """同一事务写入冻结定义及节点绑定，调用方已锁住草稿。"""
         definition = publication.publication_payload()
         row = (
             self.connection.execute(
-                insert(versions)
+                pg_insert(versions)
                 .values(
                     design_version_id=new_uuid7(),
                     design_id=design_id,
                     revision=publication.revision,
                     contract_json=definition,
                     contract_sha256=identity_sha256(definition),
+                    version_name=version_name,
                 )
+                .on_conflict_do_nothing(constraint="uq_design_version_name")
                 .returning(versions)
             )
             .mappings()
-            .one()
+            .one_or_none()
         )
+        if row is None:
+            raise StudyVersionConflict("This study version name has already been used")
         keys = {
             (node.component.code, node.component.revision)
             for node in publication.composition.nodes

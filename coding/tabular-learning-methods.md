@@ -4,7 +4,7 @@
 
 ## 事实和范围
 
-- 生物所22项采用组件中，标准观测表可复用训练只有线性和历史曲线合同；均未登记运行制品。原随机森林、XGBoost、高斯过程、LSTM与ConvLSTM版本是指定资料评估，不能拿评估报告冒充模型。
+- 部署环境22项采用组件中，标准观测表可复用训练只有线性和历史曲线合同；均未登记运行制品。原随机森林、XGBoost、高斯过程、LSTM与ConvLSTM版本是指定资料评估，不能拿评估报告冒充模型。
 - 本次给随机森林、XGBoost、高斯过程分别增加标准观测表训练及独立推理组件，原合同及指定资料研究保持。共同使用系统指标、完整对象和业务日期；不改变来源资格，不要求用户重新发明变量。
 - LSTM与ConvLSTM需要序列/网格资料；温室、统计及其他分析方法按对应研究用途展示，不作为当前表格训练的替代项。不可执行能力不能标为可运行。
 
@@ -22,7 +22,7 @@
 
 - 三算法各自双目标训练、无标签独立推理、保存再读取数值一致；后段标签篡改不影响训练状态，错单位及缺列等反例拒绝。人工与估计来源保持原规则。
 - 组件清单、合同、源码摘要、镜像和独立文件协议一致，真实隔离容器正反例；参数表单及用途编辑回归。
-- 生物所目录→选择→保存→重开→海豚训练→保存模型→独立预测，记录准确版本、运行和结果。合成资料仅作工程验收，不报科研准确率。
+- 部署环境目录→选择→保存→重开→海豚训练→保存模型→独立预测，记录准确版本、运行和结果。合成资料仅作工程验收，不报科研准确率。
 
 ## 一手依据
 
@@ -33,8 +33,8 @@ XGBoost官方说明模型JSON与内存快照的区别及save/load接口：[模�
 - `.venv/Scripts/python.exe .ops/verify_local_database.py`：新建隔离库及非特权角色，升级0011，Alembic检查无额外结构差异，132项全部通过；使用项目独立临时目录，不把跳过数据库的运行计作全量验收。
 - `npm test`：41/41通过，新增三种算法真实切换、用途编辑、非线性公式展示，原有串联、来源和历史页面回归保持。
 - Linux AMD64依赖SHA锁定，三算法各自实际隔离容器双目标训练和无标签推理通过，错误单位、估计目标反例拒绝；本地另与独立scikit-learn/XGBoost算法参考逐值比较，并验证改变留出标签不改变训练状态。
-- 生物所SR850迁移只新增6项合同，原25项合同摘要保持；API Job9、独立执行Job3均部署成功、Consul各1 passing。API/执行Worker/分发进程各139个包文件逐项核对，密钥、工作区签名和来源环境保持。
-- 原海豚Worker Job36保持。实际任务只通过HTTP交给独立Worker计算；已更新承担本次目录与执行职责的独立服务，无需重启其他项目任务。
+- 部署验收新增 6 项合同，原 25 项合同摘要保持一致，API 与执行服务通过健康检查。
+- 实际任务只通过HTTP交给独立Worker计算；已更新承担本次目录与执行职责的独立服务，无需重启其他项目任务。
 - 线上真实DOM事件及HTTP：线性、随机森林、XGBoost、高斯过程各自选择、保存、重开、海豚训练、保存模型及无标签预测完成，共8个SUCCESS工作流。模型新客户端重开摘要一致；预测状态保持，调用的是独立推理组件；其他工作区访问404。
 - 真实运行号：随机森林738/739；高斯过程740/742；XGBoost741/743；线性744/745。全部为明确合成工程数据，数值可用不等于独立科研精度；本次没有凌晨2点每日调度验收。
 - 原气象737报告和7点曲线新页面重查正常。原生浏览器环境未能初始化，本次没有像素布局验收。
@@ -42,10 +42,10 @@ XGBoost官方说明模型JSON与内存快照的区别及save/load接口：[模�
 页面验收命令（分别替换训练组件）：
 
 ```sh
-node scripts/verify_designer_ui.mjs --base-url http://172.16.1.122:18925 --training-method random_forest_training --session-file .ops/tabular-learning/private/forest-session.json --output coding/deployments/modarchitect-biology/tabular-random-forest-ui.json
+node scripts/verify_designer_ui.mjs --base-url https://research.example.com --training-method random_forest_training --session-file .ops/tabular-learning/private/forest-session.json --output ./tabular-random-forest-ui.json
 ```
 
-[部署与包核对](deployments/modarchitect-biology/tabular-deployment-acceptance.json) · [组件正反例](deployments/modarchitect-biology/tabular-component-acceptance.json) · [随机森林](deployments/modarchitect-biology/tabular-random-forest-ui.json) · [XGBoost](deployments/modarchitect-biology/tabular-xgboost-ui.json) · [高斯过程](deployments/modarchitect-biology/tabular-gaussian-ui.json) · [线性](deployments/modarchitect-biology/tabular-linear-ui.json) · [模型重开与隔离](deployments/modarchitect-biology/tabular-reopened-models.json) · [海豚准确运行](deployments/modarchitect-biology/tabular-scheduler-acceptance.json)
+部署与包核对 · 组件正反例 · 随机森林 · XGBoost · 高斯过程 · 线性 · 模型重开与隔离 · 海豚准确运行
 
 ## 仍保留的边界
 

@@ -2,7 +2,7 @@ import { element } from "./visuals.js?v=continuous1";
 import { inputChoices, nodeRecord, requestInput, sourceFor, sourceFromKey, sourceKey } from "./editor.js?v=continuous1";
 import { choices, field, parameters, selectField } from "./schema-fields.js?v=continuous1";
 
-const roles = { driver: "驱动变量", target: "目标变量", validation: "验证变量", covariate: "候选因子" };
+const roles = { driver: "驱动变量", target: "目标变量", validation: "验证变量", covariate: "候选因子", treatment: "试验处理", group: "分组", parameter: "参数" };
 const objectives = { prediction: "训练与预测", association: "探索变量关系", treatment_effect: "处理效应", mechanistic: "机理模拟" };
 const purposes = { train: "训练", explore: "探索", fit: "拟合", simulate: "模拟", predict: "预测", evaluate: "评价" };
 
@@ -139,36 +139,15 @@ function planFields(definition, update) {
   return grid;
 }
 
-function variableFields(variable, requirement, callbacks) {
-  const grid = element("div", "field-grid");
-  for (const [name, title] of [["name", "变量名称"], ["unit", "单位"]]) {
-    const control = element("input", "");
-    control.maxLength = 128;
-    control.value = variable[name];
-    control.readOnly = Boolean(requirement);
-    control.addEventListener("input", () => callbacks.updateVariable(variable.code, name, control.value));
-    grid.append(field(title, "variable-" + name, control, name === "name"));
-  }
-  const options = Object.entries(roles);
-  if (!roles[variable.role]) options.push([variable.role, variable.role]);
-  grid.append(field("变量角色", "variable-role", selectField(
-    options, variable.role, (value) => callbacks.updateVariable(variable.code, "role", value),
-  )));
+function variableDetails(variable, requirement) {
+  const details = [
+    ["指标编码", variable.code], ["定义版本", variable.definition_version], ["科学单位", variable.unit],
+    ["方案登记用途", roles[variable.role] || variable.role],
+  ];
   if (requirement) {
-    grid.append(element("p", "field-note schema-note", "固定观测单位 · " + requirement.unit_kind + "；来源与单位在研究输入中查看。"));
-    for (const [name, title, max] of [["interval_days", "采样间隔（天）", 366],
-      ["minimum_observations_per_unit", "每地块最低记录数", 10000],
-      ["minimum_independent_units", "最低独立单位数", 10000]]) {
-      const control = element("input", "");
-      control.type = "number";
-      control.min = "1";
-      control.max = String(max);
-      control.value = requirement[name] ?? "";
-      control.addEventListener("input", () => callbacks.updateRequirement(requirement.code, name, control.valueAsNumber));
-      grid.append(field(title, name, control, true));
-    }
+    details.push(["观测层级", requirement.unit_kind], ["提供方式", requirement.method.instructions]);
   }
-  return grid;
+  return [element("h3", "", variable.name), element("p", "inspector-description", variable.description), detailList(details)];
 }
 
 function connectionFields(definition, records, model, callbacks) {
@@ -199,8 +178,7 @@ export function inspect(container, state, callbacks) {
   const item = [...flow.inputs, ...flow.models, ...flow.outputs].find((entry) => entry.key === selected);
   if (selected === "plan") {
     container.replaceChildren(planFields(definition, callbacks.updatePlan),
-      action("从系统目录选择输入", callbacks.addObservation),
-      action("新增预测因子", callbacks.addDerived));
+      action("从系统目录选择输入", callbacks.addObservation));
     return "方案信息";
   }
   const remove = item && action("移除" + item.name, () => callbacks.removeNode(item.key), "text-button remove-node");
@@ -249,9 +227,8 @@ export function inspect(container, state, callbacks) {
     return "成果输出";
   }
   const variable = definition.variables.find((entry) => "variable:" + entry.code === selected);
-  const requirement = definition.collection_requirements.find((entry) => entry.variable_code === variable.code);
-  container.replaceChildren(element("p", "field-note", "变量代码 · " + variable.code),
-    variableFields(variable, requirement, callbacks));
+  const requirement = definition.collection_requirements.find((entry) => entry.variable_code === variable?.code);
+  container.replaceChildren(...(variable ? variableDetails(variable, requirement) : []));
   return "研究变量";
 }
 
@@ -264,17 +241,22 @@ export function issueMessage(issue, record) {
   if (issue.type === "incompatible_connection") return node + "的「" + port + "」资料类型、单位或对齐规则不匹配。";
   if (["unresolved_source", "invalid_port"].includes(issue.type)) return node + "的「" + port + "」引用不存在或重复，请检查这条连接。";
   if (issue.type === "unknown_component") return "该计算步骤引用了未登记的模型版本，请从模型目录重新选择。";
+  if (issue.type === "incomplete_configuration") return node + "的参数尚未配置，请到计算与评价中完成该方法的参数，待配置步骤不能通过完整检查。";
+  if (issue.type === "input_target_overlap") return node + "的输入与目标包含同一指标，不能把目标本身作为预测依据，请调整资料或目标选择。";
+  if (issue.type === "unregistered_indicator") return "当前方案包含未绑定系统指标的资料，请从平台指标库重新选择。";
   if (issue.type === "dependency_cycle") return "计算步骤形成了循环依赖，请检查这些节点的前后连接。";
   if (issue.type === "invalid_indicator") return "研究输入的「" + ({ unit: "科学单位", name: "指标名称" }[name] || name) + "」与系统指标库不一致。";
   if (issue.type === "invalid_source") return "研究输入的来源、版本或取数属性与系统目录不一致，请重新选择该指标。";
   if (issue.path?.[0] === "question") return "请填写研究问题。";
+  if (issue.path?.[0] === "name") return "请填写有效的研究方案名称，不能只输入空格。";
+  if (issue.path?.[0] === "responsible_user_id") return "请填写业务系统提供的负责人用户ID：1—128个字符，不能包含空白，并按字符串传递。";
   if (name === "nodes") return "请从资源库添加计算组件。";
   if (issue.path?.includes("outputs")) return "请选择至少一个成果输出。";
   if (issue.path?.includes("target_codes") || issue.message.includes("Evaluation targets")) return "请设置至少一个目标变量，并核对其角色。";
   if (issue.message.includes("Required input bindings")) return "组件输入尚未连齐，请核对画布上的端口。";
   if (issue.message.includes("unused external inputs")) return "有未使用的输入，请连接或移除。";
   if (issue.message.includes("unrelated to its outputs")) return "有组件未连到成果，请选择成果或连到下游组件。";
-  if (issue.message.includes("Logistic driver must use unit")) return "驱动变量的单位与时间轴不匹配。";
+  if (issue.message.includes("Logistic driver must use unit")) return issue.message.endsWith("deg_c_day") ? "生长度日轴需要积温指标（deg_c_day），请添加对应研究资料；不能用叶面积或普通气温代替。" : "天数轴需要天数指标（day），请从研究资料中选择对应指标。";
   if (issue.message.includes("upstream table does not supply")) return "上游输出缺少配置所选变量，请核对输出列或先合并观测表。";
   if (issue.message.includes("training target requires an observed")) return "训练目标必须来自实测。请把模型预测作为因子与观测表合并。";
   if (issue.message.includes("same unit")) return "预测因子需要独立列名，并且单位须与上游变量相同。";

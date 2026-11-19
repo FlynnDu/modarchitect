@@ -4,7 +4,7 @@ import { dirname } from "node:path";
 import { JSDOM } from "jsdom";
 
 const option = (key, fallback) => process.argv.includes(key) ? process.argv[process.argv.indexOf(key) + 1] : fallback;
-const base = option("--base-url", "http://192.168.3.249:18925"), output = option("--output", null);
+const base = option("--base-url", "http://127.0.0.1:8000"), output = option("--output", null);
 if (!output) throw new Error("--output is required");
 const nativeFetch = globalThis.fetch, source = new URL("../modarchitect/web/designer/", import.meta.url);
 const snapshot = option("--snapshot-html", null);

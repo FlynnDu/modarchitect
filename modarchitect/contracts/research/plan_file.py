@@ -25,6 +25,7 @@ def plan_payload(plan: ResearchPlan, *, include_layout: bool = True) -> dict:
         result["evaluation"].pop("numeric_gate", None)
     if not include_layout:
         result.pop("layout", None)
+        result.pop("responsible_user_id", None)
     if not include_layout or result["report"] is None:
         result.pop("report")
     return result

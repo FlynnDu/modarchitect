@@ -25,13 +25,12 @@ class ReportObject(Contract):
     reference_point: ReferencePoint
 
 
-class ReportPeriod(Contract):
+class StudyPeriod(Contract):
     """观察范围是资料日期闭区间，末日资料在次日02:00处理。"""
 
     design_version_id: UUID
     observation_start: date
     observation_end: date
-    model_id: UUID | None = None
 
     @model_validator(mode="after")
     def bounded_period(self):
@@ -41,6 +40,12 @@ class ReportPeriod(Contract):
                 "Report observation period is reversed or exceeds 731 days"
             )
         return self
+
+
+class ReportPeriod(StudyPeriod):
+    """日报允许引用指定预测模型。"""
+
+    model_id: UUID | None = None
 
 
 class WorkspaceReportStart(ReportPeriod):

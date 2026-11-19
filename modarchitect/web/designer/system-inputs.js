@@ -1,13 +1,13 @@
 import { element } from "./visuals.js?v=continuous1";
 import { addModel, addObservationInput, connectInput, recordKey, setOutput } from "./editor.js?v=continuous1";
-import { editStudy, formatUnit, studySettings } from "./modeling.js?v=continuous1";
+import { editStudy, formatUnit, inputUsageRows, studySettings } from "./modeling.js?v=continuous1";
 import { canAddInput, inputGroup, inputProvision } from "./input-provision.js?v=continuous1";
 
 const units = { field_season: "地块种植季", point: "采样点", plant: "单株", quadrat: "样方", soil_layer: "土层" };
 
 export function addSystemInput(definition, configuration, inputPort = null, records = new Map()) {
   const { variable, requirement } = configuration;
-  if (definition.variables.some((v) => v.code === variable.code)) throw new Error("这个指标已在方案中；请在已选输入中调整角色。");
+  if (definition.variables.some((v) => v.code === variable.code)) throw new Error("这个指标已在方案中，不能重复添加；需要更换用途时，请先调整原选择。");
   const ports = Object.entries(definition.input_recipes).filter(([, recipe]) => recipe.kind === "observations");
   if (ports.length > 1 && !inputPort) throw new Error("请明确将指标加入哪一组研究数据。");
   const selected = inputPort ? ports.find(([port]) => port === inputPort) : ports[0];
@@ -42,16 +42,18 @@ export function buildInputModel(definition, records, trainingEnd) {
 }
 
 export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, configure, notify, onChooseMethod }) {
-  let category = "manual", subcategory = "", query = "";
+  let category = "manual", subcategory = "", query = "", adoptionRole = null;
   const host = document.getElementById("input-catalog-list"), chosen = document.getElementById("selected-system-inputs");
   const subtabs = element("div", "input-subcategories"); subtabs.setAttribute("role", "group"); subtabs.setAttribute("aria-label", "细分输入类别");
   document.getElementById("input-categories").after(subtabs);
   const groupName = (entry) => inputGroup(catalog, entry);
-  const counts = (items) => "已登记 " + items.length + " · 可添加 " + items.filter(canAddInput).length;
+  const selectedVariable = (entry) => getDefinition().variables.find((variable) => variable.code === entry.variable.code);
+  const canAdopt = (entry) => canAddInput(entry) && !selectedVariable(entry) && (adoptionRole !== "target" || entry.source.binding?.value_nature === "observed");
+  const counts = (items) => "已登记 " + items.length + " · 可添加 " + items.filter(canAdopt).length;
   function selected() {
     const plan = getDefinition(); chosen.replaceChildren();
     const items = plan.collection_requirements;
-    if (!items.length) chosen.append(element("p", "modeling-muted", "先选择一个要预测的实测目标，再选择已知因素。"));
+    if (!items.length) chosen.append(element("p", "modeling-muted", "从指标库添加模型输入和希望预测的输出指标。"));
     for (const requirement of items) {
       const variable = plan.variables.find((v) => v.code === requirement.variable_code);
       const provision = inputProvision(requirement, catalog), entry = provision.entry;
@@ -77,6 +79,10 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
   }
   function render() {
     selected(); host.replaceChildren();
+    for (const button of document.querySelectorAll('#input-categories [data-category]')) {
+      const item = catalog.categories.find((entry) => entry.code === button.dataset.category);
+      button.textContent = item.name + " · " + counts(catalog.items.filter((entry) => entry.category === item.code));
+    }
     subtabs.replaceChildren();
     const children = catalog.categories.find((parent) => parent.code === category)?.children || [];
     subtabs.hidden = !children.length;
@@ -98,10 +104,24 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
       if (entry.source.binding?.value_nature === "estimated") card.append(element("small", "modeling-muted", "提供方估计值，可作为因素，不能替代实测训练目标。"));
       if (entry.source.definition?.support?.temporal_support === "static") card.append(element("small", "modeling-muted", "静态网格参考；用于多个日期不等于每天独立实测。"));
       if (entry.source.definition?.support?.temporal_support === "scene_observation") card.append(element("small", "modeling-muted", "仅实际清晰过境日期有记录；不是逐日都有影像，缺日不填补。"));
+      const existingVariable = selectedVariable(entry);
+      if (existingVariable) {
+        const usage = inputUsageRows(getDefinition(), getRecords()).find((row) => row.variable.code === variable.code);
+        const role = usage?.role === "target" ? "target" : usage?.role === "covariate" ? "covariate" : existingVariable.role;
+        const label = role === "target" ? "已选为目标指标（第03步）" : ["covariate", "driver"].includes(role) ? "已选为研究资料（第02步）" : "已在方案中采用";
+        const selected = element("button", "button button-secondary", label); selected.type = "button"; selected.disabled = true;
+        selected.dataset.inputRole = adoptionRole || role;
+        card.append(element("p", "input-channel-pending", "不能重复添加；需要更换用途时，请先调整原选择。"), selected);
+        host.append(card); continue;
+      }
       if (!canAddInput(entry)) {
         const unavailable = element("button", "button button-secondary", entry.selectable ? "采样尺度待适配" : "待接入");
         unavailable.type = "button"; unavailable.disabled = true;
         card.append(unavailable); host.append(card); continue;
+      }
+      if (!canAdopt(entry)) {
+        card.append(element("p", "input-channel-pending", "该来源不是实测，不能作为训练目标；可在研究资料步骤采用为模型输入。"));
+        host.append(card); continue;
       }
       const selectors = {};
       for (const [name, schema] of Object.entries(entry.source.selection_schema.properties)) {
@@ -111,29 +131,30 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
         select.addEventListener("change", () => { selectors[name] = select.value; });
         label.append(select); card.append(label);
       }
-      const roleLabel = element("label", "", "在研究中作为"), role = element("select");
-      role.add(new Option("已知因素", "covariate"));
-      if (entry.source.binding?.value_nature === "observed") role.add(new Option("预测目标（实测）", "target"));
-      roleLabel.append(role); card.append(roleLabel);
       const inputPorts = getDefinition().composition.inputs.filter((port) => getDefinition().input_recipes[port.code]?.kind === "observations");
       let destination = null;
       if (inputPorts.length > 1) {
         const label = element("label", "", "加入哪组数据"), select = element("select"); select.add(new Option("请选择输入组", ""));
         for (const port of inputPorts) select.add(new Option(port.name, port.code)); label.append(select); card.append(label); destination = select;
       }
-      const add = element("button", "button button-secondary", "加入研究输入"); add.type = "button";
-      // 点位、单株需要受权对象选择；当前工作区没有该入口，不能伪装成地块输入。
-      add.disabled = !canAddInput(entry);
-      add.addEventListener("click", async () => {
-        add.disabled = true;
-        try {
-          const configured = await configure({ key: entry.key, selectors, role: role.value });
-          const plan = structuredClone(getDefinition()); addSystemInput(plan, configured, destination?.value || null, getRecords()); onEdit(plan); render();
-          notify("已加入「" + variable.name + "」，单位与来源已固定。");
-        } catch (error) { notify(error.message); }
-        finally { add.disabled = !canAddInput(entry); }
-      });
-      card.append(add); host.append(card);
+      const actions = element("div", "input-adopt-actions");
+      const roles = adoptionRole ? [adoptionRole] : entry.source.binding?.value_nature === "observed" ? ["covariate", "target"] : ["covariate"];
+      for (const role of roles) {
+        const add = element("button", "button button-secondary", role === "target" ? "添加为预测输出" : "添加为模型输入");
+        add.type = "button"; add.dataset.inputRole = role;
+        add.setAttribute("aria-label", "将" + variable.name + add.textContent);
+        add.addEventListener("click", async () => {
+          if (selectedVariable(entry)) { notify("该指标已在研究资料或目标指标中，不能重复添加。"); render(); return; }
+          for (const button of actions.children) button.disabled = true;
+          try {
+            const configured = await configure({ key: entry.key, selectors, role });
+            const plan = structuredClone(getDefinition()); addSystemInput(plan, configured, destination?.value || null, getRecords()); onEdit(plan); render();
+            notify("已加入「" + variable.name + "」，单位与来源已固定。");
+          } catch (error) { notify(error.message); }
+          finally { for (const button of actions.children) button.disabled = !canAddInput(entry); }
+        }); actions.append(add);
+      }
+      card.append(actions); host.append(card);
     }
     if (!filtered.length) host.append(element("p", "modeling-muted", children.find((child) => child.code === subcategory)?.count === 0 ? "此分类暂时没有可选指标，待真实来源和科学单位确认后提供。" : "此类别中没有匹配指标。"));
     const plan = getDefinition(), existing = Boolean(plan.composition.nodes.length);
@@ -158,5 +179,6 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
       const plan = structuredClone(getDefinition()); buildInputModel(plan, getRecords(), document.getElementById("input-training-end").value); onEdit(plan);
     } catch (error) { notify(error.message); }
   });
-  render(); return { render };
+  for (const id of ["open-indicator-library", "open-output-library"]) document.getElementById(id).disabled = false;
+  render(); return { render, setAdoptionRole(role) { adoptionRole = role; render(); } };
 }

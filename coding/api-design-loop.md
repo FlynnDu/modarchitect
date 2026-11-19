@@ -21,7 +21,7 @@
 
 ## 验收
 
-按两份文档的curl逐步执行：方案库列表/详情、空白定义、全目录指标configure、基础模型设计、合法/非法check、非法save不落库、合法save、同ID重放、列表/详情重开、按保存的真实图渲染；记录后端与前端证据。用隔离数据库验证旧接口、授权和回执兼容，再到SR850上线验证本系统API。运行未接通输入的反例仍须拒绝，验证不得跳过执行边界。
+按两份文档的curl逐步执行：方案库列表/详情、空白定义、全目录指标configure、基础模型设计、合法/非法check、非法save不落库、合法save、同ID重放、列表/详情重开、按保存的真实图渲染；记录后端与前端证据。用隔离数据库验证旧接口、授权和回执兼容，再在部署环境验证本系统 API。运行未接通输入的反例仍须拒绝，验证不得跳过执行边界。
 
 ## 2026-11-16实际结果
 
@@ -31,11 +31,11 @@
 - `node .ops/api-design-loop/verify_selection.mjs`：28项模型均通过实际DOM选择“先保留为待配置步骤”及线上检查，没有以执行实现或制品部署状态禁用设计。
 - `node .ops/api-design-loop/render_flow.mjs`：用三份重查的配置调用实际流程图渲染器；模板与自定义各4节点/3连线，未来模型3节点/2连线，均显示5个研究阶段。已核对已部署脚本与本地一致；未做原生浏览器像素验收。
 - 14个本批自有Python文件执行文件头检查、`ruff check`全部通过；`node --check scripts/verify_designer_ui.mjs`通过。
-- 生物所SR850：API Job11、独立执行Job5发布成功且健康；API、Worker和分发进程各140个包文件逐项核对无差异。模板与运行版本一致；密钥、来源环境及9项运行制品登记保留，数据库0011无迁移，原海豚Worker Job36未改。
+- 部署环境的 API 与执行服务通过健康检查。确认应用包与执行进程使用同一套已登记组件合同。
 
 验收终点是保存→查询→还原流程图。业务库仅明确保存协议和字段，不做实测；本批未启动采集、计算或海豚任务。
 
-[线上API证据](deployments/modarchitect-biology/api-design-loop-acceptance.json) · [28项模型选择](deployments/modarchitect-biology/api-design-model-selection.json) · [流程图证据](deployments/modarchitect-biology/api-design-flow-acceptance.json) · [部署核对](deployments/modarchitect-biology/api-design-loop-deployment.json)
+线上API证据 · 28项模型选择 · 流程图证据 · 部署核对
 
 ## 对接文档按接口拆分
 
@@ -47,4 +47,12 @@
 
 验证：21次真实curl返回符合预期，包含准确保存请求重放、查回执、重查方案、目录/模型合同、生成/检查/导入及缺连线反例。两份文档的全部路径/方法与线上OpenAPI一致；58段JSON可解析，40段shell通过bash语法检查，链接目标存在。训练模型详情的正例按代码合同说明并明确标注，隔离设计企业无训练模型，未创建任务补数据。无产品源码、数据库或运行版本改动。
 
-[逐接口文档验收](deployments/modarchitect-biology/api-interface-docs-acceptance.json)
+逐接口文档验收
+
+## 平台默认方案查询的企业范围
+
+01 和 02 读取平台模板目录。在 API Key 模式下共用业务接入凭据校验，查询列表无需企业范围，详情只接收模板 ID 和可选版本摘要。旧调用附带企业范围时仍读取同一份平台目录。历史委托认证模式保留原有的委托校验。企业草稿、模型和运行继续由现有企业身份解析和持久化隔离规则处理。
+
+验收覆盖无企业范围的合法请求、缺失和错误的 Key、不同企业参数返回同一目录、准确版本读取、已保存的企业方案查询及跨企业访问拒绝。两份对接文档和闭环流程图使用相同入口规则。
+
+本地隔离数据库使用 `MODARCHITECT_PYTEST_ARGS='["tests/test_design_api.py","tests/test_api_design_loop.py","tests/test_study_templates.py","-q","--tb=short"]'` 运行 `.venv/Scripts/python.exe .ops/verify_local_database.py`，27 项通过。三个自有 Python 文件通过文件头检查和 Ruff。服务发布后完成回归。直连和代理均验证平台目录免传企业范围，详情共核对 22 项，企业方案同企业可读、跨企业返回 404。

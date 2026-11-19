@@ -16,6 +16,7 @@ from .contracts.research.execution import (
     InputUsage,
     ResearchOperation,
 )
+from .contracts.violations import ContractViolation
 
 
 def reference_key(reference: dict) -> str:
@@ -104,7 +105,9 @@ def input_usages(composition: Composition, requests: dict) -> list[dict]:
         capability = execution_capability(node.component.model_dump(mode="json"))
         if capability is None:
             continue
-        _, value, schema = request
+        recipe, value, schema = request
+        sources = {binding.port: (binding.source.node, binding.source.port) for binding in node.bindings}
+        training_inputs, training_labels = set(), []
         for field, usage in capability.input_uses.items():
             spec = (
                 schema.get("properties", {}).get(field, {}).get("x-research-variables")
@@ -113,6 +116,12 @@ def input_usages(composition: Composition, requests: dict) -> list[dict]:
                 continue
             codes = value[field] if isinstance(value[field], list) else [value[field]]
             for code in codes:
+                if "training" in usage.phases:
+                    column = (*sources.get(spec["table_port"], (None, spec["table_port"])), code)
+                    if usage.role in {"feature", "driver"}:
+                        training_inputs.add(column)
+                    elif usage.role == "label":
+                        training_labels.append((column, field, spec["table_port"]))
                 uses.append(
                     InputUsage(
                         node=node.code,
@@ -123,6 +132,13 @@ def input_usages(composition: Composition, requests: dict) -> list[dict]:
                         phases=usage.phases,
                         observed_required=bool(spec.get("observed")),
                     ).model_dump(mode="json")
+                )
+        for column, field, port in training_labels:
+            if column in training_inputs:
+                raise ContractViolation(
+                    "A training input cannot include its own target: %s" % column[-1],
+                    ["input_recipes", recipe, "value", field], "input_target_overlap",
+                    node=node.code, port=port,
                 )
     return uses
 
