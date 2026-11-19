@@ -3,11 +3,13 @@ GRANT SELECT ON resource_scopes, model_component_definitions, research_designs,
     research_design_drafts, research_design_versions, research_design_components TO modarchitect_app;
 GRANT INSERT ON resource_scopes, research_designs, research_design_drafts,
     research_design_versions, research_design_components TO modarchitect_app;
-GRANT UPDATE (revision, configuration_json, configuration_sha256, updated_at, version_name)
+GRANT UPDATE (draft_id, revision, configuration_json, configuration_sha256, updated_at, version_name)
     ON research_design_drafts TO modarchitect_app;
 GRANT SELECT, INSERT ON research_design_saves TO modarchitect_app;
 GRANT SELECT, INSERT ON research_draft_versions TO modarchitect_app;
 GRANT SELECT, INSERT ON research_studies TO modarchitect_app;
+GRANT SELECT, INSERT ON research_design_draft_sessions TO modarchitect_app;
+GRANT UPDATE (published_version_id, closed_at) ON research_design_draft_sessions TO modarchitect_app;
 
 GRANT SELECT, INSERT ON research_runs, research_trained_models,
     research_design_data, research_dispatch_queue TO modarchitect_app;

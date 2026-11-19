@@ -25,7 +25,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from ..contracts.enterprise.identity import EnterpriseAccessError, VerifiedPrincipal
 from ..contracts.identifiers import identity_sha256, new_uuid7
 from ..contracts.model_center.components import DesignPublication
-from .schema import bindings, components, designs, drafts, scopes, versions
+from .schema import bindings, components, designs, drafts, draft_sessions, scopes, versions
 
 
 class DesignConflict(ValueError):
@@ -64,12 +64,12 @@ class DesignStore:
                                     'research_design_versions','research_design_components',
                                     'research_dataset_snapshots','research_report_tasks',
                                     'research_report_batches','research_design_saves',
-                                    'research_draft_versions','research_studies')
+                                    'research_draft_versions','research_studies','research_design_draft_sessions')
                   AND c.relrowsecurity AND c.relforcerowsecurity
                   AND NOT pg_has_role(c.relowner, 'MEMBER')
             """)
             ).scalar_one()
-            if unsafe or protected != 11:
+            if unsafe or protected != 12:
                 raise RuntimeError(
                     "The research runtime role or row security configuration is unsafe"
                 )
@@ -167,14 +167,14 @@ class DesignTransaction:
             if row["initial_sha256"] != digest or row["initial_version_name"] != version_name:
                 raise DesignConflict("Research draft creation content differs")
             return row, False
-        row = self.connection.execute(
+        self.connection.execute(
             insert(drafts).values(
                 design_id=design_id, revision=1, configuration_json=configuration,
                 configuration_sha256=digest, initial_sha256=digest,
                 version_name=version_name, initial_version_name=version_name,
             ).returning(drafts)
         ).mappings().one()
-        return row, True
+        return self.get_draft(design_id), True
 
     def version_names(self, design_id: UUID) -> set[str]:
         """读取同一方案已确认的名称集合，用于预查和默认分配。"""
@@ -199,7 +199,7 @@ class DesignTransaction:
     def list_drafts(self) -> list[RowMapping]:
         """读取当前主体最近使用的最多一百份草稿。"""
         query = (
-            select(drafts)
+            self._draft_query()
             .order_by(drafts.c.updated_at.desc(), drafts.c.design_id)
             .limit(100)
         )
@@ -207,13 +207,54 @@ class DesignTransaction:
 
     def get_draft(self, design_id: UUID, *, lock: bool = False) -> RowMapping:
         """读取当前主体的草稿，写入时锁住同一草稿。"""
-        query = select(drafts).where(drafts.c.design_id == design_id)
+        query = self._draft_query().where(drafts.c.design_id == design_id)
         if lock:
             query = query.with_for_update(of=drafts)
         row = self.connection.execute(query).mappings().one_or_none()
         if row is None:
             raise LookupError("Research draft was not found")
         return row
+
+    def _draft_query(self):
+        """当前工作位合并独立编辑轮次，不混入初始回执字段。"""
+        return select(drafts, draft_sessions.c.base_version_id,
+                      draft_sessions.c.published_version_id).join(
+            draft_sessions, drafts.c.draft_id == draft_sessions.c.draft_id)
+
+    def open_draft(self, version: RowMapping, key: str, configuration: dict) -> RowMapping:
+        """方案锁内开启新编辑轮次，同键只返回原始开启回执。"""
+        design_id = version["design_id"]
+        previous = self.connection.execute(select(draft_sessions).where(
+            draft_sessions.c.design_id == design_id, draft_sessions.c.request_key == key
+        )).mappings().one_or_none()
+        if previous is not None:
+            if previous["base_version_id"] != version["design_version_id"]:
+                raise DesignConflict("Draft request refers to another published version")
+            return previous
+        current = self.connection.execute(self._draft_query().where(
+            drafts.c.design_id == design_id).with_for_update(of=drafts)).mappings().one_or_none()
+        if current is not None and current["published_version_id"] is None:
+            raise DesignConflict("An active research draft already exists")
+        revision = current["revision"] + 1 if current is not None else 1
+        digest = identity_sha256(configuration)
+        session = self.connection.execute(insert(draft_sessions).values(
+            draft_id=new_uuid7(), design_id=design_id, base_version_id=version["design_version_id"],
+            request_key=key, opened_revision=revision, configuration_sha256=digest,
+        ).returning(draft_sessions)).mappings().one()
+        values = dict(draft_id=session["draft_id"], revision=revision,
+                      configuration_json=configuration, configuration_sha256=digest,
+                      version_name=None, updated_at=func.now())
+        if current is None:
+            self.connection.execute(insert(drafts).values(design_id=design_id,
+                initial_sha256=digest, initial_version_name=None, **values))
+        else:
+            self.connection.execute(update(drafts).where(drafts.c.design_id == design_id).values(**values))
+        return session
+
+    def close_draft(self, draft_id: UUID, version_id: UUID) -> None:
+        """与正式版本追加原子关闭本轮编辑，后续写入必须另开草稿。"""
+        self.connection.execute(update(draft_sessions).where(draft_sessions.c.draft_id == draft_id).values(
+            published_version_id=version_id, closed_at=func.now()))
 
     def save_draft(
         self,
@@ -226,9 +267,12 @@ class DesignTransaction:
         replace_candidate: bool = False,
     ) -> RowMapping:
         """核对修订并保存，重复保存原内容保留当前修订。"""
+        self.lock_design(design_id)
         row = self.get_draft(design_id, lock=True)
         if row["revision"] != revision:
             raise DesignConflict("Research draft revision has changed")
+        if row["published_version_id"] is not None:
+            raise DesignConflict("Published configuration is frozen; open a new draft from a published version")
         digest = identity_sha256(configuration)
         unchanged = row["configuration_sha256"] == digest
         if unchanged and not force_revision and (not replace_candidate or version_name == row["version_name"]):
@@ -239,13 +283,14 @@ class DesignTransaction:
         candidate = row["version_name"]
         if candidate in published_names:
             candidate = None
-        return self.connection.execute(
+        self.connection.execute(
             update(drafts).where(drafts.c.design_id == design_id).values(
                 configuration_json=configuration, configuration_sha256=digest,
                 revision=revision + 1, updated_at=func.now(),
                 version_name=version_name if replace_candidate else candidate,
             ).returning(drafts)
         ).mappings().one()
+        return self.get_draft(design_id)
 
     def latest_version(self, design_id: UUID) -> RowMapping | None:
         """读取准确方案身份的最新版本。"""

@@ -60,7 +60,10 @@ def test_two_applied_versions_train_and_reopen_independent_models(runtime_client
     config = next(r for r in changed["input_recipes"].values() if "features" in r.get("value", {}))
     original_features = config["value"]["features"][:]
     config["value"]["features"] = original_features[:-1]
-    response = client.put(draft, headers=WRITE, json={"definition": changed, "expected_revision": saved["revision"],
+    opened = client.post(BASE + "/design-versions/" + a_version["design_version_id"] + "/drafts",
+                         headers={**WRITE, "Idempotency-Key": str(uuid4())}).raise_for_status().json()
+    assert opened["draft_id"] != saved["draft_id"]
+    response = client.put(draft, headers=WRITE, json={"definition": changed, "expected_revision": opened["revision"],
                                                       "version_name": "缩减因子版", "data_kind": "synthetic"})
     assert response.status_code == 200, response.text
     update = response.json()

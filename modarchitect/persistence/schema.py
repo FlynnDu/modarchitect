@@ -13,6 +13,7 @@ from sqlalchemy import (
     ForeignKey,
     ForeignKeyConstraint,
     Integer,
+    Index,
     JSON,
     MetaData,
     String,
@@ -20,6 +21,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Uuid,
     func,
+    text,
 )
 
 
@@ -67,6 +69,7 @@ drafts = Table(
     "research_design_drafts",
     metadata,
     Column("design_id", ForeignKey(designs.c.design_id), primary_key=True),
+    Column("draft_id", Uuid, nullable=False, server_default=text("gen_random_uuid()")),
     Column("revision", Integer, nullable=False),
     Column("configuration_json", JSON, nullable=False),
     Column("configuration_sha256", String(64), nullable=False),
@@ -81,6 +84,8 @@ drafts = Table(
     CheckConstraint(
         "initial_sha256 ~ '^[a-f0-9]{64}$'", name="ck_draft_initial_sha256"
     ),
+    ForeignKeyConstraint(["draft_id", "design_id"], ["research_design_draft_sessions.draft_id", "research_design_draft_sessions.design_id"], name="fk_current_draft_session"),
+    UniqueConstraint("draft_id", name="uq_current_draft_id"),
 )
 
 draft_versions = Table(
@@ -115,6 +120,28 @@ versions = Table(
     CheckConstraint("revision >= 1", name="ck_design_revision"),
     CheckConstraint("contract_sha256 ~ '^[a-f0-9]{64}$'", name="ck_design_sha256"),
 )
+
+draft_sessions = Table(
+    "research_design_draft_sessions", metadata,
+    Column("draft_id", Uuid, primary_key=True),
+    Column("design_id", ForeignKey(designs.c.design_id), nullable=False),
+    Column("base_version_id", Uuid),
+    Column("published_version_id", Uuid),
+    Column("request_key", String(128)),
+    Column("opened_revision", Integer, nullable=False),
+    Column("configuration_sha256", String(64), nullable=False),
+    Column("created_at", DateTime(timezone=True), nullable=False, server_default=func.now()),
+    Column("closed_at", DateTime(timezone=True)),
+    UniqueConstraint("draft_id", "design_id", name="uq_draft_session_identity"),
+    UniqueConstraint("design_id", "request_key", name="uq_draft_session_request"),
+    ForeignKeyConstraint(["base_version_id", "design_id"], ["research_design_versions.design_version_id", "research_design_versions.design_id"], name="fk_draft_base_version"),
+    ForeignKeyConstraint(["published_version_id", "design_id"], ["research_design_versions.design_version_id", "research_design_versions.design_id"], name="fk_draft_published_version"),
+    CheckConstraint("opened_revision >= 1", name="ck_draft_session_revision"),
+    CheckConstraint("configuration_sha256 ~ '^[a-f0-9]{64}$'", name="ck_draft_session_sha256"),
+    CheckConstraint("(published_version_id IS NULL) = (closed_at IS NULL)", name="ck_draft_session_closed"),
+)
+Index("uq_active_design_draft", draft_sessions.c.design_id, unique=True,
+      postgresql_where=draft_sessions.c.closed_at.is_(None))
 
 bindings = Table(
     "research_design_components",

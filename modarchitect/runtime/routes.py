@@ -151,6 +151,12 @@ def update_plan(
     return runtime.save_plan(principal, body, design_id=design_id)
 
 
+@workspace.post("/design-versions/{version_id}/drafts")
+def open_version_draft(version_id: UUID, principal: Owner, runtime: Runtime, key: RequestKey) -> dict:
+    """个人工作区复用正式版本的新草稿规则。"""
+    return runtime.designs.open_draft(principal, version_id, key)
+
+
 @workspace.post("/runs", response_model=RunView)
 def train(
     body: TrainingRequest | ExecutionRequest,

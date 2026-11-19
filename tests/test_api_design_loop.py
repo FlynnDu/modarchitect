@@ -123,7 +123,9 @@ def test_study_versions_are_assigned_and_reserved_per_design(business_client) ->
     assert publish(1) == original
     template["name"] = "修改后的农学方案"
     changed = client.post(API + "/configurations/draft", json=template).json()
-    update = {"design_id": receipt["design_id"], "expected_revision": 1, "configuration": changed}
+    opened = client.post(API + "/design-versions/" + original["design_version_id"] + "/drafts", params=scope,
+                         headers={"Idempotency-Key": str(uuid4())}).raise_for_status().json()
+    update = {"design_id": receipt["design_id"], "expected_revision": opened["revision"], "configuration": changed}
     invalid = save({**update, "version_name": "两行\n版本"})
     assert invalid.status_code == 422 and invalid.json()["issues"][0]["path"][-1] == "version_name"
     occupied = save({**update, "version_name": "1.0.0"})
@@ -142,7 +144,9 @@ def test_study_versions_are_assigned_and_reserved_per_design(business_client) ->
     own_version = client.post(API + "/design-drafts/" + custom["design_id"] + "/publish", params=scope,
                               json={"expected_revision": custom["revision"]}).raise_for_status().json()
     assert own_version["version_name"] == confirm["version_name"]
-    update["expected_revision"] = second["revision"]
+    opened = client.post(API + "/design-versions/" + confirm["design_version_id"] + "/drafts", params=scope,
+                         headers={"Idempotency-Key": str(uuid4())}).raise_for_status().json()
+    update["expected_revision"] = opened["revision"]
     with ThreadPoolExecutor(max_workers=2) as pool:
         changes = list(pool.map(lambda name: save({**update, "version_name": name}), ("处理组 A", "处理组 B")))
     assert sorted(response.status_code for response in changes) == [200, 409]

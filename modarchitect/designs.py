@@ -30,6 +30,10 @@ def draft_view(row: Mapping) -> dict:
         raise DesignConflict("Persisted research draft checksum differs")
     return {
         "design_id": row["design_id"],
+        "draft_id": row["draft_id"],
+        "draft_state": "published" if row["published_version_id"] is not None else "draft",
+        "base_version_id": row["base_version_id"],
+        "published_version_id": row["published_version_id"],
         "revision": row["revision"],
         "version_name": row["version_name"],
         "configuration": configuration,
@@ -212,17 +216,12 @@ class ResearchDesigns:
         """对当前草稿建立不可变版本，网络核权期间不持有数据库锁。"""
         with self.store.transaction(principal) as tx:
             snapshot = draft_view(tx.get_draft(design_id))
-            latest = tx.latest_version(design_id)
             if snapshot["revision"] != revision:
                 raise DesignConflict("Research draft revision has changed")
+            if snapshot["published_version_id"] is not None:
+                return _version_view(tx, tx.get_version(version_id=snapshot["published_version_id"]))
             plan = ResearchPlan.model_validate(snapshot["configuration"]["definition"])
             definition = plan_payload(plan)
-            if (
-                latest is not None
-                and latest["contract_json"].get("research_plan") == definition
-                and snapshot["version_name"] in (None, latest["version_name"])
-            ):
-                return _version_view(tx, latest)
         compile_plan(plan, adopted=True, for_execution=False)
         # 通用方案在应用时绑定对象；历史显式绑定的范围仍须重新核权。
         if plan.sampling_selection is not None:
@@ -235,13 +234,9 @@ class ResearchDesigns:
                 or current["configuration_sha256"] != snapshot["configuration_sha256"]
             ):
                 raise DesignConflict("Research draft revision has changed")
+            if current["published_version_id"] is not None:
+                return _version_view(tx, tx.get_version(version_id=current["published_version_id"]))
             latest = tx.latest_version(design_id)
-            if (
-                latest is not None
-                and latest["contract_json"].get("research_plan") == definition
-                and snapshot["version_name"] in (None, latest["version_name"])
-            ):
-                return _version_view(tx, latest)
             publication = DesignPublication(
                 name=plan.name,
                 composition=plan.composition,
@@ -249,7 +244,21 @@ class ResearchDesigns:
                 revision=(latest["revision"] if latest is not None else 0) + 1,
             )
             result, _ = _append(tx, design_id, publication, latest, version_name=snapshot["version_name"])
+            tx.close_draft(current["draft_id"], result["design_version_id"])
             return result
+
+    def open_draft(self, principal: VerifiedPrincipal, version_id: UUID, key: str) -> dict:
+        """显式从准确正式版本开启独立草稿，保留同一个方案身份。"""
+        with self.store.transaction(principal) as tx:
+            version = tx.get_version(version_id=version_id)
+            definition = _version_view(tx, version)["definition"].get("research_plan")
+            if definition is None:
+                raise DesignConflict("Published version has no editable research plan")
+            tx.lock_design(version["design_id"])
+            session = tx.open_draft(version, key, draft_file(definition))
+            return {"design_id": session["design_id"], "draft_id": session["draft_id"],
+                    "base_version_id": session["base_version_id"],
+                    "revision": session["opened_revision"], "configuration_sha256": session["configuration_sha256"]}
 
     def publish_direct(
         self,

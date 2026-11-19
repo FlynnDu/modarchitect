@@ -460,7 +460,7 @@ test("公开方案目录不等待组件与个人工作区初始化", async () =>
 });
 
 test("完整页面从引导入口载入、编辑并保存同一方案，组件视图保留实际五层", async () => {
-  const dom = domEnvironment(); const calls = [], saved = new Map();
+  const dom = domEnvironment(); const calls = [], saved = new Map(), published = new Map();
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (url, options = {}) => {
     const parsed = new URL(url, location.href), path = parsed.pathname, body = options.body && JSON.parse(options.body);
@@ -476,9 +476,21 @@ test("完整页面从引导入口载入、编辑并保存同一方案，组件�
     }
     else if (path.endsWith("/validate")) value = { check: { valid: true, issues: [], compiled: {} } };
     else if (path === "/api/v1/workspace/plans" && options.method === "POST") {
-      value = { design_id: "saved-study", revision: 1, configuration: { definition: body.definition } }; saved.set(value.design_id, value);
+      value = { design_id: "saved-study", draft_id: "first-draft", draft_state: "draft", revision: 1, configuration: { definition: body.definition }, observations: body.observations, data_kind: body.data_kind }; saved.set(value.design_id, value);
     } else if (path === "/api/v1/workspace/plans/saved-study" && options.method === "PUT") {
-      value = { design_id: "saved-study", revision: body.expected_revision + 1, configuration: { definition: body.definition } }; saved.set(value.design_id, value);
+      assert.equal(saved.get("saved-study").draft_state, "draft");
+      value = { ...saved.get("saved-study"), revision: body.expected_revision + 1, configuration: { definition: body.definition } }; saved.set(value.design_id, value);
+    } else if (path === "/api/v1/workspace/plans/saved-study/publish") {
+      const current = saved.get("saved-study");
+      value = { design_version_id: "published-version", version_name: "1.0.0" };
+      published.set(value.design_version_id, structuredClone(current.configuration.definition));
+      Object.assign(current, { draft_state: "published", published_version_id: value.design_version_id, latest_version: value });
+    } else if (path === "/api/v1/workspace/plans/saved-study") value = saved.get("saved-study");
+    else if (path === "/api/v1/workspace/design-versions/published-version/drafts") {
+      assert.ok(options.headers["Idempotency-Key"]);
+      const current = saved.get("saved-study");
+      Object.assign(current, { draft_id: "second-draft", draft_state: "draft", base_version_id: "published-version", published_version_id: null, revision: current.revision + 1 });
+      value = current;
     } else if (path.endsWith("/plans") || path.endsWith("/models") || path.endsWith("/runs")) value = { items: [] };
     else throw new Error("Unexpected test request " + path);
     return { ok: true, status: 200, json: async () => value };
@@ -519,6 +531,20 @@ test("完整页面从引导入口载入、编辑并保存同一方案，组件�
     assert.ok(!last.body.definition.input_recipes.regression_config.value.features.includes("temperature"));
     assert.equal(last.body.observations.rows.length, 90);
     assert.equal(document.querySelectorAll("#modeling-flow > li").length, 2);
+    await waitFor(() => !document.getElementById("research-inspection").hasAttribute("aria-busy"));
+    document.getElementById("wizard-save-design").click();
+    await waitFor(() => saved.get("saved-study").draft_state === "published" && !document.getElementById("cloud-save").disabled);
+    assert.ok(document.getElementById("wizard-name").matches(":disabled"));
+    assert.match(document.getElementById("draft-lifecycle-status").textContent, /已发布.*只读/);
+    const originalVersion = structuredClone(published.get("published-version"));
+    document.getElementById("open-version-draft").click();
+    await waitFor(() => saved.get("saved-study").draft_id === "second-draft" && !document.getElementById("wizard-name").matches(":disabled") && !document.getElementById("cloud-save").disabled);
+    const editedName = document.getElementById("wizard-name");
+    editedName.value = "新草稿"; editedName.dispatchEvent(new dom.window.Event("change"));
+    document.getElementById("cloud-save").click();
+    await waitFor(() => saved.get("saved-study").configuration.definition.name === "新草稿" && !document.getElementById("cloud-save").disabled);
+    assert.deepEqual(published.get("published-version"), originalVersion);
+    await waitFor(() => !document.getElementById("research-inspection").hasAttribute("aria-busy"));
   } finally { globalThis.fetch = originalFetch; dom.window.close(); }
 });
 

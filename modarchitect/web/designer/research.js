@@ -5,6 +5,7 @@ import { renderSummary, runOperation } from "./result-views.js?v=continuous1";
 import { researchTitle } from "./study-library.js?v=continuous1";
 import { mountSourceData } from "./source-data.js?v=continuous1";
 import { mountContinuousResearch } from "./continuous-research.js?v=continuous1";
+import { mountDraftLifecycle } from "./draft-lifecycle.js?v=lifecycle1";
 
 const byId = (id) => document.getElementById(id);
 const BASE = "/api/v1/workspace";
@@ -67,10 +68,15 @@ function tableView(target, table, editable, onEdit = () => {}) {
 
 export function mountResearch({ getDefinition, getRecords = () => new Map(), openDefinition, notify, onDataChange = () => {}, onRunChange = () => {}, onFlowChange = () => {}, onModelChange = () => {}, onTemplateChange = () => {}, onExecutionCheck = () => {}, onError = () => {}, beforeRun = async () => {} }) {
   const state = { saved: null, data: null, dataKind: "user_supplied", sourceSnapshotIds: [], template: null, run: null, model: null, prediction: null, poll: null, busy: false, pending: new Map(), flowRun: null, runData: null, generation: 0, plans: new Map(), templates: new Map(), rules: new Map() };
+  const lifecycle = mountDraftLifecycle({ report: feedback, onOpen: () => guard(async () => {
+    const opened = await api("/design-versions/" + state.saved.published_version_id + "/drafts", { method: "POST", idempotent: true });
+    await openStudy(opened.design_id);
+    feedback("已开启新草稿。编辑和发布此草稿不会改变原来的正式版本及已有地块研究。");
+  }) });
   const sourceBody = () => state.sourceSnapshotIds.length ? { source_snapshot_ids: state.sourceSnapshotIds } : {};
   byId("wizard-study-version").addEventListener("input", (event) => { event.target.dataset.edited = "true"; });
-  const continuous = mountContinuousResearch({ api, save: () => save(true), getModel: () => state.model, report: feedback, follow });
-  const sourcePanel = mountSourceData({ api, getDefinition, getData: () => state.data, getDataKind: () => state.dataKind, saveDefinition: () => save(true),
+  const continuous = mountContinuousResearch({ api, save: () => publishConfiguration(), getModel: () => state.model, report: feedback, follow });
+  const sourcePanel = mountSourceData({ api, getDefinition, getData: () => state.data, getDataKind: () => state.dataKind, saveDefinition: () => saveForExecution(true),
     adopt(ids, table) { state.sourceSnapshotIds = ids; state.data = table; state.flowRun = null; state.generation += 1; dataView(); if (state.model) predictionForm(state.model); }, report: feedback });
 
   async function inputBody(table = state.data, dataKind = state.dataKind) {
@@ -97,6 +103,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     if (!response.ok) {
       if (result.issues?.some((issue) => issue.rule === "study_version_conflict")) throw new Error("该方案已使用这个版本名称，请修改名称或留空自动生成。");
       if (response.status === 422 && result.issues?.some((issue) => issue.path?.at(-1) === "version_name")) throw new Error("请填写不超过 128 字符的单行版本名称。");
+      if (response.status === 409 && /Published configuration is frozen/.test(result.detail || "")) throw new Error("已发布配置只读，请先基于已发布版本开启新草稿。");
       if (response.status === 409) throw new Error("方案或请求已变化，请刷新云端方案后重试。");
       if (response.status === 401) throw new Error("工作区会话已失效，请刷新页面。");
       if (response.status === 404 && /^\/plans\/[^/]+$/.test(path)) throw new Error("当前工作区中找不到该研究方案。请使用保存时的工作区打开，或由业务系统确认访问权限。");
@@ -164,7 +171,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
   async function refresh() {
     const [plans, runs, models] = await Promise.all([api("/plans"), api("/runs"), api("/models")]);
     for (const [id, items, key, label] of [
-      ["cloud-plans", plans.items, "design_id", (row) => researchTitle(row.configuration.definition)],
+      ["cloud-plans", plans.items, "design_id", (row) => researchTitle(row.configuration.definition) + (row.draft_state === "published" ? " · 已发布" : " · 草稿")],
       ["cloud-runs", runs.items, "run_id", (row) => (OPERATION[row.kind] || row.kind) + " · " + STATUS[row.status] + " · " + new Date(row.created_at).toLocaleString("zh-CN")],
       ["cloud-models", models.items, "model_id", (row) => row.name],
     ]) {
@@ -180,6 +187,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
   }
 
   async function save(definitionOnly = false) {
+    if (state.saved?.draft_state === "published") throw new Error("已发布配置只读，请先基于已发布版本开启新草稿。");
     const definition = getDefinition();
     const fingerprint = JSON.stringify(definition);
     const field = byId("wizard-study-version");
@@ -190,6 +198,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
       ? await api("/plans/" + state.saved.design_id, { method: "PUT", body: { ...body, expected_revision: state.saved.revision } })
       : await api("/plans", { method: "POST", body, idempotent: true });
     state.saved = result;
+    lifecycle.set(result);
     if (field.value === versionText) { field.value = ""; delete field.dataset.edited; }
     const url = new URL(location.href);
     url.searchParams.delete("research"); url.searchParams.set("study", result.design_id);
@@ -201,17 +210,26 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
   }
 
   async function publishConfiguration() {
-    const saved = await save(true);
+    const saved = await saveForExecution(true);
     const version = await api("/plans/" + saved.design_id + "/publish", { method: "POST", body: { expected_revision: saved.revision } });
+    state.saved = await api("/plans/" + saved.design_id);
+    lifecycle.set(state.saved);
     showStudyVersion(version.version_name);
     feedback("已保存可应用版本 · " + version.version_name);
     return { ...saved, version_name: version.version_name, design_version_id: version.design_version_id };
+  }
+
+  async function saveForExecution(definitionOnly = false) {
+    if (state.saved?.draft_state !== "published") return save(definitionOnly);
+    if (JSON.stringify(getDefinition()) !== JSON.stringify(state.saved.configuration.definition)) throw new Error("当前显示配置与正式版本不同，请重新打开方案，再开启新草稿编辑。");
+    return state.saved;
   }
 
   async function openStudy(id) {
     const saved = await api("/plans/" + id);
     await openDefinition(saved.configuration.definition);
     state.saved = saved; state.data = saved.observations; state.dataKind = saved.data_kind;
+    lifecycle.set(saved);
     showStudyVersion(saved.latest_version?.version_name);
     byId("wizard-study-version").value = saved.version_name === saved.latest_version?.version_name ? "" : saved.version_name || "";
     state.sourceSnapshotIds = saved.source_snapshot_ids || [];
@@ -358,11 +376,13 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("检查期间方案或资料已变化，请重新检查后再开始研究。");
     if (checked.checks) onExecutionCheck(checked.checks);
     if (!checked.can_execute) throw new Error(state.rules.get(checked.issues[0]?.rule)?.guidance || "当前输入或模型设置未满足执行条件，请核对后重试。");
-    const saved = await save();
+    const saved = await saveForExecution();
     if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("保存期间方案或资料已变化，请重新检查后再开始研究。");
     const body = native ? { design_id: saved.design_id, expected_revision: saved.revision, template_id: state.template.id, template_sha256: state.template.sha256 } : { design_id: saved.design_id, expected_revision: saved.revision, ...await inputBody(), ...runOperation(getDefinition()) };
     const submitted = !native && state.data ? structuredClone(state.data) : null;
     const started = await api(native ? "/template-runs" : "/runs", { method: "POST", idempotent: true, body });
+    state.saved = await api("/plans/" + saved.design_id);
+    lifecycle.set(state.saved);
     state.runData = submitted ? { runId: started.run_id, table: submitted, dataKind: state.dataKind } : null;
     await follow(started);
   }));
@@ -415,6 +435,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
   }, onLoad() {
     clearTimeout(state.poll);
     state.saved = null; state.data = null; state.prediction = null; state.model = null; state.run = null;
+    lifecycle.set(null);
     byId("wizard-study-version").value = "";
     delete byId("wizard-study-version").dataset.edited;
     showStudyVersion(null);

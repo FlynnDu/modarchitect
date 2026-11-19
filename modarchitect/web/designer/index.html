@@ -38,7 +38,7 @@
         </div>
         <p id="plan-question">定义研究问题、观测变量与目标，再选择计算组件。</p>
       </div>
-      <div class="heading-actions"><button type="button" id="wizard-save-draft" class="button button-primary">保存草稿</button><details class="designer-tools"><summary>方案工具</summary><div class="actions">
+      <div class="heading-actions"><button type="button" id="open-version-draft" class="button button-primary" hidden>基于已发布版本编辑</button><button type="button" id="wizard-save-draft" class="button button-primary">保存草稿</button><details class="designer-tools"><summary>方案工具</summary><div class="actions">
         <button type="button" id="component-library-link" class="button button-secondary">组件目录与高级视图</button>
         <button type="button" id="chain-plan" class="button button-example" disabled><span class="icon icon-flow" aria-hidden="true"></span> 中间指标研究</button>
         <button type="button" id="new-plan" class="button button-secondary" disabled><span aria-hidden="true">＋</span> 新建方案</button>
@@ -51,6 +51,7 @@
     </section>
 
 
+      <p id="draft-lifecycle-status" class="information-note" role="status" hidden></p>
       <nav class="wizard-stages" aria-label="模型创建阶段">
         <button type="button" data-stage="select" aria-current="step"><span>01</span>选择模型</button>
         <i aria-hidden="true"></i><button type="button" data-stage="configure"><span>02</span>模型配置</button>

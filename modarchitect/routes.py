@@ -443,6 +443,12 @@ def get_configuration(
     return service.configuration(owner, version_id)
 
 
+@research.post("/design-versions/{version_id}/drafts")
+def open_version_draft(version_id: UUID, owner: Principal, service: DesignService, key: RequestKey) -> dict:
+    """显式开启独立草稿，同一请求重放不会覆盖或重新开启编辑。"""
+    return service.open_draft(owner, version_id, key)
+
+
 @compatibility.post(
     "/designs", status_code=201, responses={200: {"description": "创建重放"}}
 )
