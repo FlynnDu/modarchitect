@@ -103,7 +103,8 @@ class ResearchStudies:
         definition = version["definition"].get("research_plan")
         if definition is None:
             raise ValueError("Study requires a frozen research plan")
-        if any(item["unit_kind"] == "point" for item in definition["collection_requirements"]) and (
+        needs_points = any(item["unit_kind"] == "point" for item in definition["collection_requirements"])
+        if needs_points and (
             not isinstance(body, BusinessStudyStart) or not body.point_refs
         ):
             raise ValueError("This plan requires an applied business scope with authorized sampling points")
@@ -111,6 +112,11 @@ class ResearchStudies:
         if isinstance(body, BusinessStudyStart):
             objects, sampling_points, evidence = self._business_scope(owner, body.fields, body.point_refs,
                                                                       body.observation_start, body.observation_end)
+            if needs_points and any(
+                not any(point["object"] == item["object"] for point in sampling_points)
+                for item in objects
+            ):
+                raise ValueError("Select at least one authorized sampling point for each selected business field")
             context.update(objects=objects, field_evidence=evidence,
                            business_selection=body.fields.model_dump(mode="json"), sampling_points=sampling_points)
         else:

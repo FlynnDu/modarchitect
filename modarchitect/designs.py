@@ -224,7 +224,9 @@ class ResearchDesigns:
             ):
                 return _version_view(tx, latest)
         compile_plan(plan, adopted=True, for_execution=False)
-        check_sampling(self.gateway, principal, definition)
+        # 通用方案在应用时绑定对象；历史显式绑定的范围仍须重新核权。
+        if plan.sampling_selection is not None:
+            check_sampling(self.gateway, principal, definition)
         with self.store.transaction(principal) as tx:
             tx.lock_design(design_id)
             current = tx.get_draft(design_id, lock=True)
