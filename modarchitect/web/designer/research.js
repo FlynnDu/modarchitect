@@ -65,7 +65,7 @@ function tableView(target, table, editable, onEdit = () => {}) {
   target.append(view);
 }
 
-export function mountResearch({ getDefinition, getRecords = () => new Map(), openDefinition, notify, onDataChange = () => {}, onRunChange = () => {}, onFlowChange = () => {}, onModelChange = () => {}, onTemplateChange = () => {}, onError = () => {}, beforeRun = async () => {} }) {
+export function mountResearch({ getDefinition, getRecords = () => new Map(), openDefinition, notify, onDataChange = () => {}, onRunChange = () => {}, onFlowChange = () => {}, onModelChange = () => {}, onTemplateChange = () => {}, onExecutionCheck = () => {}, onError = () => {}, beforeRun = async () => {} }) {
   const state = { saved: null, data: null, dataKind: "user_supplied", sourceSnapshotIds: [], template: null, run: null, model: null, prediction: null, poll: null, busy: false, pending: new Map(), flowRun: null, runData: null, generation: 0, plans: new Map(), templates: new Map(), rules: new Map() };
   const sourceBody = () => state.sourceSnapshotIds.length ? { source_snapshot_ids: state.sourceSnapshotIds } : {};
   byId("wizard-study-version").addEventListener("input", (event) => { event.target.dataset.edited = "true"; });
@@ -353,9 +353,13 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     const native = state.template?.execution_mode === "frozen_case";
     if (!native && !state.data) throw new Error("请先提供观测数据。");
     await beforeRun();
-    const checked = await api("/check-execution", { method: "POST", body: { definition: getDefinition(), ...(state.saved ? { design_id: state.saved.design_id } : {}), operation: native ? state.template.operation : (runOperation(getDefinition())?.operation || "train"), ...(!native ? await inputBody() : {}) } });
+    const checkGeneration = state.generation, definition = getDefinition(), fingerprint = JSON.stringify(definition);
+    const checked = await api("/check-execution", { method: "POST", body: { definition, ...(state.saved ? { design_id: state.saved.design_id } : {}), operation: native ? state.template.operation : (runOperation(definition)?.operation || "train"), ...(!native ? await inputBody() : {}) } });
+    if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("检查期间方案或资料已变化，请重新检查后再开始研究。");
+    if (checked.checks) onExecutionCheck(checked.checks);
     if (!checked.can_execute) throw new Error(state.rules.get(checked.issues[0]?.rule)?.guidance || "当前输入或模型设置未满足执行条件，请核对后重试。");
     const saved = await save();
+    if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("保存期间方案或资料已变化，请重新检查后再开始研究。");
     const body = native ? { design_id: saved.design_id, expected_revision: saved.revision, template_id: state.template.id, template_sha256: state.template.sha256 } : { design_id: saved.design_id, expected_revision: saved.revision, ...await inputBody(), ...runOperation(getDefinition()) };
     const submitted = !native && state.data ? structuredClone(state.data) : null;
     const started = await api(native ? "/template-runs" : "/runs", { method: "POST", idempotent: true, body });

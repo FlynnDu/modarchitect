@@ -23,6 +23,8 @@ from pydantic import Field
 from fastapi.security import APIKeyHeader
 
 from .catalog import catalog, component
+from .inspection import inspect_configuration, inspect_definition
+from .contracts.research.inspection import ResearchInspection
 from .contracts.enterprise.identity import CompanyIdentity, VerifiedPrincipal
 from .contracts.enterprise.business_scope import BusinessScope
 from .contracts.model_center.components import Composition, Contract, DesignPublication
@@ -42,7 +44,7 @@ from .contracts.research.plan_file import (
 from .contracts.research.plans import ResearchPlan, Purpose
 from .designs import ResearchDesigns
 from .package_preflight import registered_port_types, validate_manifest
-from .validation import check_draft, compile_graph, compile_plan, load_configuration
+from .validation import compile_graph, compile_plan, load_configuration
 from .runtime.service import component_record
 from .study_templates import template, template_view, templates
 from .system_inputs import configure_input, input_catalog
@@ -168,7 +170,8 @@ def business_templates() -> dict:
 @research.get("/study-templates/{template_id}", dependencies=[Depends(require_platform_template_access)])
 def business_template(template_id: str, sha256: str | None = None) -> dict:
     """复用准确模板投影，不向浏览器发送受限原生资料。"""
-    return template_view(template(template_id, sha256), include_definition=True)
+    result = template_view(template(template_id, sha256), include_definition=True)
+    return {**result, "inspection": inspect_definition(result["definition"]).model_dump(mode="json")}
 
 
 @research.get("/models")
@@ -327,7 +330,13 @@ def configuration_draft(body: dict) -> dict:
 @research.post("/configurations/check")
 def configuration_check(body: dict) -> dict:
     """检查草稿完整性和科学合同，返回可定位问题。"""
-    return check_draft(body)
+    return inspect_configuration(body)
+
+
+@research.post("/definitions/inspect", response_model=ResearchInspection)
+def inspect_research_definition(body: dict) -> ResearchInspection:
+    """为编辑中的研究返回统一事实，不持久化也不检查实际取数。"""
+    return inspect_definition(body)
 
 
 @research.post("/configurations/import")
@@ -385,7 +394,8 @@ def get_save_receipt(request_id: UUID, owner: Principal, service: DesignService)
 @research.get("/design-drafts/{design_id}")
 def get_draft(design_id: UUID, owner: Principal, service: DesignService) -> dict:
     """按原身份重开私有草稿。"""
-    return service.read(owner, design_id)
+    result = service.read(owner, design_id)
+    return {**result, "inspection": inspect_definition(result["configuration"]["definition"]).model_dump(mode="json")}
 
 
 @research.put("/design-drafts/{design_id}")
@@ -402,7 +412,7 @@ def check_saved_draft(
     design_id: UUID, owner: Principal, service: DesignService
 ) -> dict:
     """使用与配置检查相同的规则检查已保存草稿。"""
-    return check_draft(service.read(owner, design_id)["configuration"])
+    return inspect_configuration(service.read(owner, design_id)["configuration"])
 
 
 @research.post("/design-drafts/{design_id}/publish")

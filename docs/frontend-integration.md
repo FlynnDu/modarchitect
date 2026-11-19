@@ -1,5 +1,7 @@
 # 前端API使用说明
 
+资料、节点参数及规则新增统一的 `inspection` 响应。新前端优先消费该投影，旧字段继续兼容；见[统一研究资料与规则响应](research-inspection-api.md)。
+
 覆盖浏览、设计、检查、保存、流程回读，以及可应用版本和研究实例。响应字段的界面用法与[业务系统 API 文档](business-api-integration.md)对应。
 
 [查看完整闭环流程图（按 API 编号）](model-designer-api-flow.md)

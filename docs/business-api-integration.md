@@ -1,5 +1,7 @@
 # 业务系统API对接
 
+资料、节点参数及规则新增统一的 `inspection` 响应，已有保存正文、摘要和旧响应字段保持。新增只读 `POST /api/v1/research/definitions/inspect`，沿用服务 Key；见[统一研究资料与规则响应](research-inspection-api.md)。
+
 覆盖方案、指标和基础模型查询，设计校验、保存和流程回读，以及固定版本与研究实例对接。
 
 [查看完整闭环流程图（按 API 编号）](model-designer-api-flow.md)

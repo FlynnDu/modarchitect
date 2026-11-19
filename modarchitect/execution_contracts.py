@@ -60,16 +60,12 @@ def compile_execution(
     composition: Composition, operation: ResearchOperation, profiles: dict
 ) -> dict:
     """核验每个节点支持操作及制品一致性；训练必须存在可复用状态。"""
-    result, model_states = {}, 0
+    validate_operation(composition, operation)
+    result = {}
     for node in composition.nodes:
         reference = node.component.model_dump(mode="json")
         key = reference_key(reference)
         capability = execution_capability(reference)
-        if capability is None or operation not in capability.operations:
-            raise ValueError(
-                "Component does not support research operation %s: %s"
-                % (operation, key)
-            )
         profile = profiles.get(key)
         if profile is None:
             raise ValueError("Component execution is not available: %s" % key)
@@ -87,12 +83,29 @@ def compile_execution(
             )
         if inference and inference not in profiles:
             raise ValueError("Exact inference artifact is unavailable")
-        if capability.state_output:
-            model_states += 1
         result[key] = capability.model_dump(mode="json")
-    if operation == "train" and not model_states:
-        raise ValueError("Training requires a declared reusable model state")
     return result
+
+
+def validate_operation(composition: Composition, operation: ResearchOperation) -> None:
+    """设计说明与实际执行共用操作兼容规则，不要求部署制品已就绪。"""
+    states = 0
+    for index, node in enumerate(composition.nodes):
+        capability = execution_capability(node.component.model_dump(mode="json"))
+        if capability is None or operation not in capability.operations:
+            raise ContractViolation(
+                "Component does not support research operation %s: %s"
+                % (operation, reference_key(node.component.model_dump(mode="json"))),
+                ["composition", "nodes", index],
+                "execution_capability_missing" if capability is None else "operation_incompatible",
+                node=node.code,
+            )
+        states += bool(capability.state_output)
+    if operation == "train" and not states:
+        raise ContractViolation(
+            "Training requires a declared reusable model state",
+            ["composition", "outputs"], "model_state_required",
+        )
 
 
 def input_usages(composition: Composition, requests: dict) -> list[dict]:

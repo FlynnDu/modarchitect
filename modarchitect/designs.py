@@ -8,6 +8,7 @@ from collections.abc import Mapping
 from uuid import UUID
 
 from .business import BusinessGateway, check_sampling
+from .inspection import inspect_definition
 from .catalog import catalog
 from .contracts.enterprise.identity import VerifiedPrincipal
 from .contracts.identifiers import identity_sha256
@@ -78,6 +79,8 @@ def _version_view(tx: DesignTransaction, row: Mapping) -> dict:
         "design_id": row["design_id"],
         "definition": definition,
         "plan": plan,
+        "inspection": inspect_definition(definition["research_plan"]).model_dump(mode="json")
+        if definition.get("research_plan") is not None else None,
     }
 
 

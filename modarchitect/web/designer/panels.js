@@ -234,6 +234,11 @@ export function inspect(container, state, callbacks) {
 
 export function issueMessage(issue, record) {
   if (!issue) return "方案通过合同校验";
+  if (issue.code) return {
+    operation_incompatible: "该步骤不支持当前方案要求的操作，请调整计算方法或方案操作。",
+    execution_capability_missing: "该准确组件尚未声明执行能力，可保留设计，实际运行仍待接入。",
+    model_state_required: "训练方案需要至少一个能够产生可复用模型状态的计算步骤。",
+  }[issue.code] || issue.message;
   const name = issue.path?.at(-1);
   const node = record?.definition.name || issue.node || "当前组件";
   const port = record?.definition.inputs.find((item) => item.code === issue.port)?.name || issue.port || "输入";

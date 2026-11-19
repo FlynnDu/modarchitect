@@ -138,6 +138,9 @@
             <div class="method-banner"><span class="method-mark" aria-hidden="true">ƒ</span><div><strong id="wizard-method">尚未选择计算方法</strong><p id="wizard-method-note">选择适合输入资料和研究目标的方法。</p></div><span class="status-chip" id="wizard-method-state">待选择</span><button id="choose-method" type="button" class="button button-secondary">选择／配置计算方法</button></div>
             <dialog id="method-dialog" class="indicator-dialog method-dialog" aria-labelledby="method-dialog-title"><div class="section-heading"><div><h2 id="method-dialog-title">选择计算方法</h2><p>方法来自系统组件目录；可用于设计与本环境可运行分别标明。</p></div><button id="close-method-picker" class="text-button" type="button" aria-label="关闭计算方法选择">关闭 ×</button></div><label>要配置的步骤 <select id="method-target"></select></label><div class="method-picker-layout"><div id="method-list" class="method-list"></div><section id="method-detail" class="method-detail" aria-label="所选方法参数"></section></div><p id="method-message" class="wizard-error" role="status" hidden></p><button id="apply-method" type="button" class="button button-primary" disabled>检查并应用方法</button></dialog>
             <div class="input-model-build"><label>训练截止日期 <input id="input-training-end" type="date" required></label><button id="build-input-model" class="button button-primary" type="button">从模型目录选择方法</button><span class="modeling-muted">之后的观测用于时间留出评价。</span></div>
+            <p id="inspection-status" class="modeling-muted" role="status"></p>
+            <button id="inspection-retry" type="button" class="text-button" hidden>重新核对资料与规则</button>
+            <div id="research-inspection"></div>
     <section class="panel modeling-workspace" aria-labelledby="modeling-title">
       <div class="modeling-heading">
         <div><span class="modeling-eyebrow">从研究问题开始</span><h2 id="modeling-title">把已知因素与预测目标连成一个模型</h2><p class="modeling-muted">先说明要研究什么，再决定是否需要一个中间指标。</p></div>

@@ -34,6 +34,7 @@ from .service import ResearchRuntime
 from .workspace import owner, session
 from ..system_inputs import input_readiness
 from ..study_templates import templates, template, template_view
+from ..inspection import inspect_definition
 
 workspace = APIRouter(prefix="/api/v1/workspace", tags=["个人研究工作区"])
 internal = APIRouter(prefix="/internal/v1/research", tags=["可信研究执行"])
@@ -100,7 +101,8 @@ def list_templates() -> dict:
 @workspace.get("/study-templates/{template_id}")
 def read_template(template_id: str, principal: Owner, sha256: str | None = None) -> dict:
     """会话内读取可采用定义，受限原生输入不发送给浏览器。"""
-    return template_view(template(template_id, sha256), include_definition=True)
+    result = template_view(template(template_id, sha256), include_definition=True)
+    return {**result, "inspection": inspect_definition(result["definition"]).model_dump(mode="json")}
 
 
 @workspace.post("/template-runs", response_model=RunView)
@@ -117,7 +119,7 @@ def create_plan(
     return runtime.save_plan(principal, body, key=key)
 
 
-@workspace.post("/check-execution", response_model=ExecutionCheckResult)
+@workspace.post("/check-execution", response_model=ExecutionCheckResult, response_model_exclude_unset=True)
 def check_execution(body: ExecutionCheckRequest, principal: Owner, runtime: Runtime) -> dict:
     """只读核验输入增删后的执行条件，和实际启动共用规则。"""
     return runtime.check_execution(principal, body)
@@ -126,9 +128,11 @@ def check_execution(body: ExecutionCheckRequest, principal: Owner, runtime: Runt
 @workspace.get("/plans/{design_id}")
 def read_plan(design_id: UUID, principal: Owner, runtime: Runtime) -> dict:
     """按准确身份重新读取方案。"""
+    saved = runtime.designs.read(principal, design_id)
     return {
-        **runtime.designs.read(principal, design_id),
+        **saved,
         **runtime.store.data(principal, design_id),
+        "inspection": inspect_definition(saved["configuration"]["definition"]).model_dump(mode="json"),
     }
 
 

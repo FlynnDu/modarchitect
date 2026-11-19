@@ -58,7 +58,7 @@ function readonlyInputTable(title, items, sample = null) {
   return wrap;
 }
 
-export function mountWizard({ getDefinition, getRecords, getInputCatalog, onEdit, onExample, onTechnical, onChooseIndicators, onSave, validate }) {
+export function mountWizard({ getDefinition, getRecords, getInputCatalog, getInspection, onEdit, onExample, onTechnical, onChooseIndicators, onSave, validate }) {
   const initial = location.hash.slice(1).split("/");
   let stage = ["select", "configure", "review"].includes(initial[0]) ? initial[0] : "select";
   let section = sections.includes(initial[1]) ? initial[1] : "basic";
@@ -95,7 +95,7 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, onEdit
     onEdit(draft);
   }
   function roleTable(plan) {
-    const inputHost = byId("wizard-role-table"), outputHost = byId("wizard-output-table"), rows = inputUsageRows(plan, getRecords());
+    const inputHost = byId("wizard-role-table"), outputHost = byId("wizard-output-table"), rows = inputUsageRows(plan, getRecords(), getInspection?.());
     const resources = resourceInputs(plan, getRecords());
     const native = studyInputDetails(plan, templateInfo), details = [...native.values()].flat();
     const nativeInputs = details.filter((item) => item.kind === "input");
@@ -274,9 +274,10 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, onEdit
     const reusable = records.some((record) => (record?.research_contract.capabilities || record?.definition.configuration.research_model?.execution)?.state_output);
     byId("wizard-method-note").textContent = reusable ? "此方法声明可复用的训练模型；训练成功后可以保存并用于后续预测。" : "按所选方法产生分析、曲线或模拟成果；具体成果见第03步，不会自动生成可复用预测模型。";
     byId("wizard-product-note").textContent = reusable ? "训练成功后可保存为候选预测模型。独立评价、科研复核与版本生效需分别确认。" : "应用方案后，按上方成果清单生成实际结果。";
-    document.querySelector(".modeling-workspace").hidden = Boolean(native && plan.purpose !== "train");
+    const inspection = getInspection?.();
+    document.querySelector(".modeling-workspace").hidden = Boolean(plan.composition.nodes.length && inspection !== undefined || native && plan.purpose !== "train");
     const enabled = records.length && records.every((record) => record?.research_contract.execution.status === "available");
-    byId("wizard-method-state").textContent = !records.length ? "待选择" : enabled ? "运行已启用" : "可设计 · 运行待启用";
+    byId("wizard-method-state").textContent = !records.length ? "待选择" : inspection?.checks.operation.status === "blocked" ? "操作不兼容" : enabled ? "制品已登记 · 启动前检查" : "可设计 · 运行待启用";
     byId("wizard-method-state").dataset.state = enabled ? "ready" : "pending";
     if (checkedPlan && checkedPlan !== JSON.stringify(plan)) { checkedPlan = null; byId("wizard-check-result").replaceChildren(); }
     roleTable(plan); products(plan); review(plan, methodNames);

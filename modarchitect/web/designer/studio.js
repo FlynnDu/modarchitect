@@ -11,6 +11,7 @@ import { mountModeling } from "./modeling-view.js?v=continuous1";
 import { mountSystemInputs } from "./system-inputs.js?v=continuous1";
 import { mountWizard } from "./wizard.js?v=continuous1";
 import { mountMethodPicker } from "./method-picker.js?v=continuous1";
+import { mountInspection } from "./inspection-view.js?v=inspection1";
 import { mountStudyLibrary, showTemplateSummary, showStudyFlow, researchTitle, researchQuestion } from "./study-library.js?v=proxy1";
 
 const byId = (id) => document.getElementById(id);
@@ -32,6 +33,7 @@ let modelingWorkspace;
 let inputWorkspace;
 let wizardWorkspace;
 let methodWorkspace;
+let inspectionWorkspace;
 
 function technical(force) {
   const expanded = force ?? byId("technical-workspace").hidden;
@@ -200,6 +202,7 @@ function modified() {
   inputWorkspace?.render();
   researchWorkspace?.onDefinitionChange();
   wizardWorkspace?.render();
+  inspectionWorkspace?.schedule();
 }
 
 function counts() {
@@ -248,6 +251,7 @@ function load(definition, isSample = false) {
   rebuild(isSample ? flow.models[0].key : "plan", flow);
   status("待校验");
   wizardWorkspace?.loaded();
+  inspectionWorkspace?.schedule();
 }
 
 function activateResource(key) {
@@ -533,6 +537,7 @@ modelingWorkspace = mountModeling({
 wizardWorkspace = mountWizard({
   getDefinition: () => state.definition && structuredClone(state.definition), getRecords: () => state.records,
   getInputCatalog: () => state.inputCatalog,
+  getInspection: () => inspectionWorkspace?.get(),
   onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); },
   onExample(kind) {
     if (!researchWorkspace) throw new Error("正在连接工作区，请稍后重试。");
@@ -551,6 +556,15 @@ methodWorkspace = mountMethodPicker({
   onEdit(definition) { state.definition = definition; heading(); rebuild("plan"); modified(); },
   validate: async (definition) => (await request("./validate", definition)).check,
 });
+inspectionWorkspace = mountInspection({
+  getDefinition: () => state.definition,
+  getRecords: () => state.records,
+  inspect: async (definition) => (await request("./validate", definition)).inspection,
+  onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); },
+  onTechnical(key) { technical(true); if (key) { state.tab = "parameters"; select(key); } },
+  notify,
+  onChange() { wizardWorkspace?.render(); },
+});
 // 公开目录独立读取，个人工作区或本地草稿初始化失败不会阻断目录展示。
 const libraryReady = mountStudyLibrary({ openTemplate: (id, persist) => {
   if (!researchWorkspace) throw new Error("设计器尚未准备好，请等待初始化完成或重新加载页面。当前方案目录仍可浏览。");
@@ -561,6 +575,7 @@ await boot().then(() => {
     getDefinition: () => structuredClone(state.definition), getRecords: () => state.records, notify,
     onDataChange(table, dataKind) { modelingWorkspace.setData(table); wizardWorkspace.setData(table, dataKind); },
     onRunChange(run) { modelingWorkspace.setRun(run); wizardWorkspace.setRun(run); },
+    onExecutionCheck(checks) { inspectionWorkspace.setExecutionChecks(checks); },
     onFlowChange(context) { showStudyFlow({ ...context, inputCatalog: state.inputCatalog }, state.records); },
     onModelChange: () => wizardWorkspace.openReview(),
     onTemplateChange(value, { preview = false } = {}) {

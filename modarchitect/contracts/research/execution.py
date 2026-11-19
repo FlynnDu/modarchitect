@@ -11,6 +11,8 @@ from pydantic import Field, model_validator
 from ..model_center.components import Code, ComponentReference, Contract
 
 ResearchOperation = Literal["train", "predict", "analyze", "simulate", "calibrate"]
+PURPOSE_OPERATIONS = {"train": "train", "explore": "analyze", "simulate": "simulate",
+                      "fit": "calibrate", "predict": "predict", "evaluate": "analyze"}
 UsagePhase = Literal["training", "application", "analysis", "evaluation"]
 
 

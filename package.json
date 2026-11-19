@@ -2,7 +2,7 @@
   "name": "modarchitect-ui-checks",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test tests/test_modeling.mjs tests/test_study_library.mjs tests/test_continuous_research.mjs tests/test_designer_audit.mjs", "test:ui-live": "node scripts/verify_designer_ui.mjs" },
+  "scripts": { "test": "node --test tests/test_modeling.mjs tests/test_study_library.mjs tests/test_continuous_research.mjs tests/test_designer_audit.mjs tests/test_inspection_view.mjs", "test:ui-live": "node scripts/verify_designer_ui.mjs" },
   "devDependencies": { "jsdom": "29.0.0" },
   "engines": { "node": ">=24.13" }
 }

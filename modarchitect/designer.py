@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .contracts.research.drafts import draft_file
 from .validation import check_definition, load_configuration
+from .inspection import inspect_definition
 
 class DesignerAssets(StaticFiles):
     """设计器更新时重新校验静态资源，避免旧页面与新模块混用。"""
@@ -59,7 +60,9 @@ async def _read_json(request: Request) -> dict:
 def _prepare(definition: dict) -> dict:
     """生成可导出的草稿，并复用研究方案检查。"""
     configuration = draft_file(definition)
-    return {"configuration": configuration, "check": check_definition(definition)}
+    check = check_definition(definition)
+    return {"configuration": configuration, "check": check,
+            "inspection": inspect_definition(definition, check).model_dump(mode="json")}
 
 
 @router.post("/designer/validate")

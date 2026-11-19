@@ -16,7 +16,7 @@ export function nodeSettings(plan, node) {
   return recipe ? plan.input_recipes[recipe].value : null;
 }
 
-export function inputUsageRows(plan, records = new Map()) {
+export function inputUsageRows(plan, records = new Map(), inspection) {
   const context = studySettings(plan, records);
   const external = new Set(Object.values(plan.input_recipes).filter((r) => r.kind === "observations").flatMap((r) => r.variable_codes));
   const projected = new Map();
@@ -37,6 +37,15 @@ export function inputUsageRows(plan, records = new Map()) {
     return [...new Set([declaration.inherit, ...(declaration.merge || [])].flatMap((port) => origins(sourceFor(upstream, port), code, next)))];
   };
   for (const node of plan.composition.nodes) {
+    if (inspection) {
+      for (const use of inspection.nodes.find((item) => item.code === node.code)?.input_usages || []) {
+        for (const original of origins(sourceFor(node, use.port), use.variable_code)) {
+          if (!projected.has(original)) projected.set(original, []);
+          projected.get(original).push(use);
+        }
+      }
+      continue;
+    }
     const record = records.get(node.component.code+"@"+node.component.revision);
     for (const [field, property] of requestProperties(record?.research_contract?.request_schema)) {
       const spec = property["x-research-variables"];
@@ -52,7 +61,7 @@ export function inputUsageRows(plan, records = new Map()) {
   }
   return plan.variables.filter((v) => external.has(v.code) || plan.collection_requirements.some((r) => r.variable_code === v.code)).map((variable) => {
     const usages = projected.get(variable.code) || [];
-    if (!context && usages.length) return { variable, role: usages.some((u) => u.role === "label") ? "target" : "covariate", train: usages.some((u) => u.phases.includes("training")), application: usages.some((u) => u.phases.includes("application")), analysis: usages.some((u) => u.phases.includes("analysis")), used: true, editable: false };
+    if ((!context || inspection) && usages.length) return { variable, role: usages.some((u) => u.role === "label") ? "target" : "covariate", train: usages.some((u) => u.phases.includes("training")), application: usages.some((u) => u.phases.includes("application")), analysis: usages.some((u) => u.phases.includes("analysis")), used: true, editable: Boolean(context) };
     const pending = !plan.composition.nodes.length;
     const target = context ? context.parameters.targets.includes(variable.code) : pending && variable.role === "target";
     const feature = context ? context.parameters.features.includes(variable.code) || variable.code === context.history?.x_code : pending && ["covariate", "driver"].includes(variable.role);

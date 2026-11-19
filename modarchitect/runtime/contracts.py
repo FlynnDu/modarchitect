@@ -15,6 +15,7 @@ from ..contracts.model_center.components import Code, Contract, Text
 from ..contracts.research.design_saves import VersionName
 from ..contracts.research.variables import Finite
 from ..contracts.research.execution import ResearchOperation
+from ..contracts.research.inspection import ResearchChecks
 
 
 class Column(Contract):
@@ -110,6 +111,9 @@ class RuleIssue(Contract):
     """可定位的单条平台规则问题，不包含原始输入。"""
 
     rule: str
+    code: str | None = None
+    node: str | None = None
+    port: str | None = None
     path: tuple[str | int, ...]
     message: str
 
@@ -119,6 +123,7 @@ class ExecutionCheckResult(Contract):
 
     can_execute: bool
     issues: tuple[RuleIssue, ...]
+    checks: ResearchChecks = Field(default_factory=ResearchChecks)
 
 
 class TrainingRequest(ResearchDataInput):

@@ -13,6 +13,8 @@ from ..contracts.research.input_bindings import ResearchInputBindingError
 from ..contracts.research.plans import ResearchPlan
 from ..execution_contracts import compile_execution, external_input_codes
 from ..study_templates import frozen_inputs, matches_template, template, validate_native_inputs, validate_template_parameters
+from ..contracts.violations import ContractViolation
+from ..contracts.research.execution import PURPOSE_OPERATIONS
 from ..system_inputs import seal_input_sources
 from ..validation import compile_plan
 from .contracts import ObservationTable
@@ -29,7 +31,7 @@ RULES = {
     "input_source": ("输入来源资格", "从系统目录采用准确指标、单位和来源；合成演示不能当作真实地块研究。"),
     "input_bindings": ("节点变量与数据", "新增或删除变量后同步调整数据列和模型参数；训练目标必须有实测。"),
 }
-PURPOSES = {"train": "train", "analyze": "explore", "simulate": "simulate", "calibrate": "fit"}
+PURPOSES = {PURPOSE_OPERATIONS[purpose]: purpose for purpose in ("train", "explore", "simulate", "fit")}
 
 
 class ExecutionRejected(ValueError):
@@ -42,6 +44,9 @@ class ExecutionRejected(ValueError):
         if isinstance(error, ResearchInputBindingError):
             location = error.path
         self.issues = [{"rule": rule, "path": location, "message": str(error)}]
+        if isinstance(error, ContractViolation):
+            self.issues = [{"rule": rule, "code": error.rule, "path": error.path,
+                            "message": str(error), "node": error.node, "port": error.port}]
         if isinstance(error, ValidationError):
             self.issues = [{"rule": rule, "path": list(item["loc"]), "message": item["msg"]}
                            for item in error.errors(include_input=False, include_context=False, include_url=False)]

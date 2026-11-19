@@ -242,6 +242,7 @@ class ResearchRuntime:
     def check_execution(self, owner: VerifiedPrincipal, body: ExecutionCheckRequest) -> dict:
         """对当前编辑输入执行与启动相同的准备规则，不创建任何研究记录。"""
         from ..contracts.research.drafts import draft_file
+        from ..contracts.research.inspection import execution_checks
 
         try:
             self.designs.prepare_draft(owner, draft_file(body.definition))
@@ -265,8 +266,11 @@ class ResearchRuntime:
                                                 data_kind, owner.subject, execution_profiles,
                                                 source_snapshots=self.source_snapshots(owner, source_ids))
         except ExecutionRejected as exc:
-            return {"can_execute": False, "issues": exc.issues}
+            return {"can_execute": False, "issues": exc.issues,
+                    "checks": execution_checks(False, exc.issues).model_dump(mode="json")}
         except LookupError:
             issue = ExecutionRejected("template_identity", "Referenced study template was not found")
-            return {"can_execute": False, "issues": issue.issues}
-        return {"can_execute": True, "issues": []}
+            return {"can_execute": False, "issues": issue.issues,
+                    "checks": execution_checks(False, issue.issues).model_dump(mode="json")}
+        return {"can_execute": True, "issues": [],
+                "checks": execution_checks(True, []).model_dump(mode="json")}
