@@ -16,7 +16,7 @@ const retained = new Set([
 ]);
 const newRows = JSON.parse(await readFile(new URL("../modarchitect/contracts/study-templates-growth-v1.json", import.meta.url), "utf8"));
 const rows = [...historicalRows.filter((row) => retained.has(row.id)), ...newRows];
-const view = (row) => ({ ...row, icon_name: row.id + ".svg", execution_mode: row.bundle_sha256 ? "frozen_case" : "observations", definition: { ...structuredClone(row.definition), layout: { study_template: { id: row.id, sha256: row.sha256 } } } });
+const view = (row) => ({ ...row, icon_name: row.id, execution_mode: row.bundle_sha256 ? "frozen_case" : "observations", definition: { ...structuredClone(row.definition), layout: { study_template: { id: row.id, sha256: row.sha256 } } } });
 
 test("关系展示读取已保存模型的真实系数和单位，区分合成数据与因果结论", () => {
   const dom = new JSDOM('<div id="host"></div>'); globalThis.document = dom.window.document;
@@ -85,7 +85,11 @@ test("代理路径下导航和研究目录请求保留应用前缀及查询参�
   const dom = new JSDOM(html, { url: "http://localhost:17000/modarchitect/designer/?template=example" });
   const previous = globalThis.fetch, calls = [];
   for (const key of ["window", "document", "location", "history", "Option"]) globalThis[key] = dom.window[key];
-  globalThis.fetch = async (url) => { calls.push(url); return { ok: true, json: async () => ({ items: [] }) }; };
+  const items = [
+    { ...view(rows[1]), icon_name: rows[1].id + ".svg" },
+    { ...view(rows[2]), icon_name: undefined },
+  ];
+  globalThis.fetch = async (url) => { calls.push(url); return { ok: true, json: async () => ({ items }) }; };
   try {
     await mountStudyLibrary({ openTemplate() {} });
     assert.equal(calls[0], "/modarchitect/api/v1/workspace/study-templates");
@@ -93,6 +97,8 @@ test("代理路径下导航和研究目录请求保留应用前缀及查询参�
     assert.equal(document.querySelector(".top-link").pathname, "/modarchitect/docs");
     assert.equal(applicationPath("/api/v1/workspace/plans?page=2"), "/modarchitect/api/v1/workspace/plans?page=2");
     assert.equal(applicationPath("./validate"), "./validate");
+    const icons = [...document.querySelectorAll(".study-template-icon")];
+    assert.deepEqual(icons.map((icon) => icon.src.split("/").at(-1)), [rows[1].id + ".svg", "crop-growth-prediction.svg"]);
   } finally { globalThis.fetch = previous; dom.window.close(); }
 });
 

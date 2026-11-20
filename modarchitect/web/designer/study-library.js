@@ -100,7 +100,8 @@ export async function mountStudyLibrary({ openTemplate }) {
         const heading = element("div", "", "study-template-heading"), titles = element("div");
         const image = element("img", "", "study-template-icon");
         const fallback = "crop-growth-prediction.svg";
-        const filename = /^[a-z0-9-]+\.svg$/.test(value.icon_name) ? value.icon_name : fallback;
+        const name = typeof value.icon_name === "string" ? value.icon_name.replace(/\.svg$/, "") : "";
+        const filename = /^[a-z0-9-]+$/.test(name) ? name + ".svg" : fallback;
         image.alt = "";
         image.width = 24; image.height = 24;
         if (filename !== fallback) image.addEventListener("error", () => {

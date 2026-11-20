@@ -74,15 +74,17 @@ def test_withdrawn_defaults_are_closed_but_exact_history_is_preserved(monkeypatc
         for prefix in ("/api/v1/research", "/api/v1/workspace"):
             listing = client.get(prefix + "/study-templates").raise_for_status().json()
             assert {row["id"] for row in listing["items"]} == PUBLIC
-            assert all(row["icon_name"] == row["id"] + ".svg" for row in listing["items"])
+            assert all(row["icon_name"] == row["id"] for row in listing["items"])
             for row in rows:
                 path = prefix + "/study-templates/" + row["id"]
                 response = client.get(path)
                 assert response.status_code == (200 if row["id"] in PUBLIC else 404)
                 if row["id"] in PUBLIC:
-                    assert response.json()["icon_name"] == row["id"] + ".svg"
+                    assert response.json()["icon_name"] == row["id"]
                 history = client.get(path, params={"sha256": row["sha256"]}).raise_for_status().json()
                 assert history["sha256"] == row["sha256"]
+                if row["id"] in PUBLIC:
+                    assert history["icon_name"] == row["id"]
                 expected = template_view(template(row["id"], row["sha256"]), include_definition=True)
                 assert history["definition"] == expected["definition"]
         for template_id in PUBLIC:
@@ -92,7 +94,10 @@ def test_withdrawn_defaults_are_closed_but_exact_history_is_preserved(monkeypatc
             assert svg.attrib["viewBox"] == "0 0 1024 1024"
             path, = svg
             assert path.tag.endswith("}path") and path.attrib["fill"].startswith("#")
-            assert "stroke" not in path.attrib and path.attrib["d"].endswith("Z")
+            assert path.attrib["fill-rule"] == "nonzero" and "stroke" not in path.attrib
+            contours = path.attrib["d"]
+            assert contours.startswith("M") and contours.endswith("Z")
+            assert contours.count("M") == contours.count("Z")
 
 
 def observed_relationship(row: dict) -> dict:

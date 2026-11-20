@@ -170,8 +170,8 @@ def training_template_issues(row: dict) -> tuple[str, ...]:
 def template_view(row: dict, *, include_definition: bool = False) -> dict:
     """目录只提供方案与来源说明，受限原始数据始终由服务器持有。"""
     result = {key: deepcopy(value) for key, value in row.items() if key not in {"definition", "observations", "prediction_observations", "bundles", "bundle_sha256", "expected_outputs", "input_file"}}
-    icon_name = row["id"] + ".svg"
-    if files("modarchitect").joinpath("web", "designer", "study-icons", icon_name).is_file():
+    icon_name = row["id"]
+    if files("modarchitect").joinpath("web", "designer", "study-icons", icon_name + ".svg").is_file():
         result["icon_name"] = icon_name
     if row.get("researcher"):
         info = row["researcher"]
