@@ -117,7 +117,7 @@ export function studySettings(plan, records = new Map()) {
   if (plan.objective !== "prediction" || plan.purpose !== "train" || plan.evaluation.split_unit !== "time"
       || plan.evaluation.numeric_gate || plan.evaluation.holdout_unit_refs?.length
       || plan.variables.some((value) => !["driver", "target", "covariate", "validation"].includes(value.role))) return null;
-  if (Object.values(plan.input_recipes).some((recipe) => recipe.kind === "configuration" && Object.keys(recipe.runtime_fields || {}).length)) return null;
+  if (Object.values(plan.input_recipes).some((recipe) => Object.values(recipe.runtime_fields || {}).some((slot) => slot !== "training_holdout_cutoff_date"))) return null;
   const nodes = plan.composition.nodes;
   const model = nodes.find((node) => {
     if (is(node, "multivariate_linear_training")) return true;
@@ -173,10 +173,12 @@ export function editStudy(plan, changes, records = new Map()) {
   const trainingEnd = changes.trainingEnd ?? parameters.training_end;
   const fitThrough = changes.fitThrough ?? history?.fit_through;
   const validDate = (value) => /^\d{4}-\d{2}-\d{2}$/.test(value || "") && Number.isFinite(Date.parse(value));
-  if (!validDate(trainingEnd) || (history && (!validDate(fitThrough) || fitThrough >= trainingEnd))) {
+  const automatic = draft.input_recipes[requestInput(draft, context.model)]?.runtime_fields?.training_end === "training_holdout_cutoff_date";
+  if ((!automatic && !validDate(trainingEnd)) || (history && (!validDate(fitThrough) || !automatic && fitThrough >= trainingEnd))) {
     throw new Error("请填写有效截止日期；历史拟合必须早于最终模型的训练截止日。");
   }
-  Object.assign(parameters, { targets, features, training_end: trainingEnd });
+  Object.assign(parameters, { targets, features });
+  if (!automatic) parameters.training_end = trainingEnd;
   if (history) history.fit_through = fitThrough;
   draft.evaluation.target_codes = [...targets];
   for (const variable of draft.variables) {
@@ -198,7 +200,7 @@ export function modelingSteps(plan, records) {
     const formula = parameters.targets.map((code) => linear ? `${variableName(plan, code)} = 截距 + ${terms.join(" + ")}` : `${variableName(plan, code)} = f(${parameters.features.map((factor) => variableName(plan, factor)).join("，")})`);
     const final = { key: model.code, title: "建立最终预测关系", method: (linear ? "多变量线性回归" : method) + " · 各目标分别训练",
       inputs: list(parameters.features), outputs: list(parameters.targets), formula,
-      note: `每个目标分别学习。使用截至 ${parameters.training_end} 的实测目标训练；之后的观测用于留出评价。预测关系及其参数随模型保存。` };
+      note: parameters.training_end ? `使用截至 ${parameters.training_end} 的实测目标训练，之后的观测用于留出评价。` : "开始训练时按观测日期生成训练与留出评价范围。" };
     if (!history) return { context, steps: [final] };
     return { context, steps: [{ key: baseline.code, title: "先计算生长趋势", method: "历史逻辑斯蒂生长模型",
       inputs: list([history.x_code, history.target_code]), outputs: list([alignment.output_code]),
@@ -230,11 +232,12 @@ export function predictionColumns(pipeline, records = new Map()) {
     : !pipeline.plan.variables.some((v) => v.code === column.code && ["target", "validation"].includes(v.role)));
 }
 
-export function dataPeriods(plan, table, records = new Map()) {
+export function dataPeriods(plan, table, records = new Map(), fittedCutoff) {
   const context = studySettings(plan, records);
   if (!context || !table?.rows?.length) return null;
   const dates = table.rows.map((r) => r.business_date).sort();
-  const fit = context.history?.fit_through, end = context.parameters.training_end;
+  const fit = context.history?.fit_through, end = fittedCutoff || context.parameters.training_end;
+  if (!end) return null;
   return { first: dates[0], last: dates.at(-1), rows: dates.length,
     objects: new Set(table.rows.map((r) => JSON.stringify([r.object.field_ref, r.object.crop_code, r.object.season_ref]))).size,
     history: fit ? dates.filter((day) => day <= fit).length : null,
@@ -245,7 +248,7 @@ export function dataPeriods(plan, table, records = new Map()) {
 export function flowDataset(plan, table, run = null, records = new Map()) {
   const context = studySettings(plan, records);
   if (!context || run?.kind === "predict" || plan.evaluation.split_unit !== "time") return null;
-  const periods = dataPeriods(plan, table, records);
+  const periods = dataPeriods(plan, table, records, run?.result_json?.pipeline?.cutoffs?.[context.model.code]);
   const outputCodes = new Set(plan.composition.outputs.filter((output) => output.source.node === context.model.code).map((output) => output.code));
   const evaluated = (run?.result_json?.metrics || []).filter((metric) => metric.status === "evaluated" && outputCodes.has(metric.output));
   const expected = new Set(evaluated.map((metric) => metric.expected_rows).filter((value) => Number.isInteger(value) && value >= 0));

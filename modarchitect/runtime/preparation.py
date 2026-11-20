@@ -6,11 +6,13 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import timedelta
 
 from pydantic import ValidationError
 
 from ..contracts.research.input_bindings import ResearchInputBindingError
-from ..contracts.research.plans import ResearchPlan
+from ..contracts.research.evaluation import DEFAULT_TRAINING_PERCENT
+from ..contracts.research.plans import TRAINING_CUTOFF, ResearchPlan
 from ..execution_contracts import compile_execution, external_input_codes
 from ..study_templates import frozen_inputs, matches_template, template, validate_native_inputs, validate_template_parameters
 from ..contracts.violations import ContractViolation
@@ -120,9 +122,28 @@ def prepare_observations(definition: dict, operation: str,
                     variables[code].validate_value(row["values"][code])
 
     _check("input_bindings", check_columns, ["observations"])
+    if any(TRAINING_CUTOFF in recipe.runtime_fields.values() for recipe in plan.input_recipes.values()):
+        cutoff = _check("input_data", lambda: _training_cutoff(plan, table), ["observations"])
+        payload["training_cutoff"] = cutoff
     payload.pop("variable_usages")
     payload.update(observations=table, data_kind=data_kind, input_sources=sources)
     return PreparedRun(payload)
+
+
+def _training_cutoff(plan: ResearchPlan, table: dict) -> str:
+    """从本次观测业务日确定边界，优先遵循明确的评价窗口。"""
+    days = sorted({row["business_date"] for row in table["rows"]})
+    if len(days) < 2:
+        raise ValueError("Automatic evaluation needs observations on at least two distinct dates")
+    gate = plan.evaluation.numeric_gate
+    if gate:
+        cutoff = (gate.holdout_start - timedelta(days=1)).isoformat()
+        window_start, window_end = gate.holdout_start.isoformat(), gate.holdout_end.isoformat()
+        if days[0] > cutoff or not any(window_start <= day <= window_end for day in days):
+            raise ValueError("The specified evaluation dates need both training and holdout observations")
+        return cutoff
+    percent = plan.evaluation.training_percent or DEFAULT_TRAINING_PERCENT
+    return days[max(1, len(days) * percent // 100) - 1]
 
 
 def prepare_template(definition: dict, template_id: str, checksum: str,

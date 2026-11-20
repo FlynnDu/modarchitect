@@ -41,7 +41,7 @@ export function buildInputModel(definition, records, trainingEnd) {
   if (!definition.question.trim()) definition.question = "研究" + targets.map((c) => definition.variables.find((v) => v.code === c).name).join("、") + "与所选因素的预测关系";
 }
 
-export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, configure, notify, onChooseMethod }) {
+export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, configure, notify }) {
   let category = "manual", subcategory = "", query = "", adoptionRole = null;
   const host = document.getElementById("input-catalog-list"), chosen = document.getElementById("selected-system-inputs");
   const subtabs = element("div", "input-subcategories"); subtabs.setAttribute("role", "group"); subtabs.setAttribute("aria-label", "细分输入类别");
@@ -157,13 +157,6 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
       card.append(actions); host.append(card);
     }
     if (!filtered.length) host.append(element("p", "modeling-muted", children.find((child) => child.code === subcategory)?.count === 0 ? "此分类暂时没有可选指标，待真实来源和科学单位确认后提供。" : "此类别中没有匹配指标。"));
-    const plan = getDefinition(), existing = Boolean(plan.composition.nodes.length);
-    document.getElementById("build-input-model").disabled = existing;
-    const cutoff = document.getElementById("input-training-end");
-    cutoff.disabled = existing;
-    const context = studySettings(plan, getRecords());
-    if (context) cutoff.value = context.parameters.training_end;
-    document.querySelector(".input-model-build").hidden = existing || plan.purpose !== "train";
   }
   const tabs = document.getElementById("input-categories");
   for (const item of catalog.categories) {
@@ -173,12 +166,6 @@ export function mountSystemInputs({ catalog, getDefinition, getRecords, onEdit, 
     tabs.append(button);
   }
   document.getElementById("input-catalog-search").addEventListener("input", (event) => { query = event.target.value.toLowerCase().trim(); render(); });
-  document.getElementById("build-input-model").addEventListener("click", () => {
-    if (onChooseMethod) { onChooseMethod(); return; }
-    try {
-      const plan = structuredClone(getDefinition()); buildInputModel(plan, getRecords(), document.getElementById("input-training-end").value); onEdit(plan);
-    } catch (error) { notify(error.message); }
-  });
   for (const id of ["open-indicator-library", "open-output-library"]) document.getElementById(id).disabled = false;
   render(); return { render, setAdoptionRole(role) { adoptionRole = role; render(); } };
 }

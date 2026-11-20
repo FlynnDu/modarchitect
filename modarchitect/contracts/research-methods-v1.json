@@ -1,0 +1,63 @@
+[
+  {
+    "component": {"code": "multivariate_linear_training", "revision": 1},
+    "name": "多变量线性回归",
+    "relationship": "学习多个因素与生长目标的线性关系，并提供各因素的拟合系数。",
+    "cutoff_field": "training_end",
+    "settings": [
+      {"code": "regression", "name": "回归方式", "value": "普通最小二乘"},
+      {"code": "fit_intercept", "name": "拟合截距", "value": true},
+      {"code": "regularization", "name": "正则化", "value": "无"},
+      {"code": "standardization", "name": "数据标准化", "value": "沿用指标原单位"}
+    ]
+  },
+  {
+    "component": {"code": "historical_logistic_training", "revision": 1},
+    "name": "逻辑斯蒂生长曲线模型",
+    "relationship": "用观测日期拟合同一地块的 S 形生长趋势。适合单个实测生长目标。",
+    "cutoff_field": "fit_through",
+    "settings": [
+      {"code": "curve", "name": "曲线", "value": "三参数逻辑斯蒂曲线"},
+      {"code": "time_axis", "name": "时间轴", "value": "平台观测日期"},
+      {"code": "grouping", "name": "拟合对象", "value": "按地块、作物和种植季分别拟合"}
+    ]
+  },
+  {
+    "component": {"code": "random_forest_training", "revision": 1},
+    "name": "随机森林回归",
+    "relationship": "用多棵决策树学习因素与生长目标的非线性关系。",
+    "cutoff_field": "training_end",
+    "settings": [
+      {"code": "n_estimators", "name": "树的数量", "value": 64},
+      {"code": "max_depth", "name": "最大树深度", "value": 8},
+      {"code": "min_samples_split", "name": "最小分裂样本数", "value": 2},
+      {"code": "max_features", "name": "分裂时的候选特征", "value": "全部特征"}
+    ],
+    "advanced_fields": ["seed"]
+  },
+  {
+    "component": {"code": "xgboost_training", "revision": 1},
+    "name": "XGBoost 回归",
+    "relationship": "逐步组合决策树，学习多个因素与生长目标的非线性关系。",
+    "cutoff_field": "training_end",
+    "settings": [
+      {"code": "n_estimators", "name": "提升轮数", "value": 64},
+      {"code": "max_depth", "name": "最大树深度", "value": 4},
+      {"code": "learning_rate", "name": "学习率", "value": 0.08},
+      {"code": "tree_method", "name": "树构建策略", "value": "直方图"}
+    ],
+    "advanced_fields": ["seed"]
+  },
+  {
+    "component": {"code": "gaussian_process_training", "revision": 1},
+    "name": "高斯过程回归",
+    "relationship": "用核函数学习因素与生长目标的平滑非线性关系。",
+    "cutoff_field": "training_end",
+    "settings": [
+      {"code": "kernel", "name": "核函数", "value": "径向基函数（RBF）"},
+      {"code": "length_scale", "name": "长度尺度", "value": 1},
+      {"code": "alpha", "name": "噪声项 α", "value": 0.01},
+      {"code": "standardization", "name": "标准化", "value": "从训练集拟合输入尺度，并归一化目标"}
+    ]
+  }
+]

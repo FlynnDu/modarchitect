@@ -12,10 +12,13 @@ test("正式方案只读且保留查看导航，显式开启草稿后恢复原�
     let opened = 0, changed = 0;
     const lifecycle = mountDraftLifecycle({ onOpen: () => opened++, report() {} });
     const input = document.getElementById("wizard-name"), technical = document.getElementById("auto-layout");
+    const reviewFields = [...document.querySelectorAll("#wizard-review [data-draft-fields] :is(input, textarea)")];
+    assert.equal(reviewFields.length, 2);
     technical.disabled = false;
     technical.addEventListener("click", () => changed++);
     lifecycle.set({ draft_state: "published" });
     assert.ok(input.matches(":disabled"));
+    assert.ok(reviewFields.every((field) => field.matches(":disabled")));
     assert.equal(document.querySelector('[data-section="calculation"]').matches(":disabled"), false);
     technical.click(); assert.equal(changed, 0);
     document.getElementById("open-version-draft").click(); assert.equal(opened, 1);
@@ -23,6 +26,7 @@ test("正式方案只读且保留查看导航，显式开启草稿后恢复原�
     assert.ok(dynamic.matches(":disabled"));
     lifecycle.set({ draft_state: "draft" });
     assert.equal(input.matches(":disabled"), false);
+    assert.ok(reviewFields.every((field) => !field.matches(":disabled")));
     assert.equal(dynamic.matches(":disabled"), false);
     assert.equal(document.getElementById("open-version-draft").hidden, true);
     assert.equal(document.getElementById("apply-method").disabled, true);

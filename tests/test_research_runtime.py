@@ -277,7 +277,9 @@ def test_evaluation_requires_observed_matching_units_and_expected_dates():
             "rows": rows[:1],
         }
     }
-    assert evaluate(output, observed, {})[0]["coverage"] == 0.1
+    sparse = evaluate(output, observed, {})[0]
+    assert sparse["coverage"] == 0.1
+    assert sparse["r2"] is None
     bad = deepcopy(observed)
     bad["columns"][0]["value_kind"] = "predicted"
     assert evaluate(output, bad, {})[0]["status"] == "awaiting_observations"

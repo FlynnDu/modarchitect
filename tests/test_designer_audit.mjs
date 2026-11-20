@@ -5,8 +5,9 @@ import { JSDOM } from "jsdom";
 import { mountWizard } from "../modarchitect/web/designer/wizard.js";
 import { mountMethodPicker } from "../modarchitect/web/designer/method-picker.js";
 import { prepareMethodDraft } from "../modarchitect/web/designer/methods.js";
+import { parameters } from "../modarchitect/web/designer/schema-fields.js";
 import { blankPlan } from "../modarchitect/web/designer/editor.js";
-import { inputUsageRows, modelingSteps, predictionColumns } from "../modarchitect/web/designer/modeling.js";
+import { inputUsageRows, modelingSteps, predictionColumns, productRows } from "../modarchitect/web/designer/modeling.js";
 import { flowOverview } from "../modarchitect/web/designer/flow-overview.js";
 import { researchFlow } from "../modarchitect/web/designer/research-flow.js";
 import { inspect } from "../modarchitect/web/designer/panels.js";
@@ -45,20 +46,38 @@ test("技术区只读展示指标定义和来源说明，不提供新增私有�
   } finally { dom.window.close(); }
 });
 
-test("确认页按错误定位，检查通过后可以直接保存方案", async () => {
+test("第5步直达确认页，确认页保留评价和版本设置并定位错误", async () => {
   const dom = environment(), plan = structuredClone(templates.find((row) => row.id === "soil-weather-lai").definition);
   try {
-    let valid = false, saves = 0;
-    const wizard = mountWizard({ getDefinition: () => plan, getRecords: () => records, onEdit() {},
+    history.replaceState(null, "", "#configure/outputs");
+    let issue = { path: ["collection_requirements", 0], type: "unregistered_indicator" }, saves = 0;
+    const wizard = mountWizard({ getDefinition: () => plan, getRecords: () => records, onEdit(next) { Object.assign(plan, next); },
       onSave: async () => { saves++; return { revision: 1 }; },
-      validate: async () => valid ? { valid: true, issues: [] } : { valid: false, issues: [{ path: ["collection_requirements", 0], type: "unregistered_indicator" }] } });
-    wizard.openReview();
+      validate: async () => issue ? { valid: false, issues: [issue] } : { valid: true, issues: [] } });
+    assert.equal(location.hash, "#review");
+    assert.equal(document.querySelectorAll("[data-section]").length, 5);
+    document.querySelector('[data-section="calculation"]').click();
+    document.getElementById("wizard-next").click();
+    assert.equal(location.hash, "#review");
+    document.getElementById("wizard-edit-again").click();
+    assert.equal(location.hash, "#configure/calculation");
+    document.getElementById("wizard-next").click();
+    assert.ok(document.querySelector("#wizard-review #wizard-study-version"));
     const save = document.getElementById("wizard-save-design");
     save.click(); await new Promise(setImmediate);
     assert.equal(saves, 0);
     document.querySelector(".review-issue button").click();
     assert.equal(location.hash, "#configure/sources");
-    wizard.openReview(); valid = true;
+    wizard.openReview();
+    issue = { path: ["evaluation", "success_criteria"], message: "Invalid criteria" };
+    assert.equal(await wizard.check(), false);
+    document.querySelector(".review-issue button").click();
+    const criteria = document.getElementById("wizard-success");
+    assert.equal(document.activeElement, criteria);
+    criteria.value = "使用同日期的独立观测判断预测误差";
+    criteria.dispatchEvent(new window.Event("change"));
+    assert.equal(plan.evaluation.success_criteria, criteria.value);
+    issue = null;
     save.click(); await new Promise(setImmediate);
     assert.equal(saves, 1);
     assert.match(document.getElementById("wizard-check-result").textContent, /研究方案已保存 · 修订 1/);
@@ -85,7 +104,7 @@ test("日期拟合的摘要保留准确方法、实际资料和当前成果能�
     assert.match(summary, /逻辑斯蒂生长曲线模型/);
     assert.match(summary, /平台观测日期驱动/);
     assert.doesNotMatch(summary, /→|· 配置/);
-    assert.doesNotMatch(document.getElementById("wizard-product-note").textContent, /候选预测模型/);
+    assert.doesNotMatch(document.getElementById("wizard-method-note").textContent, /开始训练/);
     assert.equal(modelingSteps(plan, records).steps[1].inputs.length, 1);
   } finally { dom.window.close(); }
 });
@@ -137,14 +156,17 @@ test("指定资料在准确端口显示指标、用途和来源，保留可见�
     const view = flowOverview(plan, records, { template });
     for (const item of template.input_requirements) {
       const field = document.querySelector('#wizard-role-table [data-input-port="' + item.port + '"][data-variable-code="' + item.code + '"]');
-      assert.ok(field.textContent.includes(item.name) && field.textContent.includes(item.source));
-      assert.equal(field.closest("details, dialog"), null);
+      if (item.kind === "parameter") assert.equal(field, null);
+      else {
+        assert.ok(field.textContent.includes(item.name) && field.textContent.includes(item.source));
+        assert.equal(field.closest("details, dialog"), null);
+      }
       assert.equal(view.stages.find((stage) => stage.inputCode === item.port).items[0][0], item.name);
       assert.ok(view.stages.find((stage) => stage.inputCode === item.port).items[0][1].includes(item.use));
     }
-    assert.doesNotMatch(document.querySelector('[data-resource-input="node_3_request"]').textContent, /栽培地面面积/);
-    assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, 3);
-    assert.match(document.getElementById("wizard-output-table").textContent, /作物日蒸散偏差/);
+    assert.doesNotMatch(document.getElementById("wizard-role-table").textContent, /方法资料与参数|阶段作物系数/);
+    assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, 0);
+    assert.match(document.getElementById("wizard-review-summary").textContent, /作物日蒸散偏差/);
     const other = flowOverview(plan, records, { template: { ...template, sha256: "superseded" } });
     assert.equal(other.stages.some((stage) => stage.items.some(([name]) => name === "栽培地面面积")), false);
   } finally { dom.window.close(); }
@@ -163,7 +185,7 @@ test("已调整的模拟分析指标在对应资料卡中只显示当前选择",
   assert.deepEqual(source.items.map(([name]) => name), [row.indicator_options.find((option) => option.code === "wofost_lai").name]);
 });
 
-test("冠层温度方案直接显示只读模型输入、实测目标和计算成果", () => {
+test("冠层温度方案显示只读模型输入与实测目标，成果统一进入确认页", () => {
   const dom = environment(), row = templates.find((item) => item.id === "canopy-temperature-rf");
   const plan = structuredClone(row.definition);
   plan.layout.study_template = { id: row.id, sha256: row.sha256 };
@@ -183,14 +205,14 @@ test("冠层温度方案直接显示只读模型输入、实测目标和计算�
     assert.match(input.textContent, /空气温度.*合成方法示例.*°C.*训练因素/);
     assert.equal(input.querySelector("button, input, select"), null);
     assert.equal(input.closest("[data-wizard-section]").hidden, false);
-    const cutoff = document.querySelector('[data-resource-input="request"] [data-variable-code="cutoff"]');
-    assert.match(cutoff.textContent, /训练冻结时间/);
-    assert.equal(cutoff.closest("details, dialog"), null);
+    assert.doesNotMatch(document.getElementById("wizard-role-table").textContent, /训练冻结时间/);
     assert.equal(document.getElementById("open-system-example").hidden, true);
     document.querySelector('[data-section="targets"]').click();
     const targets = document.querySelector('#wizard-output-table [aria-label="目标指标（实测参照）"]');
     assert.deepEqual([...targets.querySelectorAll("tbody tr")].map((line) => line.dataset.variableCode), ["canopy_temperature"]);
-    assert.match(targets.closest('[data-io-group="output"]').textContent, /模型输出.*冠层温度.*独立留出预测/);
+    assert.match(targets.closest('[data-io-group="output"]').textContent, /目标指标.*冠层温度/);
+    assert.doesNotMatch(targets.closest('[data-io-group="output"]').textContent, /独立留出预测/);
+    assert.match(document.getElementById("wizard-review-summary").textContent, /独立留出预测/);
     assert.equal(targets.closest("[data-wizard-section]").hidden, false);
     assert.equal(targets.closest("details, dialog"), null);
     assert.equal(JSON.stringify(plan), fingerprint);
@@ -296,21 +318,26 @@ for (const template of templates) test("方案资料与成果完整展示：" + 
     const wizard = mountWizard({ getDefinition: () => plan, getRecords: () => records, getInputCatalog: () => ({ items: [], categories: [] }), onEdit() {}, onTechnical() {}, onExample() {}, validate() {} });
     wizard.setTemplate(template); wizard.loaded();
     const inputs = document.getElementById("wizard-role-table"), outputs = document.getElementById("wizard-output-table");
-    assert.ok(inputs.querySelectorAll("tbody tr, [data-resource-input]").length, template.id + "的研究输入不能空白");
-    assert.ok(outputs.querySelectorAll("tbody tr, [data-product]").length, template.id + "的目标或成果不能空白");
+    assert.ok(inputs.textContent.trim(), template.id + "的研究输入不能空白");
+    assert.ok(outputs.textContent.trim(), template.id + "的目标或说明不能空白");
+    assert.equal(inputs.querySelector("[data-resource-input]"), null);
+    assert.equal(outputs.querySelector("[data-product]"), null);
+    const summary = document.getElementById("wizard-review-summary").textContent;
     for (const port of plan.composition.inputs.filter((port) => plan.input_recipes[port.code].kind === "artifact")) {
-      assert.ok(document.querySelector(`[data-resource-input="${port.code}"]`), template.id + "必须显示真实资料端口" + port.code);
+      assert.ok(summary.includes(port.name), template.id + "必须核对真实资料端口" + port.code);
     }
+    for (const product of productRows(plan, records)) assert.ok(summary.includes(product.name));
     assert.doesNotMatch(document.getElementById("wizard-review-summary").textContent, /按组件合同|已选择该研究所需的数据/);
   } finally { dom.window.close(); }
 });
 
-test("逻辑斯蒂替换按时间轴筛选驱动，换轴立即清除不兼容选择", () => {
-  const dom = environment(); let plan = structuredClone(templates.find((row) => row.id === "growth-trend-and-environment").definition);
+test("历史逻辑斯蒂合同在组件参数区换轴时清除不兼容的驱动", () => {
+  const dom = environment(), source = templates.find((row) => row.id === "soil-weather-lai").definition;
   try {
-    const picker = mountMethodPicker({ getDefinition: () => plan, getRecords: () => records, onEdit(next) { plan = next; }, notify() {}, validate() {} });
-    picker.open();
-    document.querySelector('[data-method="logistic_growth_curve@4"] button').click();
+    const { definition, node, record, request } = prepareMethodDraft(source, records, "logistic_growth_curve@4", source.composition.nodes[0].code);
+    document.getElementById("method-detail").append(parameters(definition, node, record.research_contract.request_schema, request, (port, key, value) => {
+      definition.input_recipes[port].value[key] = value;
+    }));
     const driver = () => document.querySelector('#method-detail [data-field="x_code"]');
     assert.ok(driver(), document.getElementById("method-message").textContent);
     assert.equal(driver().readOnly, true);
@@ -345,7 +372,7 @@ test("平台生长曲线样例仅要求目录生物量，日期以平台派生�
     assert.ok(plan.collection_requirements.every((requirement) => requirement.catalog_binding));
     const sample = await json("web/designer/calendar-study.json");
     assert.deepEqual(predictionColumns({ plan, input_columns: sample.observations.columns }, records), []);
-    const picker = mountMethodPicker({ getDefinition: () => plan, getRecords: () => records, onEdit() {}, notify() {}, validate() {} });
+    const picker = mountMethodPicker({ getDefinition: () => plan, getRecords: () => records, loadMethods: async () => ({ items: [] }), onEdit() {}, notify() {}, validate() {} });
     picker.open();
     const steps = document.getElementById("method-target");
     assert.equal(steps.options.length, 1);
@@ -353,15 +380,18 @@ test("平台生长曲线样例仅要求目录生物量，日期以平台派生�
   } finally { dom.window.close(); }
 });
 
-for (const [key, record] of records) if (record.available_for_new_design && record.definition.composable) test("自定义方法端口与成果可见：" + key, () => {
+for (const [key, record] of records) if (record.available_for_new_design && record.definition.composable) test("自定义方法的成果统一在确认页核对：" + key, () => {
   const dom = environment();
   try {
     const result = prepareMethodDraft(blankPlan(), records, key);
     const plan = result.definition;
     const wizard = mountWizard({ getDefinition: () => plan, getRecords: () => records, onEdit() {}, onTechnical() {}, onExample() {}, validate() {} });
     wizard.loaded();
-    for (const port of plan.composition.inputs) assert.ok(document.querySelector(`[data-resource-input="${port.code}"]`), key + "未显示" + port.name);
-    assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, record.definition.outputs.length);
+    assert.equal(document.querySelector("#wizard-role-table [data-resource-input], #wizard-output-table [data-product]"), null);
+    const summary = document.getElementById("wizard-review-summary").textContent;
+    const products = productRows(plan, records);
+    assert.equal(products.length, record.definition.outputs.length);
+    for (const product of products) assert.ok(summary.includes(product.name));
     if (record.research_contract.capabilities?.operations.join() === "analyze") assert.equal(plan.purpose, "explore");
   } finally { dom.window.close(); }
 });
@@ -387,16 +417,11 @@ test("未参与资料有明确用途入口及移除，历史趋势的驱动仍�
   } finally { dom.window.close(); }
 });
 
-test("待配置方法可以保留编辑，但不能伪装成完整检查成功", async () => {
-  const dom = environment(); let plan = structuredClone(templates.find((row) => row.id === "crop-growth-prediction").definition), message = "";
+test("旧的待配置草稿仍可打开并定位未完成的参数", async () => {
+  const dom = environment(), source = templates.find((row) => row.id === "crop-growth-prediction").definition;
+  const { definition: plan } = prepareMethodDraft(source, records, "historical_logistic_training@1", source.composition.nodes[0].code, "", { deferParameters: true });
   const validate = async () => ({ valid: false, issues: [{ type: "incomplete_configuration", path: ["input_recipes", "pending"], port: "request", node: plan.composition.nodes[0].code }] });
   try {
-    const picker = mountMethodPicker({ getDefinition: () => plan, getRecords: () => records, onEdit(next) { plan = next; }, notify(text) { message = text; }, validate });
-    picker.open(); document.querySelector('[data-defer-method="historical_logistic_training@1"]').click();
-    assert.match(document.getElementById("apply-method").textContent, /编辑草稿/);
-    document.getElementById("apply-method").click(); await new Promise(setImmediate);
-    assert.equal(plan.composition.nodes[0].component.code, "historical_logistic_training");
-    assert.match(message, /完整检查尚未通过/);
     const wizard = mountWizard({ getDefinition: () => plan, getRecords: () => records, onEdit() {}, onTechnical() {}, onExample() {}, validate });
     assert.equal(await wizard.check(), false); assert.equal(document.querySelector("#wizard-check-result .check-success"), null);
     assert.match(document.getElementById("wizard-check-result").textContent, /参数尚未配置/);

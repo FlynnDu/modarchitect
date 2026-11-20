@@ -5,6 +5,7 @@
 """提供有来源的现成方案，核验原生案例输入而不公开受限业务档案。"""
 
 from copy import deepcopy
+from functools import lru_cache
 from importlib.resources import files
 import json
 import os
@@ -16,7 +17,7 @@ from .catalog import catalog, research_request_schema
 from .contracts.identifiers import identity_sha256
 from .contracts.research.plans import ResearchPlan
 from .contracts.research.input_bindings import ResearchInputBindingError
-from .validation import compile_plan
+from .validation import compile_plan, _requests
 from .system_inputs import input_readiness, validate_input_bindings
 from .study_inputs import native_input_requirements
 
@@ -33,8 +34,16 @@ def _template_rows(filename: str) -> list[dict]:
 
 
 def templates() -> list[dict]:
-    """目录只列当前可采用版本，历史版本继续按准确摘要解释。"""
-    return [row for row in _template_rows("study-templates-v1.json") if row.get("listed", True)]
+    """新目录只采用具备自有数据训练、验证和模型复用闭环的研究。"""
+    allowed = _new_template_keys()
+    return [row for row in _template_rows("study-templates-v1.json") if (row["id"], row["sha256"]) in allowed]
+
+
+@lru_cache(maxsize=1)
+def _new_template_keys() -> frozenset[tuple[str, str]]:
+    """安装包中的合同固定不变，资格编译一次且不缓存本次取数状态。"""
+    return frozenset((row["id"], row["sha256"]) for row in _template_rows("study-templates-v1.json")
+                     if row.get("listed", True) and not training_template_issues(row))
 
 
 def template(template_id: str, checksum: str | None = None) -> dict:
@@ -47,6 +56,14 @@ def template(template_id: str, checksum: str | None = None) -> dict:
             if row["id"] == template_id and (checksum is None or row["sha256"] == checksum):
                 return row
     raise LookupError("Study template was not found")
+
+
+def design_template(template_id: str, checksum: str | None = None) -> dict:
+    """默认详情与新目录共用资格；准确摘要只用于恢复原研究定义。"""
+    row = template(template_id, checksum)
+    if checksum is None and (row["id"], row["sha256"]) not in _new_template_keys():
+        raise LookupError("Study template is no longer available for new research")
+    return row
 
 
 def scientific_definition(definition: dict) -> dict:
@@ -90,6 +107,57 @@ def input_policy(row: dict) -> dict:
         "editable": (["indicators"] if selection else []) if fixed else (
             ["records", "inputs", "factors", "targets"] if row["definition"]["purpose"] == "train" else ["records", "inputs"]),
     }
+
+
+def training_template_issues(row: dict) -> tuple[str, ...]:
+    """按真实科学合同审查采用资格，不把已登记来源与运行制品在线混为一谈。"""
+    from .execution_contracts import execution_capability, input_usages, validate_operation
+
+    definition = row["definition"]
+    issues = []
+    if row["operation"] != "train" or definition.get("purpose") != "train":
+        issues.append("not_training")
+    if definition.get("objective") != "prediction" or not definition["evaluation"]["target_codes"]:
+        issues.append("no_growth_prediction_target")
+    if "bundle_sha256" in row or any(recipe["kind"] in {"artifact", "deferred"}
+                                    for recipe in definition["input_recipes"].values()):
+        issues.append("fixed_or_unbound_inputs")
+    try:
+        # 只核验来源合同资格；取数尚未完成不改变研究定义的采用资格。
+        validate_input_bindings(definition, require_catalog=True)
+    except ValueError:
+        issues.append("non_catalog_inputs")
+    if issues:
+        return tuple(issues)
+    try:
+        plan = ResearchPlan.model_validate(definition)
+        compile_plan(plan, adopted=True, for_execution=False)
+        validate_operation(plan.composition, "train")
+        exports = {(output.source.node, output.source.port) for output in plan.composition.outputs}
+        states, predictions = set(), set()
+        for node in plan.composition.nodes:
+            capability = execution_capability(node.component.model_dump(mode="json"))
+            if capability.state_output:
+                states.add((node.code, capability.state_output))
+                inference = execution_capability(capability.inference.model_dump(mode="json"))
+                if inference is None or "predict" not in inference.operations:
+                    raise ValueError("Reusable model requires independent inference")
+                component = catalog()[node.component.code, node.component.revision].definition
+                predictions.update((node.code, port.code) for port in component.outputs
+                                   if port.code != capability.state_output and port.data_type.shape == "table")
+        if not exports.intersection(states) or not exports.intersection(predictions):
+            issues.append("no_reusable_prediction_outputs")
+        uses = input_usages(plan.composition, _requests(plan, for_execution=False))
+        targets = {use["variable_code"] for use in uses if use["role"] == "label"}
+        predictors = any(use["role"] in {"feature", "driver"} and "training" in use["phases"]
+                         and "application" in use["phases"] for use in uses)
+        if not set(plan.evaluation.target_codes) <= targets or not predictors:
+            issues.append("no_factor_target_relationship")
+        if plan.evaluation.split_unit != "time":
+            issues.append("unsupported_holdout")
+    except ValueError:
+        issues.append("no_valid_training_contract")
+    return tuple(issues)
 
 
 def template_view(row: dict, *, include_definition: bool = False) -> dict:

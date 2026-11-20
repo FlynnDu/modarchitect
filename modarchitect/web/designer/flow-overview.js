@@ -3,9 +3,9 @@ import { inputUsageRows, formatUnit, flowDataset, nodeSettings, inputDetailLabel
 import { inputProvision, inputGroup } from "./input-provision.js?v=continuous1";
 import { calendarAxes } from "./calendar-axis.js?v=continuous1";
 import { requestProperties } from "./request-schema.js?v=continuous1";
+import { evaluationValues } from "./result-views.js?v=calculation1";
 
 const CATEGORY = { manual: "人工采集", third_party: "第三方数据", platform: "平台分析成果", iot: "物联网监测" };
-const value = (number) => Number.isFinite(number) ? Number(number.toPrecision(4)) : null;
 
 function sources(plan, rows, catalog, data, synthetic) {
   const groups = new Map(), present = new Set(data?.columns?.map((column) => column.code));
@@ -60,10 +60,8 @@ export function flowOverview(plan, records = new Map(), context = {}) {
   else datasetItems.push(["观测记录", "尚未提供"], ["研究对象与周期", "发起研究时绑定"]);
   if (axes.length) datasetItems.push(["时间驱动", "平台按观测日期生成"]);
   const evaluationItems = metrics.flatMap((metric) => {
-    const title = names.get(metric.target) || metric.target, unit = formatUnit(metric.unit);
-    return [[title + " RMSE", value(metric.rmse) + " " + unit + " · " + metric.rows + " 条配对"],
-      ...(Number.isFinite(metric.mae) ? [["平均绝对误差（MAE）", value(metric.mae) + " " + unit]] : []),
-      ...(Number.isFinite(metric.r2) ? [["拟合优度（R²）", value(metric.r2)]] : [])];
+    const title = names.get(metric.target) || metric.target;
+    return evaluationValues(metric).map(([label, value]) => [title + " " + label, value + " · " + metric.rows + " 条配对"]);
   });
   const mismatch = (result?.metrics || []).some((metric) => metric.status === "reference_unit_mismatch");
   const cards = {

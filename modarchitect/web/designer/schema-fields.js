@@ -73,9 +73,11 @@ function variableControl(grid, definition, node, spec, title, name, shape, value
 export function parameters(definition, node, schema, requestPort, update, issue) {
   const grid = element("div", "field-grid");
   const value = definition.input_recipes[requestPort].value;
+  const runtimeFields = definition.input_recipes[requestPort].runtime_fields || {};
   function render() {
     grid.replaceChildren();
     for (const [name, property] of requestProperties(schema, value)) {
+      if (name in runtimeFields) continue;
       if (schema.title === "LogisticGrowthRequest" && name === "degree_day_definition" && value.axis_kind !== "growing_degree_days") continue;
       const title = property.title || name;
       const change = (next) => {

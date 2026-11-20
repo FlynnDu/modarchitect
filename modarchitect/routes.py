@@ -45,8 +45,9 @@ from .contracts.research.plans import ResearchPlan, Purpose
 from .designs import ResearchDesigns
 from .package_preflight import registered_port_types, validate_manifest
 from .validation import compile_graph, compile_plan, load_configuration
-from .runtime.service import component_record
-from .study_templates import template, template_view, templates
+from .runtime.service import component_record, profiles
+from .research_methods import ResearchMethodDirectory, method_directory
+from .study_templates import design_template, template_view, templates
 from .system_inputs import configure_input, input_catalog
 from .contracts.research.variables import VariableRole
 
@@ -170,7 +171,7 @@ def business_templates() -> dict:
 @research.get("/study-templates/{template_id}", dependencies=[Depends(require_platform_template_access)])
 def business_template(template_id: str, sha256: str | None = None) -> dict:
     """复用准确模板投影，不向浏览器发送受限原生资料。"""
-    result = template_view(template(template_id, sha256), include_definition=True)
+    result = template_view(design_template(template_id, sha256), include_definition=True)
     return {**result, "inspection": inspect_definition(result["definition"]).model_dump(mode="json")}
 
 
@@ -211,6 +212,16 @@ def research_rules() -> dict:
     from .runtime.preparation import rule_catalog
 
     return rule_catalog()
+
+
+@directory.get("/research-methods", response_model=ResearchMethodDirectory)
+def list_research_methods() -> ResearchMethodDirectory:
+    """列出新研究可选的关系训练方法及平台配置规则。"""
+    try:
+        registered = profiles()
+    except (OSError, ValueError):
+        registered = {}
+    return method_directory(registered)
 
 
 @directory.post("/research-inputs/configure")

@@ -11,7 +11,7 @@ from pydantic import Field
 from ..model_center.components import (
     ComponentReference, Contract, DataType, InputBinding, Port, SourceReference,
 )
-from .execution import InputUsage, ResearchOperation
+from .execution import InputUsage, MethodSetting, ResearchOperation
 from .variables import UnitKind
 
 
@@ -90,6 +90,9 @@ class InspectionNode(Contract):
     code: str
     name: str
     component: ComponentReference
+    method_name: str | None = None
+    relationship: str | None = None
+    settings: tuple[MethodSetting, ...] = ()
     operations: tuple[ResearchOperation, ...] = ()
     inputs: tuple[Port, ...] = ()
     bindings: tuple[InputBinding, ...] = ()
@@ -107,6 +110,31 @@ class InspectionOutput(Contract):
     code: str
     source: SourceReference
     definition: Port
+    reusable_model: bool = False
+
+
+class InspectionPrediction(Contract):
+    """沿用已训练管线的预测输入和目标，不包含推测数值。"""
+
+    input_codes: tuple[str, ...]
+    target_codes: tuple[str, ...]
+
+
+class InspectionEvaluationMetric(Contract):
+    """本次训练能形成的误差指标名称。"""
+
+    code: str
+    name: str
+    selected: bool = True
+    required: bool = False
+
+
+class InspectionEvaluation(Contract):
+    """预览准确切分规则。只有自动比例划分提供训练百分比。"""
+
+    strategy: Literal["automatic_dates", "configured_window", "saved_policy"]
+    training_percent: int | None = None
+    metrics: tuple[InspectionEvaluationMetric, ...]
 
 
 class ResearchInspection(Contract):
@@ -117,6 +145,8 @@ class ResearchInspection(Contract):
     materials: tuple[InspectionMaterial, ...] = ()
     nodes: tuple[InspectionNode, ...] = ()
     outputs: tuple[InspectionOutput, ...] = ()
+    prediction: InspectionPrediction | None = None
+    evaluation: InspectionEvaluation | None = None
     checks: ResearchChecks = Field(default_factory=ResearchChecks)
 
 

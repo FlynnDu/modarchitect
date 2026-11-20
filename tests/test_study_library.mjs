@@ -4,13 +4,31 @@ import { readFile } from "node:fs/promises";
 import { JSDOM } from "jsdom";
 import { mountStudyLibrary, showTemplateSummary, showStudyFlow } from "../modarchitect/web/designer/study-library.js";
 import { mountResearch } from "../modarchitect/web/designer/research.js";
-import { renderSummary } from "../modarchitect/web/designer/result-views.js";
+import { renderSummary, renderModelRelationships } from "../modarchitect/web/designer/result-views.js";
 import { inputUsageRows, flowDataset, studySettings } from "../modarchitect/web/designer/modeling.js";
 import { applicationPath } from "../modarchitect/web/designer/http-path.js";
 
 const html = await readFile(new URL("../modarchitect/web/designer/index.html", import.meta.url), "utf8");
-const rows = JSON.parse(await readFile(new URL("../modarchitect/contracts/study-templates-v1.json", import.meta.url), "utf8")).filter((row) => row.listed !== false);
+const historicalRows = JSON.parse(await readFile(new URL("../modarchitect/contracts/study-templates-v1.json", import.meta.url), "utf8"));
+const retained = new Set([
+  "crop-growth-prediction", "soil-weather-lai", "soil-weather-biomass", "soil-weather-canopy", "soil-weather-satellite-lai",
+  "biomass-growth-curve", "canopy-weather-tuber-dry-matter", "satellite-biomass-prediction",
+]);
+const rows = historicalRows.filter((row) => retained.has(row.id));
 const view = (row) => ({ ...row, execution_mode: row.bundle_sha256 ? "frozen_case" : "observations", definition: { ...structuredClone(row.definition), layout: { study_template: { id: row.id, sha256: row.sha256 } } } });
+
+test("关系展示读取已保存模型的真实系数和单位，区分合成数据与因果结论", () => {
+  const dom = new JSDOM('<div id="host"></div>'); globalThis.document = dom.window.document;
+  try {
+    const host = document.getElementById("host");
+    renderModelRelationships(host, { training_data_kind: "synthetic", states: { model: { format: "linear_state_v1", state: { intercepts: { lai: 1.5 }, coefficients: { temperature: [0.2], rainfall: [-0.03] } }, feature_columns: [{ code: "temperature", name: "温度", unit: "celsius" }, { code: "rainfall", name: "降雨", unit: "mm" }], target_columns: [{ code: "lai", name: "叶面积指数", unit: "m2_m2" }] } } });
+    assert.match(host.textContent, /叶面积指数.*1.5/);
+    assert.match(host.textContent, /温度°C0.2/); assert.match(host.textContent, /降雨mm-0.03/);
+    assert.match(host.textContent, /不代表因果/); assert.match(host.textContent, /合成演示数据/);
+    assert.equal(host.hidden, false);
+    renderModelRelationships(host, { states: {} }); assert.equal(host.hidden, true);
+  } finally { dom.window.close(); }
+});
 
 function environment() {
   const dom = new JSDOM(html, { url: "http://localhost/designer/" });
@@ -47,7 +65,7 @@ test("方案目录失败不保留加载文案，可在当前页面重试恢复",
     assert.ok(retry && !retry.hidden && !retry.disabled);
     assert.doesNotMatch(document.getElementById("study-library-status").textContent, /正在读取/);
     failed = false; retry.click(); await new Promise(setImmediate);
-    assert.equal(document.querySelectorAll("[data-study-template]").length, 20);
+    assert.equal(document.querySelectorAll("[data-study-template]").length, 8);
     assert.equal(retry.hidden, true);
   } finally { globalThis.fetch = previous; dom.window.close(); }
 });
@@ -73,27 +91,29 @@ test("研究目录按问题拆分，预览与采用分开，流程不暴露验�
   try {
     await mountStudyLibrary({ openTemplate: async (...args) => calls.push(args) });
     assert.equal(document.querySelectorAll("[data-study-template]").length, rows.length);
-    const card = document.querySelector('[data-study-template="crop-low-temperature"]');
+    const card = document.querySelector('[data-study-template="crop-growth-prediction"]');
     card.querySelectorAll("button")[0].click(); await new Promise((resolve) => setTimeout(resolve, 0));
     card.querySelectorAll("button")[1].click(); await new Promise((resolve) => setTimeout(resolve, 0));
-    assert.deepEqual(calls, [["crop-low-temperature", false], ["crop-low-temperature", true]]);
-    showTemplateSummary(view(rows.find((row) => row.id === "crop-low-temperature")));
-    const selected = view(rows.find((row) => row.id === "crop-low-temperature"));
+    assert.deepEqual(calls, [["crop-growth-prediction", false], ["crop-growth-prediction", true]]);
+    showTemplateSummary(view(historicalRows.find((row) => row.id === "crop-growth-prediction")));
+    const selected = view(historicalRows.find((row) => row.id === "crop-growth-prediction"));
     showStudyFlow({ definition: selected.definition, template: selected });
     const text = document.getElementById("study-template-list").textContent + document.getElementById("study-template-summary").textContent;
     assert.doesNotMatch(text, /658b|冻结|封存|工程验收|SHA-256/);
-    assert.equal(document.querySelectorAll("#public-research-flow rect").length, 4);
-    assert.equal(document.querySelectorAll(".research-stage-card").length, 3);
+    assert.ok(document.querySelector('[data-flow-stage="node:regression"]'));
+    assert.ok(document.querySelector('[data-flow-stage="products"]'));
     assert.equal(document.querySelector(".research-component-flow").open, false);
     assert.match(document.querySelector('[data-flow-stage="products"]').textContent, /等待产出/);
-    const filter = [...document.querySelectorAll(".study-topic-filters button")].find((button) => button.textContent === "气象与风险"); filter.click();
-    assert.equal(document.querySelectorAll(".study-template-card:not([hidden])").length, 5);
-    assert.equal(document.querySelectorAll('[data-study-template="canopy-temperature-rf"] select option').length, 3);
+    const category = rows.find((row) => row.id === "soil-weather-lai").researcher.category;
+    const filter = [...document.querySelectorAll(".study-topic-filters button")].find((button) => button.textContent === category); filter.click();
+    assert.equal(document.querySelectorAll(".study-template-card:not([hidden])").length, rows.filter((row) => row.researcher.category === category).length);
+    assert.equal(document.querySelector('[data-study-template="field-indicator-summary"]'), null);
+    for (const id of ["start-chain", "study-chain", "study-analysis", "chain-plan"]) assert.equal(document.getElementById(id).hidden, true);
   } finally { globalThis.fetch = previous; dom.window.close(); }
 });
 
 test("独立研究方案可保存重开，数据说明面向研究者，执行时保留数据来源", async () => {
-  const dom = environment(), previous = globalThis.fetch, row = view(rows.find((value) => value.id === "greenhouse-water-use")), requests = [];
+  const dom = environment(), previous = globalThis.fetch, row = view(historicalRows.find((value) => value.id === "greenhouse-water-use")), requests = [];
   let plan = row.definition, saved = null, version = null;
   globalThis.fetch = async (url, options = {}) => {
     const path = String(url).replace("/api/v1/workspace", ""), body = options.body && JSON.parse(options.body);
@@ -164,7 +184,7 @@ test("资格复核的缺分保持为空，方法评价显示实际留出值而�
 test("研究者可调整日期和固定指标，参数修改进入实际方案而不替换数据", async () => {
   const dom = environment();
   try {
-    const row = view(rows.find((item) => item.id === "growth-water-response")); let definition = row.definition;
+    const row = view(historicalRows.find((item) => item.id === "growth-water-response")); let definition = row.definition;
     const definitions = JSON.parse(await readFile(new URL("../modarchitect/contracts/agronomic-research-components-v1.json", import.meta.url), "utf8"));
     const records = new Map(definitions.map((item) => [item.code + "@1", { definition: item, research_contract: { request_schema: item.configuration.research_model.request_schema } }]));
     showTemplateSummary(row, { getDefinition: () => structuredClone(definition), getRecords: () => records, onEdit(value) { definition = value; } });
@@ -204,7 +224,7 @@ test("全部研究使用有序卡片，准确成果与误差分别显示，无�
 });
 
 test("服务端输入规则不通过时，页面保留当前方案且不保存或提交计算", async () => {
-  const dom = environment(), previous = globalThis.fetch, row = view(rows.find((item) => item.id === "greenhouse-water-use")), requests = [];
+  const dom = environment(), previous = globalThis.fetch, row = view(historicalRows.find((item) => item.id === "greenhouse-water-use")), requests = [];
   let plan = row.definition;
   globalThis.fetch = async (url, options = {}) => {
     const path = String(url); requests.push({ path, method: options.method });
@@ -228,7 +248,7 @@ test("服务端输入规则不通过时，页面保留当前方案且不保存�
 test("串联卡片按五个外部指标逐项展示，与用途表一致，真实留出记录形成评价分支", () => {
   const dom = environment();
   try {
-    const row = view(rows.find((item) => item.id === "growth-trend-and-environment"));
+    const row = view(historicalRows.find((item) => item.id === "growth-trend-and-environment"));
     const context = { definition: row.definition, template: row, data: row.observations, dataKind: "synthetic" };
     showStudyFlow(context);
     const input = document.querySelector('[data-flow-stage="inputs"]');
@@ -262,7 +282,7 @@ test("串联卡片按五个外部指标逐项展示，与用途表一致，真�
 test("预测输入、无留出记录和原生资料不沿用训练口径或虚构分支", () => {
   const dom = environment();
   try {
-    const row = view(rows.find((item) => item.id === "growth-trend-and-environment"));
+    const row = view(historicalRows.find((item) => item.id === "growth-trend-and-environment"));
     showStudyFlow({ definition: row.definition, template: row, run: { kind: "predict", status: "queued" } });
     assert.equal(document.querySelector('[data-flow-stage="inputs"] .research-stage-headline').textContent, "4 项输入指标");
     const labels = [...document.querySelectorAll('[data-flow-stage="inputs"] .research-source-variable')].map((node) => node.textContent);
@@ -271,7 +291,7 @@ test("预测输入、无留出记录和原生资料不沿用训练口径或虚�
     const earlier = structuredClone(row.observations); earlier.rows = earlier.rows.filter((record) => record.business_date <= "2026-06-09");
     showStudyFlow({ definition: row.definition, data: earlier });
     assert.match(document.querySelector(".research-data-branch").getAttribute("aria-label"), /待补留出实测/);
-    const native = view(rows.find((item) => item.id === "crop-low-temperature"));
+    const native = view(historicalRows.find((item) => item.id === "crop-low-temperature"));
     showStudyFlow({ definition: native.definition, template: native });
     assert.equal(document.querySelector('[data-flow-stage="inputs"] .research-stage-headline').textContent, "1 项输入指标");
     assert.equal(document.querySelector(".research-data-branch"), null);
@@ -281,7 +301,7 @@ test("预测输入、无留出记录和原生资料不沿用训练口径或虚�
 test("历史运行缺少分段原始记录时只用已存统计，不从日期跨度补造样本", () => {
   const dom = environment();
   try {
-    const row = view(rows.find((item) => item.id === "growth-trend-and-environment")), config = studySettings(row.definition);
+    const row = view(historicalRows.find((item) => item.id === "growth-trend-and-environment")), config = studySettings(row.definition);
     const output = row.definition.composition.outputs.find((port) => port.source.node === config.model.code && port.source.port === "predictions").code;
     const run = { kind: "train", status: "succeeded", result_json: { outputs: {}, input_sources: { row_count: 90 }, metrics: [{ output, target: "height", status: "evaluated", expected_rows: 20, rows: 18, rmse: 1, unit: "cm" }] } };
     const facts = flowDataset(row.definition, null, run);

@@ -25,6 +25,8 @@ def project_tables(
     outputs = {}
     for port, declaration in declarations.items():
         if "inherit" not in declaration:
+            # 方案读取及推理分析仍可追溯列，即使训练日期由本次数据决定。
+            cutoff = parameters.get(declaration["fit_through"])
             outputs[port] = TableColumns(
                 {
                     code: False
@@ -35,7 +37,7 @@ def project_tables(
                         else [parameters[field]]
                     )
                 },
-                date.fromisoformat(parameters[declaration["fit_through"]]),
+                date.fromisoformat(cutoff) if cutoff is not None else None,
             )
             continue
         parent = inputs.get(declaration["inherit"])

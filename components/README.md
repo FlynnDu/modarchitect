@@ -33,6 +33,8 @@ docker load -i template.oci.tar
 
 新增组件可使用 [1.1 声明模板](template/component-v1.1.json)，在合同中说明支持的操作、输入字段用途，以及可选的准确训练状态/推理组件。原 1.0 模板及摘要保持兼容；预检不授予执行资格。完整非训练参考见 [标准观测描述统计](descriptive_statistics/README.md)，它提供独立预期和离线容器正反例。
 
+训练、推理、机理模拟及其他计算组件的字段和验收要求见[计算组件开发规则](../docs/calculation-component-rules.md)。研究设计器按操作读取准确的资源、参数和成果声明。
+
 ## 逻辑斯蒂参考组件
 
 `logistic_growth/` 是迁入的独立数值包及既有文件协议适配。使用 Python 3.12 建独立环境，通过 wheel 安装。该环境只需数值依赖及组件包。

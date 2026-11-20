@@ -115,7 +115,7 @@ export async function mountStudyLibrary({ openTemplate }) {
         }
         card.append(actions); host.append(card);
       }
-      status.textContent = "共 " + items.length + " 个研究主题。按研究问题选择方案，再设置数据、时间与方法。";
+      status.textContent = "共 " + items.length + " 个研究主题。按研究问题选择方案，查看所需资料、计算方法和预期成果。";
       status.dataset.state = "ready";
     } catch {
       status.textContent = "现成方案读取失败，请点击重新读取方案。";

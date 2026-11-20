@@ -5,14 +5,19 @@ import { ensureCalendarAxis } from "./calendar-axis.js?v=continuous1";
 const capability = (record) => record?.research_contract.capabilities || record?.definition.configuration.research_model?.execution;
 const sameType = (expected, actual) => Object.entries(expected).every(([key, value]) => actual?.[key] === value);
 
-export function methodRecords(records) {
-  return [...records.values()].filter((record) => record.available_for_new_design && record.definition.composable && !record.definition.configuration.research_model?.automatic_date_axis);
-}
-
 export function methodNodes(plan, records) {
   return plan.composition.nodes.filter((node) => {
     const record = nodeRecord(node, records);
     return record && !record.definition.configuration.research_model?.automatic_date_axis;
+  });
+}
+
+export function selectableMethodNodes(plan, records) {
+  const nodes = methodNodes(plan, records);
+  if (plan.purpose !== "train") return nodes;
+  return nodes.filter((node) => {
+    const execution = capability(nodeRecord(node, records));
+    return execution?.operations.includes("train") && execution.state_output;
   });
 }
 
@@ -36,7 +41,7 @@ export function synchronizeLabels(plan, records) {
   if (configured) plan.evaluation.target_codes = targets;
 }
 
-export function prepareMethodDraft(plan, records, key, nodeCode = null, trainingEnd = "", { deferParameters = false } = {}) {
+export function prepareMethodDraft(plan, records, key, nodeCode = null, trainingEnd = "", { deferParameters = false, configuration } = {}) {
   const record = records.get(key);
   if (!record?.available_for_new_design) throw new Error("请选择当前目录允许采用的准确方法版本。");
   const restriction = methodRestriction(record); if (restriction) throw new Error(restriction);
@@ -68,7 +73,8 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
       if (!output || !sameType(input.data_type, output.data_type)) throw new Error("新方法的成果不能直接接入「" + nodeRecord(consumer, records).definition.name + "」，请先调整该连接。");
     }
   }
-  const schema = record.research_contract.request_schema || {}, values = defaults(schema) || {};
+  const schema = configuration?.parameter_schema || record.research_contract.request_schema || {};
+  const values = configuration ? structuredClone(configuration.defaults) : defaults(schema) || {};
   for (const [field] of requestProperties(schema)) if (Object.hasOwn(previous, field)) values[field] = structuredClone(previous[field]);
   if (!deferParameters) for (const [field, property] of requestProperties(schema, values)) {
     const spec = property["x-research-variables"];
@@ -79,14 +85,15 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
   }
   for (const [field, property] of deferParameters ? [] : requestProperties(schema, values)) {
     if (property["x-research-variables"] && !property["x-research-variables"].new_column) {
-      const spec = property["x-research-variables"], use = capability(record)?.input_uses?.[field] || record.research_contract.input_uses?.[field];
+      const spec = property["x-research-variables"];
+      const use = configuration?.input_uses?.[field] || record.research_contract.input_uses?.[field] || capability(record)?.input_uses?.[field];
       const role = use?.role || (spec.roles?.join() === "target" ? "label" : spec.roles?.join() === "driver" ? "driver" : "feature");
       const allowed = variableCandidates(draft, node, spec);
       const preferred = Object.hasOwn(values, field) ? (Array.isArray(values[field]) ? values[field] : [values[field]]) : role === "label" ? previous.targets || plan.evaluation.target_codes
         : ["driver", "analysis"].includes(role) ? allowed.map((v) => v.code) : previous.features || allowed.filter((v) => !plan.evaluation.target_codes.includes(v.code)).map((v) => v.code);
       const chosen = preferred.filter((code) => allowed.some((v) => v.code === code));
       if (property.type === "array") values[field] = chosen;
-      else values[field] = chosen[0];
+      else values[field] = configuration && chosen.length !== 1 ? undefined : chosen[0];
     } else if (property.format === "date" && !values[field]) values[field] = trainingEnd || previous.training_end || previous.fit_through || "";
   }
   if (previousRequest && !draft.composition.nodes.some((item) => item.bindings.some((binding) => !binding.source.node && binding.source.port === previousRequest))) {
@@ -97,6 +104,8 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
   const parameterPort = record.definition.inputs.find((port) => port.code === "request");
   if (deferParameters && parameterPort) connectInput(draft, records, node, "request", addDeferredInput(draft, node, parameterPort));
   else addConfiguration(draft, node, record, values);
+  const request = requestInput(draft, node);
+  if (configuration && request) useMethodDefaults(draft, node, configuration);
   if (changed) {
     draft.composition.outputs = draft.composition.outputs.filter((output) => output.source.node !== node.code);
     for (const output of record.definition.outputs) setOutput(draft, node.code, output.code, true);
@@ -117,9 +126,29 @@ export function prepareMethodDraft(plan, records, key, nodeCode = null, training
     if (operations?.length && !operations.includes(operation)) {
       draft.purpose = { train: "train", analyze: "explore", simulate: "simulate", predict: "predict", calibrate: "fit" }[operations[0]];
       for (const requirement of draft.collection_requirements) requirement.required_for = [draft.purpose];
-      if (draft.purpose !== "train") draft.evaluation.target_codes = [];
+      if (draft.purpose !== "train") {
+        draft.evaluation.target_codes = [];
+        delete draft.evaluation.training_percent;
+        delete draft.evaluation.metrics;
+      }
     }
   }
   synchronizeLabels(draft, records);
-  return { definition: draft, node, record, request: requestInput(draft, node) };
+  return { definition: draft, node, record, request };
+}
+
+export function useMethodDefaults(definition, node, configuration) {
+  const request = requestInput(definition, node);
+  if (!request) return;
+  const recipe = definition.input_recipes[request];
+  for (const [field, value] of Object.entries(configuration.defaults)) {
+    if (!(field in recipe.value)) recipe.value[field] = structuredClone(value);
+  }
+  // 上游历史拟合有不同时间窗，保留原边界。自动切分用于最终训练。
+  const feedsAnother = definition.composition.nodes.some((consumer) => consumer.bindings.some((binding) => binding.source.node === node.code));
+  if (feedsAnother || definition.evaluation.split_unit !== "time") return;
+  for (const [field, slot] of Object.entries(configuration.runtime_fields)) {
+    delete recipe.value[field];
+    recipe.runtime_fields = { ...recipe.runtime_fields, [field]: slot };
+  }
 }

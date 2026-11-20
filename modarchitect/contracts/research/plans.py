@@ -15,7 +15,7 @@ from modarchitect.contracts.model_center.components import (
     Text,
 )
 from .variables import StudyContext, UnitKind, Variable
-from .evaluation import NumericEvaluationGate
+from .evaluation import EvaluationMetricCode, NumericEvaluationGate
 from .catalog_bindings import CatalogBinding
 from .field_selection import SelectedResearchFields
 from .report_layout import ReportOptions
@@ -94,6 +94,9 @@ def collection_schedule_schema() -> dict:
     }
 
 
+TRAINING_CUTOFF = "training_holdout_cutoff_date"
+
+
 class InputRecipe(Contract):
     """把外部输入映射到观测表、结构化配置或已冻结成果，拒绝任意动态代码。"""
 
@@ -106,6 +109,7 @@ class InputRecipe(Contract):
         Literal[
             "cutoff_date",
             "fit_cutoff_date",
+            "training_holdout_cutoff_date",
             "cutoff_timestamp",
             "object",
             "season_start",
@@ -156,6 +160,27 @@ class EvaluationPolicy(Contract):
     )
     maximum_runs: Annotated[int, Field(strict=True, ge=1, le=1000)] = 10
     numeric_gate: NumericEvaluationGate | None = None
+    training_percent: Annotated[int, Field(strict=True, ge=1, le=99)] | None = None
+    metrics: Annotated[tuple[EvaluationMetricCode, ...], Field(min_length=1)] | None = None
+
+    @model_validator(mode="after")
+    def valid_metrics(self):
+        """每个选中指标只计算一次，保留已配置门槛使用的指标。"""
+        if self.metrics is not None and (
+            len(set(self.metrics)) != len(self.metrics)
+            or self.numeric_gate is not None and self.numeric_gate.metric not in self.metrics
+        ):
+            raise ValueError("Evaluation metrics must be unique and include the configured gate metric")
+        return self
+
+    @model_serializer(mode="wrap")
+    def serialized_policy(self, handler: SerializerFunctionWrapHandler) -> dict:
+        """省略未配置的选项，保留历史版本的摘要。"""
+        result = handler(self)
+        for key in ("training_percent", "metrics"):
+            if getattr(self, key) is None:
+                result.pop(key, None)
+        return result
 
 
 class ResearchPlan(Contract):
@@ -211,6 +236,15 @@ class ResearchPlan(Contract):
         ):
             raise ValueError("Observation research requires explicit variable definitions")
         gate = self.evaluation.numeric_gate
+        if self.purpose != "train" and (
+            self.evaluation.training_percent is not None or self.evaluation.metrics is not None
+        ):
+            raise ValueError("Training evaluation options require a training plan")
+        if self.evaluation.training_percent is not None and (
+            self.evaluation.split_unit != "time" or gate is not None
+            or not any(TRAINING_CUTOFF in recipe.runtime_fields.values() for recipe in self.input_recipes.values())
+        ):
+            raise ValueError("Training percentage requires automatic date splitting")
         if self.schema_version == "1.0" and gate is not None:
             raise ValueError("Numeric evaluation requires research plan schema 1.1")
         if gate is not None:

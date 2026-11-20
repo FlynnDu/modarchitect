@@ -24,11 +24,11 @@ from test_research_runtime import runtime_clients  # noqa: F401
 
 
 def test_templates_compile_and_public_metadata_excludes_real_case_inputs(monkeypatch):
-    """十套准确方案可检查；真实档案不进入公开元数据或可下载静态模板。"""
+    """合格训练方案可采用；撤下的案例按准确摘要保留且不公开原始数据。"""
     rows = templates()
-    assert len(rows) == 20
-    variants = [template(method["id"]) for row in rows for method in row.get("method_options", [])]
-    assert len({row["id"] for row in rows + variants}) == 22
+    assert len(rows) == 8
+    assert len(_template_rows("study-templates-v1.json")) == 25
+    variants = [template(code) for code in ("canopy-temperature-xgboost", "canopy-temperature-gp")]
     for variant in variants:
         compile_plan(ResearchPlan.model_validate(variant["definition"]), adopted=True)
         view = template_view(variant, include_definition=True)
@@ -50,7 +50,7 @@ def test_templates_compile_and_public_metadata_excludes_real_case_inputs(monkeyp
         listing = client.get("/api/v1/workspace/study-templates").json()
         assert "geometry" not in json.dumps(listing)
         client.get("/api/v1/workspace/session")
-        detail = client.get("/api/v1/workspace/study-templates/survey-658b").json()
+        detail = client.get("/api/v1/workspace/study-templates/survey-658b", params={"sha256": survey["sha256"]}).json()
         assert "snapshot" not in detail and "bundles" not in detail
         assert detail["definition"]["layout"]["study_template"]["sha256"] == survey["sha256"]
         assert client.get("/api/v1/workspace/study-templates/unknown").status_code == 404
@@ -83,7 +83,7 @@ def test_each_template_projects_input_port_details_and_declared_products(monkeyp
     monkeypatch.setenv("MODARCHITECT_WORKSPACE_KEY", "test-templates-" * 4)
     with TestClient(create_app()) as client:
         client.get("/api/v1/workspace/session")
-        detail = client.get("/api/v1/workspace/study-templates/greenhouse-water-use").json()
+        detail = client.get("/api/v1/workspace/study-templates/greenhouse-water-use", params={"sha256": template("greenhouse-water-use")["sha256"]}).json()
     projection = {item["code"]: item["port"] for item in detail["input_requirements"]}
     assert projection["net_radiation_mj_m2_d"] == "node_1_request"
     assert projection["ground_area_m2"] == projection["start_mass_g"] == "node_2_request"

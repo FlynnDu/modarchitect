@@ -484,7 +484,7 @@ def test_enterprise_catalogs_use_business_identity_without_workspace_cookie(live
     client, _ = live_design_api
     assert not client.cookies.get("modarchitect_workspace")
     listed = client.get(ROOT + "/study-templates", headers=AUTH)
-    assert listed.status_code == 200 and len(listed.json()["items"]) == 20
+    assert listed.status_code == 200 and len(listed.json()["items"]) == 8
     detail = client.get(ROOT + "/study-templates/crop-growth-prediction", headers=AUTH)
     assert detail.status_code == 200 and detail.json()["definition"]["composition"]["nodes"]
     assert "bundles" not in detail.json()
@@ -567,7 +567,7 @@ def test_real_curl_and_business_reference_failure_recover_without_duplicate_desi
             "key": "variable_source:temperature_mean_daily@1.0.0"}, authorized=False)[0] == 200
         assert curl("GET", ROOT + "/models")[0] == 200
         status, listed = curl("GET", ROOT + "/study-templates")
-        assert status == 200 and len(listed["items"]) == 20
+        assert status == 200 and len(listed["items"]) == 8
         status, study = curl("GET", ROOT + "/study-templates/crop-growth-prediction")
         assert status == 200
         status, configuration = curl("POST", ROOT + "/configurations/draft", study["definition"])

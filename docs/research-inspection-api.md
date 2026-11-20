@@ -17,6 +17,8 @@
 
 直接检查接口的响应类型公开在 OpenAPI 的 `ResearchInspection`。错误草稿仍返回该形状；配置无法解析时资料和节点为空，问题位于 `checks.configuration.issues`，不能保留上一份草稿的通过状态。
 
+计算方式选择使用公开的 `GET /api/v1/model-center/research-methods`。该目录统一返回组件身份、参数 Schema、输入用途、平台默认值和成果。训练日期可在方案中声明为运行时规则，实际启动时根据观测日期生成。见[计算与评价的统一配置与展示](../coding/research-method-design-20261120.md)。
+
 ## 固定结构
 
 | 字段 | 含义及消费方式 |
@@ -27,11 +29,17 @@
 | `materials[].sources[]` | 来源、取数属性、观测单位和通道状态；`data_available=null` 表示未核验本次数据 |
 | `materials[].indicators[]` | 指定原生资料的公开字段、单位、用途与来源；没有原始数值、凭据或受限原文 |
 | `nodes[]` | 准确组件身份、支持操作、输入绑定、请求配方身份、参数 Schema/当前值/运行上下文字段、节点用途及声明输出 |
-| `nodes[].input_usages[]` | 复用权威用途推导；role/phases 表示指标在准确节点的用途，不修改变量自身单位或来源 |
+| `nodes[].input_usages[]` | 来自权威用途推导，`role/phases` 表示指标在准确节点的用途 |
+| `nodes[].method_name/relationship/settings` | 已登记方法的名称、用途和该修订固定设置，尚无方法卡的组件沿用节点原名 |
+| `outputs[].reusable_model` | 来自组件的训练状态声明，表示该成果可保存为模型供后续预测 |
+| `prediction` | 可复用训练流程的预测预览。包含 `input_codes` 和 `target_codes`。输入沿用执行器的资料推导，日期曲线可只依赖对象和日期。配置或操作不成立时为 `null` |
+| `evaluation` | 配置完整且可训练的方案返回策略及评价指标。策略是 `automatic_dates`、`configured_window` 或 `saved_policy`。仅自动日期切分提供 `training_percent`。`metrics[]` 的 `code/name/selected/required` 表示支持项、当前选择和是否被评价门槛要求。 |
 | `outputs[]` | 方案选择的公开成果引用及准确端口定义，区别于组件全部声明输出 |
 | `checks` | 分别表达配置完整、操作兼容与本次实际执行条件 |
 
 前端依据 `parameter_schema` 生成表单，将编辑结果写回 `input_recipes[request_input].value`。`runtime_fields` 中的字段由可信运行上下文提供，不能作为静态用户参数覆盖。原生制品参数值未公开时 `parameters=null`，不得补造数值。
+
+训练与评价设置随正常草稿保存提交。自动按观测日期划分时可在 `definition.evaluation.training_percent` 保存 1–99 的整数，验证比例为 100 减训练比例。通过 `definition.evaluation.metrics` 提交至少一个互不重复的指标代码，支持 `r2`、`rmse`、`mae`、`bias`。存在数值评价门槛时，指标选择包含门槛使用的指标。缺省时沿用 80% 的自动切分比例及全部指标。已发布版本封存选择，开始训练时按封存设置切分和计算。
 
 ## 相同的检查类型
 

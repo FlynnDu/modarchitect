@@ -5,13 +5,14 @@ import {
 import { describe, inspect, issueMessage, renderFlowSummary, resources } from "./panels.js?v=continuous1";
 import { defaults } from "./schema-fields.js?v=continuous1";
 import { createGraph, element } from "./visuals.js?v=continuous1";
-import { mountResearch } from "./research.js?v=proxy1";
+import { mountResearch } from "./research.js?v=calculation1";
 import { applicationPath } from "./http-path.js?v=proxy1";
 import { mountModeling } from "./modeling-view.js?v=continuous1";
 import { mountSystemInputs } from "./system-inputs.js?v=continuous1";
-import { mountWizard } from "./wizard.js?v=continuous1";
-import { mountMethodPicker } from "./method-picker.js?v=continuous1";
-import { mountInspection } from "./inspection-view.js?v=inspection1";
+import { mountWizard } from "./wizard.js?v=calculation1";
+import { mountMethodPicker } from "./method-picker.js?v=calculation1";
+import { mountInspection } from "./inspection-view.js?v=calculation1";
+import { useMethodDefaults } from "./methods.js?v=calculation1";
 import { mountStudyLibrary, showTemplateSummary, showStudyFlow, researchTitle, researchQuestion } from "./study-library.js?v=proxy1";
 
 const byId = (id) => document.getElementById(id);
@@ -19,7 +20,7 @@ const DRAFT_KEY = "modarchitect.designer.draft.v1";
 const REQUEST_BUDGET = 1_048_576;
 const CATALOG = "/api/v1/model-center/components";
 const state = {
-  definition: null, records: new Map(), catalog: [], inputCatalog: { items: [], categories: [] }, flow: null,
+  definition: null, records: new Map(), methods: new Map(), catalog: [], inputCatalog: { items: [], categories: [] }, flow: null,
   selected: "plan", tab: "connections", library: "components", zoom: 1,
   generation: 0, issue: null, busy: true, source: null, saved: null,
 };
@@ -34,6 +35,19 @@ let inputWorkspace;
 let wizardWorkspace;
 let methodWorkspace;
 let inspectionWorkspace;
+let methodRequest;
+
+function loadResearchMethods() {
+  methodRequest ??= request("/api/v1/model-center/research-methods").then((directory) => {
+    if (directory.schema_version !== "1.0") throw new Error("暂时无法读取计算方式，请刷新设计器。");
+    state.methods = new Map(directory.items.map((method) => [recordKey(method.component), method]));
+    return directory;
+  }).catch((error) => {
+    methodRequest = undefined;
+    throw error;
+  });
+  return methodRequest;
+}
 
 function technical(force) {
   const expanded = force ?? byId("technical-workspace").hidden;
@@ -417,7 +431,6 @@ async function boot() {
     state.inputCatalog = inputCatalog;
     inputWorkspace = mountSystemInputs({
       catalog: inputCatalog, getDefinition: () => state.definition, getRecords: () => state.records, notify,
-      onChooseMethod: () => methodWorkspace.open(),
       configure: (value) => request("/api/v1/model-center/research-inputs/configure", value),
       onEdit(definition) { state.definition = definition; heading(); rebuild("plan"); modified(); },
     });
@@ -442,7 +455,7 @@ async function boot() {
 
 async function openExample() {
   if (!researchWorkspace) { notify("正在连接研究工作区，请稍后重试。"); return; }
-  await researchWorkspace.openExample("calendar");
+  await researchWorkspace.openExample("system");
 }
 
 async function openChain(focusBoard = false) {
@@ -536,6 +549,7 @@ modelingWorkspace = mountModeling({
 });
 wizardWorkspace = mountWizard({
   getDefinition: () => state.definition && structuredClone(state.definition), getRecords: () => state.records,
+  getMethod: (component) => state.methods.get(recordKey(component)),
   getInputCatalog: () => state.inputCatalog,
   getInspection: () => inspectionWorkspace?.get(),
   onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); },
@@ -553,17 +567,15 @@ wizardWorkspace = mountWizard({
 });
 methodWorkspace = mountMethodPicker({
   getDefinition: () => state.definition && structuredClone(state.definition), getRecords: () => state.records, notify,
+  loadMethods: loadResearchMethods,
   onEdit(definition) { state.definition = definition; heading(); rebuild("plan"); modified(); },
   validate: async (definition) => (await request("./validate", definition)).check,
 });
 inspectionWorkspace = mountInspection({
   getDefinition: () => state.definition,
-  getRecords: () => state.records,
   inspect: async (definition) => (await request("./validate", definition)).inspection,
-  onEdit(definition) { state.definition = definition; heading(); rebuild(state.selected); modified(); },
-  onTechnical(key) { technical(true); if (key) { state.tab = "parameters"; select(key); } },
-  notify,
   onChange() { wizardWorkspace?.render(); },
+  onEdit(definition) { state.definition = definition; modified(); },
 });
 // 公开目录独立读取，个人工作区或本地草稿初始化失败不会阻断目录展示。
 const libraryReady = mountStudyLibrary({ openTemplate: (id, persist) => {
@@ -573,9 +585,21 @@ const libraryReady = mountStudyLibrary({ openTemplate: (id, persist) => {
 await boot().then(() => {
   researchWorkspace = mountResearch({
     getDefinition: () => structuredClone(state.definition), getRecords: () => state.records, notify,
-    onDataChange(table, dataKind) { modelingWorkspace.setData(table); wizardWorkspace.setData(table, dataKind); },
+    async configureTemplate(definition) {
+      if (definition.purpose !== "train" || Object.values(definition.input_recipes).some((recipe) => recipe.kind === "artifact")) return definition;
+      await loadResearchMethods();
+      const configured = structuredClone(definition);
+      for (const node of configured.composition.nodes) {
+        const method = state.methods.get(recordKey(node.component));
+        if (method) useMethodDefaults(configured, node, method.configuration);
+      }
+      return configured;
+    },
+    onDataChange(table, dataKind) {
+      modelingWorkspace.setData(table); wizardWorkspace.setData(table, dataKind);
+      inspectionWorkspace.setObservations(table, dataKind);
+    },
     onRunChange(run) { modelingWorkspace.setRun(run); wizardWorkspace.setRun(run); },
-    onExecutionCheck(checks) { inspectionWorkspace.setExecutionChecks(checks); },
     onFlowChange(context) { showStudyFlow({ ...context, inputCatalog: state.inputCatalog }, state.records); },
     onModelChange: () => wizardWorkspace.openReview(),
     onTemplateChange(value, { preview = false } = {}) {

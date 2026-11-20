@@ -6,15 +6,15 @@
 
 from copy import deepcopy
 from datetime import date, timedelta
-import math
-from statistics import fmean
 from time import monotonic
 from collections.abc import Callable
 
 from .containers import Artifact, ContainerRunner
 from .service import profile_key
 from ..contracts.model_center.components import Composition
+from ..contracts.research.evaluation import PREDICTION_METRICS
 from ..execution_contracts import compile_execution
+from ..contracts.research.plans import TRAINING_CUTOFF
 
 
 def observation_input(table: dict, variables: list[str]) -> Artifact:
@@ -40,7 +40,8 @@ def observation_input(table: dict, variables: list[str]) -> Artifact:
     )
 
 
-def configuration(recipe: dict, plan: dict, table: dict, context: dict | None = None) -> dict:
+def configuration(recipe: dict, plan: dict, table: dict, context: dict | None = None,
+                  training_cutoff: str | None = None) -> dict:
     """把显式运行槽位绑定到当次封存业务日及对象。"""
     result = dict(recipe["value"])
     if not recipe.get("runtime_fields"):
@@ -63,7 +64,9 @@ def configuration(recipe: dict, plan: dict, table: dict, context: dict | None = 
         "season_end": cutoff,
     }
     for key, slot in recipe.get("runtime_fields", {}).items():
-        result[key] = slots[slot]
+        if slot == TRAINING_CUTOFF and training_cutoff is None:
+            raise ValueError("Training cutoff was not sealed before execution")
+        result[key] = training_cutoff if slot == TRAINING_CUTOFF else slots[slot]
     return result
 
 
@@ -74,11 +77,16 @@ def table_key(row: dict) -> tuple:
 
 
 def evaluate(
-    outputs: dict[str, dict], observed: dict, cutoffs: dict[str, str | None]
+    outputs: dict[str, dict], observed: dict, cutoffs: dict[str, str | None],
+    metric_codes: list[str] | None = None,
 ) -> list[dict]:
     """只评价已产生预测且有同期实测的目标，逐目标保留覆盖和误差。"""
     actual = {table_key(row): row["values"] for row in observed["rows"]}
     metadata = {column["code"]: column for column in observed["columns"]}
+    calculations = {
+        code: compute for code, (_, compute) in PREDICTION_METRICS.items()
+        if metric_codes is None or code in metric_codes
+    }
     metrics = []
     for output, table in outputs.items():
         if not isinstance(table.get("columns"), list) or not isinstance(
@@ -113,12 +121,14 @@ def evaluate(
                     }
                 )
                 continue
-            errors = [
-                row["values"][code] - actual[table_key(row)][code]
+            pairs = [
+                (row["values"][code], actual[table_key(row)][code])
                 for row in table["rows"]
                 if table_key(row) in eligible and code in actual[table_key(row)]
             ]
-            if errors:
+            if pairs:
+                observed = [reference for _, reference in pairs]
+                errors = [prediction - reference for prediction, reference in pairs]
                 metrics.append(
                     {
                         "output": output,
@@ -128,9 +138,7 @@ def evaluate(
                         "coverage": len(errors) / len(eligible),
                         "expected_rows": len(eligible),
                         "status": "evaluated",
-                        "mae": fmean(abs(value) for value in errors),
-                        "rmse": math.sqrt(fmean(value * value for value in errors)),
-                        "bias": fmean(errors),
+                        **{key: compute(errors, observed) for key, compute in calculations.items()},
                     }
                 )
     return metrics
@@ -198,7 +206,9 @@ def execute(
                 continue
             recipe = plan["input_recipes"][source["port"]]
             if recipe["kind"] == "configuration":
-                parameters = configuration(recipe, plan, table, payload.get("execution_context"))
+                if not (prediction and profile.get("inference")):
+                    parameters = configuration(recipe, plan, table, payload.get("execution_context"),
+                                               payload.get("training_cutoff"))
             elif recipe["kind"] == "artifact":
                 inputs[port] = Artifact.encode(payload["artifact_inputs"][source["port"]])
             else:
@@ -263,6 +273,7 @@ def execute(
                 output["code"]: pipeline["cutoffs"].get(output["source"]["node"])
                 for output in plan["composition"]["outputs"]
             },
+            plan["evaluation"].get("metrics"),
         ) if table is not None else [],
         "receipts": receipts,
         "pipeline": pipeline if prediction or pipeline["states"] else None,

@@ -1,6 +1,7 @@
 // 用禁用的字段组保护配置，保留原控件自身的可用性规则及配置步骤导航。
 export function mountDraftLifecycle({ onOpen, report }) {
-  const groups = [...document.querySelectorAll("[data-wizard-section]")].map((section) => {
+  const configuration = "[data-wizard-section],[data-draft-fields]";
+  const groups = [...document.querySelectorAll(configuration)].map((section) => {
     const group = document.createElement("fieldset");
     group.className = "draft-configuration-fields";
     group.style.cssText = "border:0;margin:0;padding:0;min-width:0";
@@ -11,7 +12,8 @@ export function mountDraftLifecycle({ onOpen, report }) {
   button.addEventListener("click", onOpen);
   for (const event of ["click", "pointerdown", "keydown", "input", "change"]) {
     document.addEventListener(event, (value) => {
-      if (!published || !value.target.closest("[data-wizard-section],#technical-workspace,#edit-plan,#auto-layout")) return;
+      if (!published || !value.target.closest(configuration + ",#technical-workspace,#edit-plan,#auto-layout")) return;
+      if (value.target.closest("summary[data-calculation-detail]")) return;
       value.preventDefault(); value.stopImmediatePropagation();
       if (event === "click") report("已发布配置只读，请先基于已发布版本开启新草稿。");
     }, true);

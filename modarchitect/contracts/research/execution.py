@@ -16,6 +16,14 @@ PURPOSE_OPERATIONS = {"train": "train", "explore": "analyze", "simulate": "simul
 UsagePhase = Literal["training", "application", "analysis", "evaluation"]
 
 
+class MethodSetting(Contract):
+    """准确修订采用的固定算法设置。"""
+
+    code: Code
+    name: str
+    value: str | bool | int | float
+
+
 class FieldUsage(Contract):
     """请求字段的科学用途；用途不改变变量本体、单位或来源性质。"""
 

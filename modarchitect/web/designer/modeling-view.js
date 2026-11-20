@@ -57,8 +57,8 @@ export function mountModeling({ getDefinition, getRecords, onEdit, onExample, on
     const model = getRecords().get(context.model.component.code + "@" + context.model.component.revision);
     host.append(element("p", "modeling-muted", "方法：" + (model?.definition.name || "当前训练方法") + "。每个目标分别训练；增加因素不需要增加模型节点。"));
     if (history) host.append(dateField("历史趋势用到哪一天的实测？", history.fit_through, (value) => change({ fitThrough: value })));
-    host.append(dateField("最终模型用到哪一天的实测？", parameters.training_end, (value) => change({ trainingEnd: value })));
-    host.append(element("p", "modeling-muted", "之后的实测留作评价，不参与本次训练。未来预测仍需提供该日期的已知因素。"));
+    if (parameters.training_end) host.append(dateField("最终模型用到哪一天的实测？", parameters.training_end, (value) => change({ trainingEnd: value })));
+    else host.append(element("p", "modeling-muted", "训练时由平台根据实际观测日期划分。"));
   }
   function renderPeriods() {
     const host = byId("modeling-periods"), plan = getDefinition(); host.replaceChildren();
@@ -115,7 +115,7 @@ export function mountModeling({ getDefinition, getRecords, onEdit, onExample, on
       settings(plan, null);
     }
   }
-  for (const [id, kind] of [["start-direct", "multivariable"], ["start-chain", "chain"]]) {
+  for (const [id, kind] of [["start-direct", "system"], ["start-chain", "chain"]]) {
     byId(id).addEventListener("click", async () => {
       try { await onExample(kind); } catch (error) { notify(error.message); }
     });

@@ -100,6 +100,16 @@ async function until(condition, label, timeout = designOnly ? 15000 : 180000) {
   throw new Error("UI acceptance timed out: " + label + " · " + id("workspace-status").textContent + " · " + id("wizard-error").textContent + " · " + id("method-message").textContent);
 }
 function section(name) { document.querySelector('[data-section="' + name + '"]').click(); events.push("configure/" + name); }
+async function chooseMethod(code) {
+  const selector = '[data-method="' + code + '@1"]';
+  await until(() => document.querySelector(selector), "method cards loaded", 15000);
+  const card = document.querySelector(selector);
+  const name = card.querySelector("strong").textContent;
+  card.click();
+  assert.equal(id("method-detail").querySelector('input[type="date"]'), null);
+  click("apply-method");
+  await until(() => !id("method-dialog").open && id("wizard-method").textContent.includes(name), "configured method applied", 15000);
+}
 
 try {
   await import(new URL("studio.js?live-wizard-acceptance", source));
@@ -136,7 +146,6 @@ try {
         const selector = '[data-input-port="' + item.port + '"][data-variable-code="' + item.code + '"]';
         const field = host.querySelector(selector);
         assert.ok(field?.textContent.includes(item.name) && !field.closest("[hidden], details:not([open]), dialog"), "Hidden detail in wizard: " + method.id + ":" + item.code);
-        if (item.kind === "parameter") assert.equal(field.closest("[data-resource-input]").dataset.resourceInput, item.port);
       };
       const card = document.querySelector('[data-study-template="' + entry.id + '"]');
       if (card.querySelector("select")) card.querySelector("select").value = method.id;
@@ -144,18 +153,18 @@ try {
       await until(() => id("wizard-name").value === detail.definition.name && id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "preview " + method.id, 15000);
       assert.equal(location.hash, "#configure/inputs", method.id);
       section("inputs");
-      assert.ok(document.querySelectorAll("#wizard-role-table tbody tr, #wizard-role-table [data-resource-input]").length, "Missing inputs: " + method.id);
-      for (const port of detail.definition.composition.inputs.filter((port) => detail.definition.input_recipes[port.code].kind === "artifact")) assert.ok(document.querySelector('[data-resource-input="' + port.code + '"]'), "Hidden artifact input: " + method.id);
+      assert.ok(id("wizard-role-table").textContent.trim(), "Missing inputs: " + method.id);
+      assert.equal(document.querySelector("#wizard-role-table [data-resource-input]"), null);
       for (const item of detail.input_requirements || []) {
-        if (item.kind !== "target") visibleDetail(item, id("wizard-role-table"));
+        if (item.kind === "input") visibleDetail(item, id("wizard-role-table"));
         const stage = document.querySelector('[data-flow-kind="input"][data-input-code="' + item.port + '"]');
         assert.ok(stage?.textContent.includes(item.name) && stage.textContent.includes(item.use), "Missing detail in flow: " + method.id + ":" + item.code);
       }
       section("targets");
-      assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, detail.definition.composition.outputs.length);
-      for (const outcome of document.querySelectorAll("#wizard-output-table [data-product] > strong")) {
+      assert.equal(document.querySelectorAll("#wizard-output-table [data-product]").length, 0);
+      for (const outcome of detail.inspection.outputs) {
         const stages = [...document.querySelectorAll('[data-flow-kind="product"]')];
-        assert.ok(stages.some((stage) => stage.textContent.includes(outcome.textContent)), "Missing product in flow: " + method.id + ":" + outcome.textContent + " · " + id("public-research-flow").textContent.slice(0, 200));
+        assert.ok(stages.some((stage) => stage.textContent.includes(outcome.definition.name)), "Missing product in flow: " + method.id + ":" + outcome.definition.name);
       }
       for (const target of (detail.input_requirements || []).filter((item) => item.kind === "target")) visibleDetail(target, id("wizard-output-table"));
       document.querySelector('[data-stage="review"]').click(); click("wizard-check");
@@ -209,45 +218,35 @@ try {
     await until(() => location.hash === "#configure/inputs" && id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "catalog-bound example ready", 15000);
     section("calculation");
     click("choose-method");
-    assert.equal(document.querySelectorAll("[data-method]").length, 28);
-    document.querySelector('[data-method="logistic_growth_curve@4"] button').click();
-    let driver = document.querySelector('#method-detail [data-field="x_code"]');
-    assert.ok(driver && driver.readOnly); assert.match(driver.value, /平台观测日期/);
-    change(document.querySelector('#method-detail [data-field="axis_kind"]'), "growing_degree_days");
-    driver = document.querySelector('#method-detail [data-field="x_code"]');
-    assert.equal(driver.value, ""); assert.match(id("method-detail").textContent, /积温.*deg_c_day/);
-    change(document.querySelector('#method-detail [data-field="axis_kind"]'), "elapsed_days");
-    assert.equal(document.querySelector('#method-detail [data-field="x_code"]').readOnly, true); click("apply-method");
-    await until(() => !id("method-dialog").open, "logistic applied with valid day driver", 15000);
+    await chooseMethod("historical_logistic_training");
     document.querySelector('[data-stage="review"]').click(); click("wizard-check");
     await until(() => !id("wizard-check").disabled && id("wizard-check-result").querySelector(".check-success"), "logistic full API check", 15000);
-    const proof = { service: base, method: "real DOM and live HTTP", native_browser_visual_check: false, checked_templates: checked, catalog_models: 28, canopy_inputs_and_outputs_visible: true, preview_kept_plan_and_flow: true, independent_sample_requires_explicit_save: true, blank_custom_rejected: true, logistic_axis_change_clears_driver: true, logistic_valid_day_applied: true, run_started: false };
+    const proof = { service: base, method: "real DOM and live HTTP", native_browser_visual_check: false, checked_templates: checked, catalog_models: 5, canopy_inputs_and_outputs_visible: true, preview_kept_plan_and_flow: true, independent_sample_requires_explicit_save: true, blank_custom_rejected: true, logistic_valid_day_applied: true, run_started: false };
     await mkdir(dirname(output), { recursive: true }); await writeFile(output, JSON.stringify(proof, null, 2) + "\n");
-    console.log("Designer inventory acceptance passed", JSON.stringify({ templates: checked.length, models: 28, blank_custom_rejected: true, logistic_applied: true }));
+    console.log("Designer inventory acceptance passed", JSON.stringify({ templates: checked.length, models: 5, blank_custom_rejected: true, logistic_applied: true }));
   } else if (methodsOnly) {
     if (!reopenStudy) {
       await until(() => id("workspace-status").textContent.includes("个人工作区已连接"), "workspace connected");
-      click("select-model-next"); section("calculation"); click("start-direct");
-      await until(() => saved?.design_id && !id("cloud-save").disabled, "editable engineering example adopted");
-      click("choose-method");
+      document.querySelector('[data-study-template="soil-weather-lai"] button').click();
+      await until(() => id("workspace-status").textContent.includes("正在预览完整流程") && !id("cloud-save").disabled, "research example adopted", 15000);
+      section("calculation"); click("choose-method");
+      await until(() => document.querySelectorAll("[data-method]").length === 5, "reviewed methods listed", 15000);
       const methods = [...document.querySelectorAll("[data-method]")].map((card) => card.dataset.method);
-      for (const name of ["random_forest", "xgboost", "gaussian_process", "lstm", "convlstm"]) assert.ok(methods.includes(name+"@1"), "Missing method from catalog: " + name);
-      document.querySelector('[data-defer-method="random_forest@1"]').click();
-      assert.match(id("method-detail").textContent, /待接入输入/); assert.equal(id("apply-method").disabled, false);
-      document.querySelector('[data-method="historical_logistic_training@1"] button').click();
-      assert.equal(id("apply-method").disabled, false); click("apply-method");
-      await until(() => !id("method-dialog").open && id("wizard-method").textContent.includes("历史曲线训练"), "actual component replaced");
+      for (const name of ["multivariate_linear", "historical_logistic", "random_forest", "xgboost", "gaussian_process"]) assert.ok(methods.includes(name + "_training@1"), "Missing method from catalog: " + name);
+      await chooseMethod("historical_logistic_training");
       change(id("wizard-name"), "生长曲线研究（方法配置验证）"); click("cloud-save");
-      await until(() => saved?.configuration?.definition.composition.nodes[0].component.code === "historical_logistic_training" && !id("cloud-save").disabled, "replaced model saved");
+      await until(() => saved?.configuration?.definition.composition.nodes.some((node) => node.component.code === "historical_logistic_training") && !id("cloud-save").disabled, "replaced model saved");
       await mkdir(dirname(sessionFile), { recursive: true }); await writeFile(sessionFile, JSON.stringify({ base, cookie })+"\n", { mode: 0o600 });
     } else {
       await until(() => saved?.design_id === reopenStudy && id("workspace-status").textContent.includes("已打开云端方案") && !id("cloud-save").disabled, "new page reopened configured method");
     }
     const plan = saved.configuration.definition;
-    assert.equal(plan.composition.nodes[0].component.code, "historical_logistic_training");
-    assert.deepEqual(plan.evaluation.target_codes, ["height"]);
+    const trained = plan.composition.nodes.find((node) => node.component.code === "historical_logistic_training");
+    assert.ok(trained);
+    assert.deepEqual(plan.evaluation.target_codes, ["lai"]);
     assert.match(id("wizard-method-state").textContent, /运行待启用/);
-    const proof = { service: base, method: "real DOM events and live server structure validation", native_browser_visual_check: false, engineering_demo_only: true, fresh_page: Boolean(reopenStudy), design_id: saved.design_id, revision: saved.revision, selected_component: plan.composition.nodes[0].component, output_ports: plan.composition.outputs.map((item) => item.source.port), target_codes: plan.evaluation.target_codes, runtime_enabled: false, run_started: false, configuration_sha256: saved.configuration_sha256, http_error_count: exchanges.filter((item) => item.status >= 400).length };
+    await until(() => id("research-inspection").querySelector("[data-inspection-node]") && !id("research-inspection").hasAttribute("aria-busy"), "method preview settled", 15000);
+    const proof = { service: base, method: "real DOM events and live server structure validation", native_browser_visual_check: false, engineering_demo_only: true, fresh_page: Boolean(reopenStudy), design_id: saved.design_id, revision: saved.revision, selected_component: trained.component, output_ports: plan.composition.outputs.map((item) => item.source.port), target_codes: plan.evaluation.target_codes, runtime_enabled: false, run_started: false, configuration_sha256: saved.configuration_sha256, http_error_count: exchanges.filter((item) => item.status >= 400).length };
     assert.equal(proof.http_error_count, 0); await mkdir(dirname(output), { recursive: true }); await writeFile(output, JSON.stringify(proof, null, 2)+"\n");
     console.log("Method selection acceptance passed", JSON.stringify({ design_id: saved.design_id, component: proof.selected_component, fresh_page: Boolean(reopenStudy) }));
   } else if (thirdParty && reopenStudy) {
@@ -423,19 +422,12 @@ try {
   id("observation-file").dispatchEvent(new dom.window.Event("change"));
   await until(() => id("data-summary").textContent.includes("60 条") && !id("wizard-save-draft").disabled, "uploaded engineering observations");
   section("calculation");
-  change(id("input-training-end"), "2026-05-10"); click("build-input-model");
+  click("choose-method");
   }
-  await until(() => id("method-dialog").open, "method picker opened");
-  const chosenCard = document.querySelector('[data-method="' + trainingMethod + '@1"]');
-  const chosenName = chosenCard.querySelector("strong").textContent;
-  chosenCard.querySelector("button").click();
-  assert.equal(id("apply-method").disabled, false); click("apply-method");
-  await until(() => !id("method-dialog").open && id("wizard-method").textContent.includes(chosenName) && document.querySelectorAll("#modeling-flow > li").length === 1, "built actual model");
-  assert.equal(id("input-training-end").disabled, true);
-  section("outputs");
-  assert.equal(document.querySelectorAll("#wizard-products .product-row").length, 2);
-  change(id("wizard-success"), "以日期留出观测分别核对两个目标；本次构造数据仅验证工程闭环。");
+  await chooseMethod(trainingMethod);
   click("wizard-next"); events.push("review/check");
+  assert.equal(location.hash, "#review");
+  change(id("wizard-success"), "以日期留出观测分别核对两个目标；本次构造数据仅验证工程闭环。");
   click("wizard-check"); await until(() => document.querySelector(".check-success"), "server compilation");
   click("wizard-save-draft");
   await until(() => saved?.design_id && !id("wizard-save-draft").disabled, "saved plan");

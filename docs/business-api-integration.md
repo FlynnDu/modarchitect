@@ -1,5 +1,7 @@
 # 业务系统API对接
 
+v0.4.0 开发草稿，尚未上线：公共方案目录只提供 5 个具备训练预测闭环的方案。默认详情下架返回 404；已有研究继续传原 `sha256` 回读，不能替换为最新定义。API 身份范围、统一 `inspection`、保存/发布及模型预测合同保持。[目录复盘与兼容规则](growth-research-catalog.md)。
+
 v0.3.0：业务后端需转接新增 26：`POST /api/v1/research/design-versions/{version_id}/drafts`，注入原企业范围、服务 Key 和幂等键，无请求体。13/14 透传 `draft_id/draft_state/base_version_id/published_version_id`；关闭草稿保存返回 409，必须明确开启新草稿。原保存回执三个字段保持不变；应用继续使用准确的正式版本 UUID。[请求、响应与重试](research-version-integration.md#v030发布后再次编辑) · [迁移及改动项](release-notes-v0.3.0.md)。
 
 2026-11-19，v0.2.2 修复：`design-saves` 正式保存后的点位方案，通过 `POST /api/v1/research/design-drafts/{design_id}/publish` 固定版本时允许尚未选地；请求继续传 `expected_revision`，企业范围沿用原约定。不要为发布补造地块或降低采样尺度。`POST /api/v1/research/studies` 才绑定实际地块及点位，点位方案要求逐地块覆盖。显式绑定选地的历史草稿仍核验原范围，旧暂存草稿和直接发布入口保留原合同。见[本次修复](release-notes-v0.2.2.md)。

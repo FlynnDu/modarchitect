@@ -16,14 +16,16 @@ from .contracts.research.input_bindings import (
     validate_research_input_bindings,
 )
 from .contracts.research.plan_file import export_plan, import_plan
-from .contracts.research.plans import ResearchPlan
+from .contracts.research.plans import TRAINING_CUTOFF, ResearchPlan
 from .system_inputs import validate_input_bindings
 from .execution_contracts import input_usages
 from .contracts.violations import ContractViolation
+from .research_methods import method_declarations
 
 _RUNTIME_EXAMPLES = {
     "cutoff_date": "2000-01-01",
     "fit_cutoff_date": "2000-01-01",
+    TRAINING_CUTOFF: "2000-01-01",
     "cutoff_timestamp": "2000-01-01T00:00:00+00:00",
     "object": {
         "field_ref": "validation",
@@ -99,6 +101,14 @@ def _requests(plan: ResearchPlan, *, for_execution: bool = True) -> dict[str, tu
         if recipe.kind != "configuration":
             raise ValueError("Research request requires a configuration recipe")
         value = dict(recipe.value or {})
+        if TRAINING_CUTOFF in recipe.runtime_fields.values():
+            method = method_declarations().get((node.component.code, node.component.revision))
+            if (not method or plan.purpose != "train" or plan.evaluation.split_unit != "time"
+                    or recipe.runtime_fields != {method.cutoff_field: TRAINING_CUTOFF}
+                    or method.cutoff_field in value):
+                raise ValueError("Automatic training cutoff requires the reviewed method and a time holdout rule")
+            if any(b.source.node == node.code for consumer in plan.composition.nodes for b in consumer.bindings):
+                raise ValueError("Automatic training cutoff is only supported for the final training step")
         # 形状检查使用占位值。科学时点由未来的可信运行上下文绑定。
         value.update(
             {

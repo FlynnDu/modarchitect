@@ -66,25 +66,21 @@ def compile_execution(
         reference = node.component.model_dump(mode="json")
         key = reference_key(reference)
         capability = execution_capability(reference)
-        profile = profiles.get(key)
-        if profile is None:
-            raise ValueError("Component execution is not available: %s" % key)
-        inference = (
-            reference_key(capability.inference.model_dump(mode="json"))
-            if capability.inference
-            else None
-        )
-        if (
-            profile.get("state_output") != capability.state_output
-            or profile.get("inference") != inference
-        ):
-            raise ValueError(
-                "Execution artifact state or inference differs from its declaration"
-            )
-        if inference and inference not in profiles:
-            raise ValueError("Exact inference artifact is unavailable")
+        validate_execution_profile(key, capability, profiles)
         result[key] = capability.model_dump(mode="json")
     return result
+
+
+def validate_execution_profile(key: str, capability: ExecutionCapability, profiles: dict) -> None:
+    """目录状态和实际启动使用同一项准确制品检查。"""
+    profile = profiles.get(key)
+    if profile is None:
+        raise ValueError("Component execution is not available: %s" % key)
+    inference = reference_key(capability.inference.model_dump(mode="json")) if capability.inference else None
+    if profile.get("state_output") != capability.state_output or profile.get("inference") != inference:
+        raise ValueError("Execution artifact state or inference differs from its declaration")
+    if inference and inference not in profiles:
+        raise ValueError("Exact inference artifact is unavailable")
 
 
 def validate_operation(composition: Composition, operation: ResearchOperation) -> None:

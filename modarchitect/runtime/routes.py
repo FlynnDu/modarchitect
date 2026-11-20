@@ -33,7 +33,7 @@ from .contracts import (
 from .service import ResearchRuntime
 from .workspace import owner, session
 from ..system_inputs import input_readiness
-from ..study_templates import templates, template, template_view
+from ..study_templates import templates, design_template, template_view
 from ..inspection import inspect_definition
 
 workspace = APIRouter(prefix="/api/v1/workspace", tags=["个人研究工作区"])
@@ -101,7 +101,7 @@ def list_templates() -> dict:
 @workspace.get("/study-templates/{template_id}")
 def read_template(template_id: str, principal: Owner, sha256: str | None = None) -> dict:
     """会话内读取可采用定义，受限原生输入不发送给浏览器。"""
-    result = template_view(template(template_id, sha256), include_definition=True)
+    result = template_view(design_template(template_id, sha256), include_definition=True)
     return {**result, "inspection": inspect_definition(result["definition"]).model_dump(mode="json")}
 
 

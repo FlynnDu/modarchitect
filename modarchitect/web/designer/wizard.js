@@ -4,11 +4,10 @@ export { inputUsageRows } from "./modeling.js?v=continuous1";
 import { issueMessage } from "./panels.js?v=continuous1";
 import { researchTitle, researchQuestion } from "./study-library.js?v=continuous1";
 import { inputProvision } from "./input-provision.js?v=continuous1";
-import { requestProperties } from "./request-schema.js?v=continuous1";
 import { calendarAxes } from "./calendar-axis.js?v=continuous1";
 
-const sections = ["basic", "inputs", "targets", "sources", "calculation", "outputs"];
-const sectionNames = ["基础信息", "研究资料与候选因素", "模型输出与研究成果", "数据来源", "计算与评价", "结果与版本"];
+const sections = ["basic", "inputs", "targets", "sources", "calculation"];
+const sectionNames = ["基础信息", "研究资料与候选因素", "目标指标", "数据来源", "计算与评价"];
 const byId = (id) => document.getElementById(id);
 
 function reviewSection(issue, plan) {
@@ -16,7 +15,8 @@ function reviewSection(issue, plan) {
   if (["name", "question", "responsible_user_id"].includes(section)) return "basic";
   if (section === "variables") return plan.variables[index]?.role === "target" ? "targets" : "inputs";
   if (section === "collection_requirements") return "sources";
-  if (section === "evaluation" || (section === "composition" && index === "outputs")) return "outputs";
+  if (section === "evaluation" && index === "success_criteria") return "review";
+  if (section === "evaluation" && index === "target_codes") return "targets";
   return "calculation";
 }
 
@@ -58,10 +58,11 @@ function readonlyInputTable(title, items, sample = null) {
   return wrap;
 }
 
-export function mountWizard({ getDefinition, getRecords, getInputCatalog, getInspection, onEdit, onExample, onTechnical, onChooseIndicators, onSave, validate }) {
+export function mountWizard({ getDefinition, getRecords, getMethod, getInputCatalog, getInspection, onEdit, onExample, onTechnical, onChooseIndicators, onSave, validate }) {
   const initial = location.hash.slice(1).split("/");
-  let stage = ["select", "configure", "review"].includes(initial[0]) ? initial[0] : "select";
-  let section = sections.includes(initial[1]) ? initial[1] : "basic";
+  const previousResultsPage = initial[0] === "configure" && initial[1] === "outputs";
+  let stage = previousResultsPage ? "review" : ["select", "configure", "review"].includes(initial[0]) ? initial[0] : "select";
+  let section = previousResultsPage ? "calculation" : sections.includes(initial[1]) ? initial[1] : "basic";
   let template = "growth", table = null, dataKind = "user_supplied", checkedPlan = null, checking = false;
   let templateInfo = null, saving = false;
   const saveControl = byId("wizard-save-design");
@@ -82,7 +83,7 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
     }
     for (const panel of document.querySelectorAll("[data-wizard-section]")) panel.hidden = panel.dataset.wizardSection !== section;
     byId("wizard-position").textContent = sectionNames[sections.indexOf(section)];
-    byId("wizard-next").textContent = section === "outputs" ? "下一步：检查与确认 →" : "下一步 →";
+    byId("wizard-next").textContent = section === "calculation" ? "前往检查与确认 →" : "下一步 →";
     const url = new URL(location.href); url.hash = stage + (stage === "configure" ? "/" + section : "");
     history.replaceState(history.state, "", url);
     render();
@@ -96,8 +97,7 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
   }
   function roleTable(plan) {
     const inputHost = byId("wizard-role-table"), outputHost = byId("wizard-output-table"), rows = inputUsageRows(plan, getRecords(), getInspection?.());
-    const resources = resourceInputs(plan, getRecords());
-    const native = studyInputDetails(plan, templateInfo), details = [...native.values()].flat();
+    const details = [...studyInputDetails(plan, templateInfo).values()].flat();
     const nativeInputs = details.filter((item) => item.kind === "input");
     const nativeTargets = details.filter((item) => item.kind === "target");
     inputHost.replaceChildren(); outputHost.replaceChildren();
@@ -110,7 +110,7 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
     ] : [["input", "研究输入", "提供给当前方法分析、拟合或模拟的资料。", rows]];
     for (const [code, title, description, items] of groups) {
       if (code === "other" && !items.length) continue;
-      if (code === "input" && !items.length && (resources.some(({ recipe }) => recipe.kind !== "configuration") || calendarAxes(plan).length)) continue;
+      if (code === "input" && !items.length && (nativeInputs.length || calendarAxes(plan).length)) continue;
       const host = code === "output" ? outputHost : inputHost;
       const group = element("section", "model-io-group"); group.dataset.ioGroup = code;
       const heading = element("h3", "", title); heading.id = "model-io-" + code;
@@ -168,44 +168,12 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
       card.append(element("h3", "", "平台日期驱动"), element("p", "", "来源：平台根据每条资料的观测日期自动换算。无需手工采集或重复选择，不补齐没有观测的日期，也不代表播种后天数。"));
       inputHost.append(card);
     }
-    if (resources.length) {
-      const group = element("section", "model-io-group");
-      group.append(element("h3", "", "方法资料与参数"));
-      const matching = matchesStudyTemplate(plan, templateInfo);
-      const approved = matching && (templateInfo.input_policy?.mode === "approved_dataset" || templateInfo.bundle_sha256);
-      for (const { port, recipe, consumers, parameter } of resources) {
-        const card = element("article", "product-row"); card.dataset.resourceInput = port.code;
-        card.append(element("strong", "", port.name), element("p", "", consumers.map((consumer) => (consumer.record?.definition.name || consumer.node.code) + " · " + (consumer.record?.definition.inputs.find((input) => input.code === consumer.port)?.name || consumer.port)).join("；")));
-        const status = recipe.kind === "deferred" ? parameter ? "参数待配置：请到计算与评价中配置此方法。" : "资料待接入：已约定资料类型，运行前必须完成相应来源与适配。" : recipe.kind === "configuration" ? "当前方法参数；完整性以检查结果为准。" : approved ? "使用方案指定的资料，开展自有研究需另行接入数据。" : "引用既有成果；运行前核验实际资料与授权。";
-        card.append(element("p", recipe.kind === "deferred" ? "input-channel-pending" : "modeling-muted", status));
-        const parameters = (native.get(port.code) || []).filter((item) => item.kind === "parameter");
-        if (parameters.length) card.append(readonlyInputTable(port.name, parameters));
-        if (recipe.kind === "configuration") {
-          const schema = consumers[0]?.record?.research_contract?.request_schema;
-          const details = element("details"), list = element("dl"); details.append(element("summary", "", "查看已采用的参数"));
-          for (const [key, property] of requestProperties(schema, recipe.value)) {
-            const value = recipe.value?.[key];
-            if ((value === undefined || value === null) && !schema.required?.includes(key) && !recipe.runtime_fields?.[key]) continue;
-            const text = recipe.runtime_fields?.[key] ? "发起研究时由运行上下文提供" : value === undefined || value === null ? "尚未配置" : Array.isArray(value) ? value.map((code) => variableLabel(plan, code)).join("、") || "尚未选择" : typeof value === "object" ? "已配置（在计算与评价中查看）" : typeof value === "boolean" ? value ? "是" : "否" : variableLabel(plan, String(value));
-            const label = property.title || key; list.append(element("dt", "", label), element("dd", "", property.labels?.[value] || text));
-          }
-          details.append(list); card.append(details);
-        }
-        group.append(card);
-      }
-      inputHost.append(group);
-    }
-    if (nativeTargets.length || plan.composition.outputs.length) {
+    if (nativeTargets.length) {
       const group = element("section", "model-io-group"); group.dataset.ioGroup = "output";
-      if (nativeTargets.length) {
-        group.append(element("h3", "", "模型输出"), element("h4", "", "目标指标（实测参照）"), readonlyInputTable("目标指标（实测参照）", nativeTargets));
-        if (plan.composition.outputs.length) group.append(element("h4", "", "计算成果"));
-      } else group.append(element("h3", "", "计算成果"));
-      for (const output of productRows(plan, getRecords())) {
-        const item = element("div", "product-row"); item.dataset.product = output.code;
-        item.append(element("strong", "", output.name), element("p", "", output.description)); group.append(item);
-      }
+      group.append(element("h3", "", "目标指标（实测参照）"), readonlyInputTable("目标指标（实测参照）", nativeTargets));
       outputHost.append(group);
+    } else if (!training) {
+      outputHost.append(element("p", "modeling-muted", "预期成果可在「检查与确认」中查看。"));
     }
   }
   function sampleRecord() {
@@ -230,25 +198,25 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
     }
     if (dialog.showModal) dialog.showModal(); else dialog.setAttribute("open", "");
   }
-  function products(plan) {
-    const host = byId("wizard-products"); host.replaceChildren();
-    for (const output of productRows(plan, getRecords())) {
-      const card = element("div", "product-row");
-      card.append(element("strong", "", output.name), element("p", "", output.description)); host.append(card);
-    }
-    if (!plan.composition.outputs.length) host.append(element("p", "information-note", "建立计算关系后，系统会列出这个方法实际产出的成果。"));
-  }
   function review(plan, methodNames) {
     const host = byId("wizard-review-summary"); host.replaceChildren();
     byId("wizard-view-flow").hidden = !plan.composition.nodes.length;
     const context = studySettings(plan, getRecords()), used = inputUsageRows(plan, getRecords()), targets = context?.parameters.targets || plan.evaluation.target_codes;
     const resources = resourceInputs(plan, getRecords()).filter((item) => item.recipe.kind !== "configuration"), products = productRows(plan, getRecords());
-    const data = table ? (dataKind === "synthetic" ? "示例观测数据" : "标准观测记录") + " · " + table.rows.length + " 条 · " + table.columns.length + " 项指标" : resources.some((item) => item.recipe.kind === "artifact") ? "已引用方案资料，尚未核验本次运行数据；请查看第02步的来源与资料明细" : "尚未提供本次运行观测数据（不影响检查设计定义）";
+    const data = table ? (dataKind === "synthetic" ? "示例观测数据" : "标准观测记录") + " · " + table.rows.length + " 条 · " + table.columns.length + " 项指标" : resources.some((item) => item.recipe.kind === "artifact") ? "已引用方案资料，尚未核验本次运行数据；请核对项目的数据来源" : "尚未提供本次运行观测数据（不影响检查设计定义）";
+    const evaluation = getInspection?.()?.evaluation;
+    const percent = evaluation?.training_percent;
+    const strategy = percent != null ? `按观测日期划分 · 训练 ${percent}% / 验证 ${100 - percent}%`
+      : evaluation?.strategy === "configured_window" ? "按方案指定的验证窗口"
+      : context?.parameters.training_end ? "按已保存日期留出，训练至 " + context.parameters.training_end
+      : "按方案与组件声明";
+    const metrics = evaluation?.metrics.filter((metric) => metric.selected !== false).map((metric) => metric.name);
     for (const [label, value] of [
       ["研究问题", plan.question || "尚未填写"], ["当前方法", methodNames || "尚未建立模型"],
       ["目标指标与成果", [...targets.map((c) => variableLabel(plan, c)), ...products.map((product) => product.name)].join("、") || "尚未配置成果"],
       ["研究资料", [...used.map((r) => variableLabel(plan, r.variable.code)), ...resources.map((item) => item.port.name + (item.recipe.kind === "deferred" ? "（待配置/接入）" : ""))].join("、") || "尚未配置研究资料"],
-      ["输入数据", data], ["评价方式", context ? "按日期留出；截至 " + context.parameters.training_end + " 训练，之后的实测用于评价" : "按准确方案与组件声明"],
+      ["输入数据", data], ["评价方式", strategy],
+      ...(metrics?.length ? [["评价指标", metrics.join("、")]] : []),
     ]) {
       const row = element("dl"); row.append(element("dt", "", label), element("dd", "", value)); host.append(row);
     }
@@ -258,7 +226,6 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
     for (const [id, value] of [["wizard-name", researchTitle(plan)], ["wizard-question", researchQuestion(plan)], ["wizard-responsible-user-id", plan.responsible_user_id], ["wizard-success", plan.evaluation.success_criteria]]) {
       if (document.activeElement !== byId(id)) byId(id).value = value || "";
     }
-    const native = plan.layout?.study_template && !Object.values(plan.input_recipes).some((r) => r.kind === "observations");
     const marker = plan.layout?.study_template;
     const matches = matchesStudyTemplate(plan, templateInfo);
     byId("wizard-template-version").value = !marker ? "自定义" : matches ? templateInfo.title + " · v" + templateInfo.revision : "模板版本待加载";
@@ -266,21 +233,20 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
     byId("open-indicator-library").hidden = fixed;
     byId("open-system-example").hidden = !sampleRecord();
     byId("open-output-library").hidden = fixed || plan.purpose !== "train";
-    const context = studySettings(plan, getRecords()), names = context?.parameters.targets || plan.evaluation.target_codes;
-    byId("wizard-goal").textContent = plan.purpose !== "train" ? plan.question || "明确研究问题与预期成果" : names.length ? "预测「" + names.map((c) => plan.variables.find((v) => v.code === c)?.name || c).join("、") + "」与已知因素之间的关系" : "从指标库选择要预测的实测指标";
     const records = plan.composition.nodes.map((n) => getRecords().get(n.component.code + "@" + n.component.revision));
-    const methodNames = records.map((record) => record?.definition.name || "准确组件").join("、");
+    const methods = plan.composition.nodes.map((node) => getMethod?.(node.component));
+    const stepNames = records.map((record, index) => methods[index]?.name || record?.definition.name || "准确组件");
+    const methodNames = stepNames.filter((_, index) => !records[index]?.definition.configuration.research_model?.automatic_date_axis).join("、");
     byId("wizard-method").textContent = methodNames || "尚未选择计算方法";
     const reusable = records.some((record) => (record?.research_contract.capabilities || record?.definition.configuration.research_model?.execution)?.state_output);
-    byId("wizard-method-note").textContent = reusable ? "此方法声明可复用的训练模型；训练成功后可以保存并用于后续预测。" : "按所选方法产生分析、曲线或模拟成果；具体成果见第03步，不会自动生成可复用预测模型。";
-    byId("wizard-product-note").textContent = reusable ? "训练成功后可保存为候选预测模型。独立评价、科研复核与版本生效需分别确认。" : "应用方案后，按上方成果清单生成实际结果。";
+    byId("wizard-method-note").textContent = reusable
+      ? "可以先保存方案，收集到观测资料后再开始训练。" : "在下方查看这项研究如何从资料得到结果。";
     const inspection = getInspection?.();
-    document.querySelector(".modeling-workspace").hidden = Boolean(plan.composition.nodes.length && inspection !== undefined || native && plan.purpose !== "train");
-    const enabled = records.length && records.every((record) => record?.research_contract.execution.status === "available");
+    const enabled = records.length && records.every((record, index) => (methods[index]?.execution || record?.research_contract.execution.status) === "available");
     byId("wizard-method-state").textContent = !records.length ? "待选择" : inspection?.checks.operation.status === "blocked" ? "操作不兼容" : enabled ? "制品已登记 · 启动前检查" : "可设计 · 运行待启用";
     byId("wizard-method-state").dataset.state = enabled ? "ready" : "pending";
     if (checkedPlan && checkedPlan !== JSON.stringify(plan)) { checkedPlan = null; byId("wizard-check-result").replaceChildren(); }
-    roleTable(plan); products(plan); review(plan, methodNames);
+    roleTable(plan); review(plan, stepNames.join("、"));
     byId("study-run").textContent = plan.purpose === "explore" ? "检查并开始分析" : plan.purpose === "simulate" ? "检查并开始模拟" : "检查并开始训练";
   }
   async function check() {
@@ -299,13 +265,15 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
         for (const issue of result.issues) {
           const node = snapshot.composition.nodes.find((node) => node.code === issue.node);
           const item = element("div", "review-issue"), section = reviewSection(issue, snapshot);
-          const edit = element("button", "text-button", "前往" + sectionNames[sections.indexOf(section)]);
+          const edit = element("button", "text-button", section === "review" ? "修改评价说明" : "前往" + sectionNames[sections.indexOf(section)]);
           edit.type = "button";
           edit.addEventListener("click", () => {
+            if (section === "review") { byId("wizard-success").focus(); return; }
             navigate("configure", section);
             document.querySelector('[data-section="' + section + '"]')?.focus();
           });
-          item.append(element("span", "", issueMessage(issue, node && getRecords().get(node.component.code + "@" + node.component.revision))), edit);
+          const message = section === "review" ? "请填写评价与结论适用范围。" : issueMessage(issue, node && getRecords().get(node.component.code + "@" + node.component.revision));
+          item.append(element("span", "", message), edit);
           list.append(item);
         }
         host.append(list); return false;
@@ -329,10 +297,10 @@ export function mountWizard({ getDefinition, getRecords, getInputCatalog, getIns
   byId("select-model-next").addEventListener("click", () => { navigate("configure", "basic"); if (template === "custom") onTechnical(); });
   byId("wizard-back").addEventListener("click", () => section === "basic" ? navigate("select") : navigate("configure", sections[sections.indexOf(section) - 1]));
   byId("wizard-next").addEventListener("click", () => {
-    try { canLeave(); section === "outputs" ? navigate("review") : navigate("configure", sections[sections.indexOf(section) + 1]); }
+    try { canLeave(); section === "calculation" ? navigate("review") : navigate("configure", sections[sections.indexOf(section) + 1]); }
     catch (exc) { error(exc.message); }
   });
-  byId("wizard-edit-again").addEventListener("click", () => navigate("configure", "basic"));
+  byId("wizard-edit-again").addEventListener("click", () => navigate("configure"));
   byId("wizard-save-draft").addEventListener("click", () => byId("cloud-save").click());
   byId("wizard-check").addEventListener("click", check);
   byId("wizard-view-flow").addEventListener("click", (event) => {

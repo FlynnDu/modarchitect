@@ -1,11 +1,11 @@
 import { formatUnit, predictionColumns } from "./modeling.js?v=continuous1";
 import { applicationPath } from "./http-path.js?v=proxy1";
 import { renderTableCurves } from "./observation-curves.js?v=continuous1";
-import { renderSummary, runOperation } from "./result-views.js?v=continuous1";
+import { evaluationValues, renderSummary, renderModelRelationships, runOperation } from "./result-views.js?v=calculation1";
 import { researchTitle } from "./study-library.js?v=continuous1";
 import { mountSourceData } from "./source-data.js?v=continuous1";
 import { mountContinuousResearch } from "./continuous-research.js?v=continuous1";
-import { mountDraftLifecycle } from "./draft-lifecycle.js?v=lifecycle1";
+import { mountDraftLifecycle } from "./draft-lifecycle.js?v=calculation1";
 
 const byId = (id) => document.getElementById(id);
 const BASE = "/api/v1/workspace";
@@ -66,7 +66,7 @@ function tableView(target, table, editable, onEdit = () => {}) {
   target.append(view);
 }
 
-export function mountResearch({ getDefinition, getRecords = () => new Map(), openDefinition, notify, onDataChange = () => {}, onRunChange = () => {}, onFlowChange = () => {}, onModelChange = () => {}, onTemplateChange = () => {}, onExecutionCheck = () => {}, onError = () => {}, beforeRun = async () => {} }) {
+export function mountResearch({ getDefinition, getRecords = () => new Map(), openDefinition, configureTemplate = async (definition) => definition, notify, onDataChange = () => {}, onRunChange = () => {}, onFlowChange = () => {}, onModelChange = () => {}, onTemplateChange = () => {}, onError = () => {}, beforeRun = async () => {} }) {
   const state = { saved: null, data: null, dataKind: "user_supplied", sourceSnapshotIds: [], template: null, run: null, model: null, prediction: null, poll: null, busy: false, pending: new Map(), flowRun: null, runData: null, generation: 0, plans: new Map(), templates: new Map(), rules: new Map() };
   const lifecycle = mountDraftLifecycle({ report: feedback, onOpen: () => guard(async () => {
     const opened = await api("/design-versions/" + state.saved.published_version_id + "/drafts", { method: "POST", idempotent: true });
@@ -107,6 +107,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
       if (response.status === 409) throw new Error("方案或请求已变化，请刷新云端方案后重试。");
       if (response.status === 401) throw new Error("工作区会话已失效，请刷新页面。");
       if (response.status === 404 && /^\/plans\/[^/]+$/.test(path)) throw new Error("当前工作区中找不到该研究方案。请使用保存时的工作区打开，或由业务系统确认访问权限。");
+      if (response.status === 404 && path.startsWith("/study-templates/")) throw new Error("该方案已从新研究目录下架，请选择支持自有数据训练和预测的方案。已有研究可从云端保存记录打开。");
       if (result.issues?.length && state.rules.has(result.issues[0].rule)) throw new Error(state.rules.get(result.issues[0].rule).guidance);
       if (typeof result.detail === "string" && /Frozen study scientific definition/.test(result.detail)) throw new Error("研究方法或数据来源已改变，请重新选择研究方案并检查设置。");
       if (typeof result.detail === "string" && /frozen study inputs.*(unavailable|not configured)/i.test(result.detail)) throw new Error("请先补齐本研究所需的数据，再开始分析。");
@@ -248,7 +249,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
   async function example(kind, persist = true) {
     state.sourceSnapshotIds = [];
     const result = await api("/examples/" + kind);
-    await openDefinition(result.definition);
+    await openDefinition(kind === "system" ? await configureTemplate(result.definition) : result.definition);
     state.data = result.observations; state.dataKind = "synthetic"; state.prediction = result.prediction_observations;
     dataView();
     if (persist) {
@@ -265,7 +266,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     state.sourceSnapshotIds = [];
     await api("/session");
     const result = await api("/study-templates/" + id);
-    await openDefinition(result.definition);
+    await openDefinition(await configureTemplate(result.definition));
     state.template = result; state.data = result.observations; state.dataKind = result.data_kind === "synthetic" ? "synthetic" : "user_supplied";
     state.prediction = result.prediction_observations;
     onTemplateChange(result, { preview: true }); dataView();
@@ -291,7 +292,8 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
       const item = node("div", "", "research-metric");
       item.append(node("span", result.pipeline?.plan.variables.find((value) => value.code === metric.target)?.name || metric.target));
       if (metric.status === "evaluated") {
-        item.append(node("strong", "预测误差 " + metric.rmse.toFixed(4) + " " + formatUnit(metric.unit)), node("span", "RMSE · " + metric.rows + " 条配对 · 覆盖 " + (metric.coverage * 100).toFixed(0) + "%"));
+        for (const [name, value] of evaluationValues(metric)) item.append(node("strong", name + " " + value));
+        item.append(node("span", metric.rows + " 条配对 · 覆盖 " + (metric.coverage * 100).toFixed(0) + "%"));
       } else item.append(node("strong", "待实测评价"));
       byId("run-metrics").append(item);
     }
@@ -333,6 +335,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     state.model = model;
     onModelChange(model);
     const pipeline = model.model_json;
+    renderModelRelationships(byId("model-relationships"), pipeline);
     const form = byId("prediction-form"); form.replaceChildren();
     byId("prediction-panel").hidden = false;
     byId("model-source").textContent = model.name + " · 使用已保存训练状态" + (pipeline.training_data_kind === "synthetic" ? " · 合成演示数据训练" : "");
@@ -360,7 +363,7 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     state.prediction = { columns, rows: [structuredClone(last)] };
   }
 
-  byId("study-multivariable").addEventListener("click", () => guard(() => example("multivariable")));
+  byId("study-multivariable").addEventListener("click", () => guard(() => example("system")));
   byId("study-chain").addEventListener("click", () => guard(() => example("chain")));
   byId("study-analysis").addEventListener("click", () => guard(() => example("analysis")));
   byId("cloud-save").addEventListener("click", () => guard(save));
@@ -374,7 +377,6 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     const checkGeneration = state.generation, definition = getDefinition(), fingerprint = JSON.stringify(definition);
     const checked = await api("/check-execution", { method: "POST", body: { definition, ...(state.saved ? { design_id: state.saved.design_id } : {}), operation: native ? state.template.operation : (runOperation(definition)?.operation || "train"), ...(!native ? await inputBody() : {}) } });
     if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("检查期间方案或资料已变化，请重新检查后再开始研究。");
-    if (checked.checks) onExecutionCheck(checked.checks);
     if (!checked.can_execute) throw new Error(state.rules.get(checked.issues[0]?.rule)?.guidance || "当前输入或模型设置未满足执行条件，请核对后重试。");
     const saved = await saveForExecution();
     if (checkGeneration !== state.generation || fingerprint !== JSON.stringify(getDefinition())) throw new Error("保存期间方案或资料已变化，请重新检查后再开始研究。");
@@ -427,7 +429,8 @@ export function mountResearch({ getDefinition, getRecords = () => new Map(), ope
     const url = new URL(location.href), study = url.searchParams.get("study"), sample = url.searchParams.get("research"), template = url.searchParams.get("template");
     if (study) await openStudy(study);
     else if (template) await openTemplate(template, true);
-    else if (["multivariable", "chain", "system", "analysis", "calendar"].includes(sample)) await example(sample);
+    else if (sample === "system") await example(sample);
+    else if (sample) feedback("该示例已从新研究入口撤下，请从研究目录选择可训练预测方案。", true);
     else feedback("个人工作区已连接 · 云端方案与模型可重新访问。");
   });
   return { publishConfiguration() { return guard(publishConfiguration); }, openExample(kind, { persist = true } = {}) { return guard(() => example(kind, persist)); }, openTemplate(id, persist = true) { return guard(() => openTemplate(id, persist)); }, onDefinitionChange() {

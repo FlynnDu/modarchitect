@@ -53,7 +53,7 @@ def test_methods_share_http_response_and_never_claim_execution(method):
         old = client.post("/api/v1/research/configurations/check", headers=headers, json=draft_file(plan)).raise_for_status().json()
     assert checked["check"]["valid"] and old["valid"]
     assert inspected == checked["inspection"] == old["inspection"]
-    assert set(inspected) == {"schema_version", "operation", "materials", "nodes", "outputs", "checks"}
+    assert set(inspected) == {"schema_version", "operation", "materials", "nodes", "outputs", "prediction", "evaluation", "checks"}
     assert inspected["checks"]["configuration"]["status"] == "passed"
     assert inspected["checks"]["execution"] == {"status": "not_checked", "issues": []}
     assert inspected["materials"][0]["sources"][0]["data_available"] is None
@@ -61,11 +61,18 @@ def test_methods_share_http_response_and_never_claim_execution(method):
     assert node["parameters"] == plan["input_recipes"]["regression_config"]["value"]
     if method == "research_descriptive_statistics":
         assert inspected["operation"] == "analyze"
+        assert inspected["prediction"] is None
+        assert inspected["evaluation"] is None
         assert all(use["phases"] == ["analysis"] for use in node["input_usages"])
         assert "training_end" not in node["parameter_schema"]["properties"]
     else:
         assert inspected["operation"] == "train"
         assert any(use["role"] == "label" for use in node["input_usages"])
+        assert set(inspected["prediction"]["input_codes"]) == {"canopy_cover", "tuber_dm_kg_ha"}
+        assert inspected["prediction"]["target_codes"] == plan["evaluation"]["target_codes"]
+        assert inspected["evaluation"]["strategy"] == "saved_policy"
+        assert inspected["evaluation"]["training_percent"] is None
+        assert {metric["code"] for metric in inspected["evaluation"]["metrics"]} == {"r2", "mae", "rmse", "bias"}
 
 
 def test_mixed_operations_locate_same_incompatibility_as_executor():
@@ -104,6 +111,7 @@ def test_invalid_drafts_return_same_check_shape_and_no_old_facts():
         result = client.post("/designer/validate", json=plan).raise_for_status().json()["inspection"]
         assert result["checks"]["configuration"]["status"] == "blocked"
         assert result["nodes"] == []
+        assert result["prediction"] is None
 
 
 def test_native_metadata_and_historical_contracts_keep_scientific_identity():

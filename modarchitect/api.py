@@ -5,6 +5,7 @@
 """装配模型设计服务的 HTTP 入口和运行资源。"""
 
 from contextlib import asynccontextmanager
+from importlib.metadata import version
 import os
 
 from fastapi import FastAPI, Request
@@ -113,7 +114,7 @@ def create_app(
 
     prefix = (proxy_prefix if proxy_prefix is not None else os.getenv("MODARCHITECT_PROXY_PREFIX", "")).rstrip("/")
     application = FastAPI(
-        title="modarchitect", lifespan=lifespan,
+        title="modarchitect", version=version("modarchitect"), lifespan=lifespan,
         root_path_in_servers=False,
     )
 

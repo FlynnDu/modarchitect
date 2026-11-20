@@ -83,23 +83,26 @@ test("未接通方法可形成准确待接入输入，检查失败不覆盖原�
   const dataset = future.node.bindings.find((b) => b.port === "dataset").source;
   assert.equal(future.definition.input_recipes[dataset.port].kind, "deferred");
   assert.equal(future.definition.composition.inputs.find((i) => i.code === dataset.port).data_type.semantic, "research_cpu_tabular_dataset");
-  const view = mountMethodPicker({ getDefinition: () => plan, getRecords: () => all, notify: (text) => messages.push(text), onEdit(next) { edits++; plan = next; }, validate: async () => delayed ? new Promise((resolve) => { release = resolve; }) : ({ valid, issues: valid ? [] : [{ message: "独立结构检查拒绝" }] }) });
+  const linear = all.get("multivariate_linear_training@1");
+  const loadMethods = async () => ({ items: [{
+    component: { code: linear.definition.code, revision: linear.definition.revision }, name: "多变量线性回归",
+    configuration: { parameter_schema: linear.research_contract.request_schema, defaults: {}, runtime_fields: { training_end: "training_holdout_cutoff_date" } },
+  }] });
+  const view = mountMethodPicker({ getDefinition: () => plan, getRecords: () => all, loadMethods, notify: (text) => messages.push(text), onEdit(next) { edits++; plan = next; }, validate: async () => delayed ? new Promise((resolve) => { release = resolve; }) : ({ valid, issues: valid ? [] : [{ message: "独立结构检查拒绝" }] }) });
   try {
-    view.open();
-    document.querySelector('[data-method="random_forest@1"] button').click();
-    assert.match(document.getElementById("method-detail").textContent, /待接入输入/); assert.equal(document.getElementById("apply-method").disabled, false);
-    document.querySelector('[data-method="historical_logistic_training@1"] button').click();
+    await view.open();
+    document.querySelector('[data-method="multivariate_linear_training@1"]').click();
     assert.equal(document.getElementById("apply-method").disabled, false);
     document.getElementById("apply-method").click(); await new Promise(setImmediate);
     assert.equal(edits, 0); assert.match(document.getElementById("method-message").textContent, /独立结构检查拒绝/);
     delayed = true; document.getElementById("apply-method").click();
-    const date = document.querySelector('#method-detail input[type="date"]'); date.value = "2026-06-15"; date.dispatchEvent(new dom.window.Event("input"));
+    document.querySelector('#method-detail [data-field="features"] input').click();
     release({ valid: true, issues: [] }); await new Promise(setImmediate);
     assert.equal(edits, 0); assert.match(document.getElementById("method-message").textContent, /方法设置已变化/);
     delayed = false;
     valid = true; document.getElementById("apply-method").click(); await new Promise(setImmediate);
-    assert.equal(edits, 1); assert.equal(plan.composition.nodes[0].component.code, "historical_logistic_training");
-    assert.match(messages.at(-1), /历史曲线训练/);
+    assert.equal(edits, 1); assert.equal(plan.composition.nodes[0].component.code, "multivariate_linear_training");
+    assert.match(messages.at(-1), /已应用计算方式/);
   } finally { dom.window.close(); }
 });
 
@@ -194,7 +197,7 @@ test("原型的模型选择、配置导航与用途表修改同一份模型，�
     assert.equal(document.querySelector('[data-wizard-section="basic"]').hidden, false);
     assert.match(document.getElementById("wizard-error").textContent, /填写/);
     const basic = document.querySelector('[data-wizard-section="basic"]');
-    assert.equal(basic.querySelectorAll('.wizard-fields input, .wizard-fields textarea').length, 5);
+    assert.equal(basic.querySelectorAll('.wizard-fields input, .wizard-fields textarea').length, 4);
     const studyVersion = document.getElementById("wizard-study-version");
     assert.equal(studyVersion.readOnly, false);
     assert.equal(studyVersion.value, "");
@@ -222,7 +225,7 @@ test("原型的模型选择、配置导航与用途表修改同一份模型，�
     assert.equal(document.querySelector('[data-io-group="input"]').closest('[data-wizard-section]').dataset.wizardSection, "inputs");
     assert.equal(document.querySelector('[data-io-group="output"]').closest('[data-wizard-section]').dataset.wizardSection, "targets");
     assert.match(document.querySelector('[data-section="inputs"]').textContent, /研究资料与候选因素/);
-    assert.match(document.querySelector('[data-section="targets"]').textContent, /模型输出与研究成果/);
+    assert.match(document.querySelector('[data-section="targets"]').textContent, /目标指标/);
     assert.match(document.querySelector('[data-io-group="input"]').textContent, /模型输入/);
     assert.match(document.querySelector('[data-io-group="output"]').textContent, /预测输出/);
     assert.equal(document.querySelectorAll('#wizard-role-table select').length, 0);
@@ -288,8 +291,9 @@ test("非训练研究发送分析操作，真实成果展示统计值且保留�
   try {
     mountWizard({ getDefinition: () => analysis.definition, getRecords: () => recordMap,
       onEdit() {}, onExample() {}, onTechnical() {}, validate() {} });
-    const outputGroup = document.querySelector('[data-io-group="output"]');
-    assert.match(outputGroup.textContent, /计算成果/);
+    const outputGroup = document.getElementById("wizard-output-table");
+    assert.match(outputGroup.textContent, /预期成果可在「检查与确认」中查看/);
+    assert.match(document.getElementById("wizard-review-summary").textContent, /目标指标与成果summary/);
     assert.doesNotMatch(outputGroup.textContent, /预测输出|训练和验证时需要/);
     assert.equal(outputGroup.querySelectorAll("button, select").length, 0);
     assert.deepEqual(runOperation(analysis.definition), { operation: "analyze" });

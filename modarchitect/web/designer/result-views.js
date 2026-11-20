@@ -1,6 +1,16 @@
 import { formatUnit } from "./modeling.js?v=continuous1";
 import { renderAgronomicResult } from "./agronomic-results.js?v=continuous1";
 
+export const evaluationLabels = { rmse: "RMSE", mae: "MAE", r2: "R²", bias: "平均偏差" };
+
+export function evaluationValues(metric) {
+  return Object.entries(evaluationLabels).filter(([code]) => Object.hasOwn(metric, code)).map(([code, label]) => {
+    const number = metric[code];
+    const value = Number.isFinite(number) ? number.toFixed(4) + (code === "r2" ? "" : " " + formatUnit(metric.unit)) : "暂不可计算";
+    return [label, value];
+  });
+}
+
 // 旧方案省略操作以保持请求身份；新方案把研究目的明确送往服务端核验。
 export function runOperation(plan) {
   if (plan.schema_version !== "1.5") return {};
@@ -25,6 +35,33 @@ export function renderSummary(host, value) {
     table.append(row);
   }
   host.append(table); return true;
+}
+
+export function renderModelRelationships(host, pipeline) {
+  host.replaceChildren();
+  const text = (tag, content) => { const item = document.createElement(tag); item.textContent = content; return item; };
+  for (const bundle of Object.values(pipeline.states || {})) {
+    if (bundle.format !== "linear_state_v1") continue;
+    const state = bundle.state, group = document.createElement("section");
+    group.append(text("h4", "模型学到的因素与生长目标关系"));
+    for (const [index, target] of bundle.target_columns.entries()) {
+      group.append(text("p", target.name + " · " + formatUnit(target.unit) + "；截距 " + Number(state.intercepts[target.code].toPrecision(6))));
+      const table = document.createElement("table"); table.className = "research-table";
+      const heading = document.createElement("tr");
+      for (const title of ["候选因素", "因素单位", "拟合系数（目标单位 / 因素单位）"]) heading.append(text("th", title));
+      table.append(heading);
+      for (const feature of bundle.feature_columns) {
+        const row = document.createElement("tr");
+        row.append(text("td", feature.name), text("td", formatUnit(feature.unit)), text("td", Number(state.coefficients[feature.code][index].toPrecision(6))));
+        table.append(row);
+      }
+      group.append(table);
+    }
+    group.append(text("p", "这些参数描述控制其他已选因素后的线性拟合关系，不代表因果；不同单位的系数大小不能直接当作因素重要性。预测可靠性须结合留出观测误差判断。"));
+    if (pipeline.training_data_kind === "synthetic") group.append(text("p", "当前关系来自合成演示数据，不能作为真实农业结论。"));
+    host.append(group);
+  }
+  host.hidden = !host.childElementCount;
 }
 
 function renderNativeResult(host, value) {

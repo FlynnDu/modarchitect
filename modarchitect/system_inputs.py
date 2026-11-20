@@ -168,16 +168,21 @@ def input_catalog() -> dict:
     return classified_catalog(_catalog(_snapshot()))
 
 
+@lru_cache(maxsize=1)
+def _historical_catalog_entries() -> tuple[dict, ...]:
+    """固定安装包只投影一次历史目录，每次解析仍按准确来源身份匹配。"""
+    return tuple(entry for envelope in _history() for entry in _catalog(envelope)["items"])
+
+
 def resolve_input(binding: dict, method: dict | None = None) -> dict:
     """按准确身份解析历史来源；摘要冲突、缺失或伪造来源均拒绝。"""
     matches = []
-    for envelope in _history():
-        for entry in _catalog(envelope)["items"]:
-            expected = entry["source"]["binding"]
-            if expected and (method is None or entry["source"]["method"] == method) and all(expected[k] == binding.get(k) for k in (
-                "kind", "code", "definition_version", "contract_sha256"
-            )):
-                matches.append(entry)
+    for entry in _historical_catalog_entries():
+        expected = entry["source"]["binding"]
+        if expected and (method is None or entry["source"]["method"] == method) and all(expected[k] == binding.get(k) for k in (
+            "kind", "code", "definition_version", "contract_sha256"
+        )):
+            matches.append(entry)
     def scientific_contract(entry: dict) -> dict:
         """采用策略的展示版本不参与准确来源科学身份。"""
         result = deepcopy(entry)
@@ -185,7 +190,7 @@ def resolve_input(binding: dict, method: dict | None = None) -> dict:
         return result
     if not matches or any(scientific_contract(entry) != scientific_contract(matches[0]) for entry in matches[1:]):
         raise ValueError("System input identity or exact source checksum differs")
-    return matches[0]
+    return deepcopy(matches[0])
 
 
 def configure_input(key: str, selectors: dict, role: str = "covariate", *, required_for: tuple[str, ...] = ("train",)) -> dict:

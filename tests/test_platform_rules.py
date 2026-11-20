@@ -12,6 +12,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from modarchitect.api import create_app
+from modarchitect.study_templates import template
 from test_research_runtime import BASE, WRITE, ScientificRunner, calculate_next
 from test_research_runtime import runtime_clients as runtime_clients
 
@@ -22,11 +23,8 @@ def test_public_policies_distinguish_records_variables_and_fixed_sources(monkeyp
     with TestClient(create_app()) as client:
         listing = client.get(BASE + "/study-templates").json()["items"]
         policies = {row["id"]: row["input_policy"] for row in listing}
-        assert sum(policy["mode"] == "approved_dataset" for policy in policies.values()) == 8
-        assert sum(policy["mode"] == "user_observations" for policy in policies.values()) == 11
-        assert policies["growth-trend-and-environment"]["mode"] == "synthetic_demo_only"
-        fixed = policies["growth-water-response"]
-        assert fixed["editable"] == ["indicators"]
+        assert len(policies) == 8 and all(policy["mode"] == "user_observations" for policy in policies.values())
+        assert "growth-trend-and-environment" not in policies and "growth-water-response" not in policies
         ordinary = policies["crop-growth-prediction"]
         assert ordinary["editable"] == ["records", "inputs", "factors", "targets"]
         assert all(set(policy) == {"mode", "editable"} for policy in policies.values())
@@ -137,7 +135,7 @@ def test_input_remove_add_then_real_model_and_historical_flow(runtime_clients):
 def test_fixed_dataset_edits_are_separate_from_input_replacement(runtime_clients):
     """指定资料不接受上传、结构增删或越权参数；合法参数仍可只读预检。"""
     client, _ = runtime_clients
-    row = client.get(BASE + "/study-templates/greenhouse-water-use").json()
+    row = client.get(BASE + "/study-templates/greenhouse-water-use", params={"sha256": template("greenhouse-water-use")["sha256"]}).json()
     body = {"definition": row["definition"], "operation": row["operation"]}
     checked = client.post(BASE + "/check-execution", headers=WRITE, json=body)
     assert checked.status_code == 200 and checked.json()["can_execute"], checked.text
@@ -154,7 +152,7 @@ def test_fixed_dataset_edits_are_separate_from_input_replacement(runtime_clients
 def test_unknown_indicator_is_refused_by_preflight_and_start(runtime_clients):
     """格式正确但资料不含的指标不能绕过复选范围进入任务队列。"""
     client, _ = runtime_clients
-    row = client.get(BASE + "/study-templates/growth-water-response").json()
+    row = client.get(BASE + "/study-templates/growth-water-response", params={"sha256": template("growth-water-response")["sha256"]}).json()
     row["definition"]["input_recipes"]["settings"]["value"]["variables"] = ["unknown_indicator"]
     checked = client.post(BASE + "/check-execution", headers=WRITE,
                           json={"definition": row["definition"], "operation": row["operation"]})
