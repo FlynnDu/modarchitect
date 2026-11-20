@@ -224,6 +224,7 @@ curl -fsS "$API/api/v1/research/study-templates" \
 | 字段 | 含义及处理 |
 | --- | --- |
 | items[].id | 模板标识；点击后作为接口02的template_id；不能当作design_id。 |
+| items[].icon_name | 可选的 SVG 文件名，接口 01 与 02 返回同名文件。静态资源在 `/designer/study-icons/` 下，部署前缀与设计器一致。 |
 | items[].title / summary | 方案名称、研究问题；显示卡片标题和摘要。 |
 | items[].revision / sha256 | 模板修订、准确摘要；保存模板来源；不当作设计修订或设计ID。 |
 | items[].researcher.category / needed | 研究分类、所需资料；分类筛选和输入要求。 |

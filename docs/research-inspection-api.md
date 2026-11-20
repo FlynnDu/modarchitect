@@ -19,6 +19,8 @@
 
 计算方式选择使用公开的 `GET /api/v1/model-center/research-methods`。该目录统一返回组件身份、参数 Schema、输入用途、平台默认值和成果。训练日期可在方案中声明为运行时规则，实际启动时根据观测日期生成。见[计算与评价的统一配置与展示](../coding/research-method-design-20261120.md)。
 
+工作区与业务 API 的模板列表和详情都可返回 `icon_name`，例如 `satellite-canopy-cover.svg`。带部署前缀的图标地址为 `{部署地址}/designer/study-icons/{icon_name}`。按准确摘要读取旧方案时仍可获取该模板现有的展示图标，图标与研究配置摘要分别维护。
+
 ## 固定结构
 
 | 字段 | 含义及消费方式 |

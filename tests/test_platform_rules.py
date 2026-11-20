@@ -23,7 +23,7 @@ def test_public_policies_distinguish_records_variables_and_fixed_sources(monkeyp
     with TestClient(create_app()) as client:
         listing = client.get(BASE + "/study-templates").json()["items"]
         policies = {row["id"]: row["input_policy"] for row in listing}
-        assert len(policies) == 8 and all(policy["mode"] == "user_observations" for policy in policies.values())
+        assert len(policies) == 20 and all(policy["mode"] == "user_observations" for policy in policies.values())
         assert "growth-trend-and-environment" not in policies and "growth-water-response" not in policies
         ordinary = policies["crop-growth-prediction"]
         assert ordinary["editable"] == ["records", "inputs", "factors", "targets"]

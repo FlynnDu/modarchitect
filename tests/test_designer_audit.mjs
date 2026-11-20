@@ -15,7 +15,7 @@ import { inspect } from "../modarchitect/web/designer/panels.js";
 const root = new URL("../modarchitect/", import.meta.url);
 const json = async (path) => JSON.parse(await readFile(new URL(path, root), "utf8"));
 const html = await readFile(new URL("web/designer/index.html", root), "utf8");
-const templates = await json("contracts/study-templates-v1.json");
+const templates = [...await json("contracts/study-templates-v1.json"), ...await json("contracts/study-templates-growth-v1.json")];
 const names = ["logistic-growth-contracts", "multivariate-regression", "chain-components", "runtime-components", "analysis-components", "native-study-components", "agronomic-research-components", "field-research-components", "tabular-learning-components"];
 const definitions = (await Promise.all(names.map((name) => json("contracts/" + name + "-v1.json")))).flat();
 const compatibility = { ...await json("contracts/execution-compatibility-v1.json"), ...await json("contracts/native-study-execution-v1.json") };

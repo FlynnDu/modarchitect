@@ -83,7 +83,7 @@ def test_process_is_independent_math_and_preserves_nature_missingness_and_pairin
 def test_public_topics_are_split_and_request_parameters_do_not_replace_sources():
     """新目录保留训练闭环，旧勘察方向仍按原合同计算和校验参数。"""
     rows = templates()
-    assert len(rows) == 8
+    assert len(rows) == 20
     assert not any(row["id"] == "survey-658b" for row in rows)
     public = json.dumps(
         [{"title": row["title"], "researcher": row["researcher"]} for row in rows],

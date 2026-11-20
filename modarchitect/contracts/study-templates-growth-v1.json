@@ -1,0 +1,3951 @@
+[
+  {
+    "id": "canopy-expansion-curve",
+    "revision": 1,
+    "title": "冠层覆盖扩展曲线",
+    "summary": "同一地块的冠层覆盖度如何随观测日期扩展并趋于稳定？",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+    "limitations": [
+      "适用于覆盖增加到趋稳的阶段。覆盖明显降低的后期应另行研究。",
+      "按原定义用比例记录冠层覆盖度，并在使用预测时检查比例范围。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "冠层覆盖扩展曲线",
+      "question": "同一地块的冠层覆盖度如何随观测日期扩展并趋于稳定？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "platform_calendar_day",
+          "name": "观测日期坐标",
+          "definition_version": "1.0.0",
+          "description": "平台从实际观测日期按固定日历基准换算的时间坐标；不表示播种后或定植后天数。",
+          "value_type": "number",
+          "unit": "day",
+          "role": "driver",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "系统标准人工记录",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "calendar_config",
+            "name": "平台观测日期驱动设置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "research_calendar_axis_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          },
+          {
+            "code": "growth_config",
+            "name": "历史曲线训练与预测设置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "historical_logistic_forecast_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "calendar",
+            "component": {
+              "code": "research_calendar_axis",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "calendar_config"
+                }
+              }
+            ],
+            "selections": {}
+          },
+          {
+            "code": "growth",
+            "component": {
+              "code": "historical_logistic_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": "calendar",
+                  "port": "table"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "growth_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "forecast",
+            "source": {
+              "node": "growth",
+              "port": "forecast"
+            }
+          },
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "growth",
+              "port": "trained_model"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "canopy_cover"
+          ]
+        },
+        "calendar_config": {
+          "kind": "configuration",
+          "value": {
+            "output_code": "platform_calendar_day",
+            "origin_date": "1970-01-01"
+          }
+        },
+        "growth_config": {
+          "kind": "configuration",
+          "value": {
+            "x_code": "platform_calendar_day",
+            "target_code": "canopy_cover"
+          },
+          "runtime_fields": {
+            "fit_through": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "canopy_cover"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "生长趋势",
+      "question": "同一地块的冠层覆盖度如何随观测日期扩展并趋于稳定？",
+      "needed": "同一地块、作物和种植季的多日期冠层覆盖度实测，保留单位和观测日期。",
+      "method": "平台按业务日期生成时间坐标，拟合逻辑斯蒂曲线，用较晚实测验证。",
+      "outcome": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+      "limits": [
+        "适用于覆盖增加到趋稳的阶段。覆盖明显降低的后期应另行研究。",
+        "按原定义用比例记录冠层覆盖度，并在使用预测时检查比例范围。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按同一采样口径覆盖生长早期、快速增长和趋缓阶段。训练后输入原对象和新日期进行曲线估计。",
+      "references": []
+    },
+    "layout": {},
+    "sha256": "ca34b1d737dde9fcc217694521ff94912b264241c76b8ae37f5d74317de85148"
+  },
+  {
+    "id": "tuber-bulking-curve",
+    "revision": 1,
+    "title": "块茎干物质积累曲线",
+    "summary": "同一地块的块茎干物质在膨大期怎样积累，趋稳阶段出现在何时？",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+    "limitations": [
+      "限有块茎膨大连续记录的作物和单一种植季。",
+      "尽量记录到积累减慢的阶段，跨季节重新拟合。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "块茎干物质积累曲线",
+      "question": "同一地块的块茎干物质在膨大期怎样积累，趋稳阶段出现在何时？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "platform_calendar_day",
+          "name": "观测日期坐标",
+          "definition_version": "1.0.0",
+          "description": "平台从实际观测日期按固定日历基准换算的时间坐标；不表示播种后或定植后天数。",
+          "value_type": "number",
+          "unit": "day",
+          "role": "driver",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "definition_version": "1.0.0",
+          "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "tuber_dm_kg_ha",
+          "variable_code": "tuber_dm_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "tuber_dm_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "系统标准人工记录",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "calendar_config",
+            "name": "平台观测日期驱动设置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "research_calendar_axis_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          },
+          {
+            "code": "growth_config",
+            "name": "历史曲线训练与预测设置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "historical_logistic_forecast_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "calendar",
+            "component": {
+              "code": "research_calendar_axis",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "calendar_config"
+                }
+              }
+            ],
+            "selections": {}
+          },
+          {
+            "code": "growth",
+            "component": {
+              "code": "historical_logistic_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": "calendar",
+                  "port": "table"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "growth_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "forecast",
+            "source": {
+              "node": "growth",
+              "port": "forecast"
+            }
+          },
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "growth",
+              "port": "trained_model"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "tuber_dm_kg_ha"
+          ]
+        },
+        "calendar_config": {
+          "kind": "configuration",
+          "value": {
+            "output_code": "platform_calendar_day",
+            "origin_date": "1970-01-01"
+          }
+        },
+        "growth_config": {
+          "kind": "configuration",
+          "value": {
+            "x_code": "platform_calendar_day",
+            "target_code": "tuber_dm_kg_ha"
+          },
+          "runtime_fields": {
+            "fit_through": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "tuber_dm_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "生长趋势",
+      "question": "同一地块的块茎干物质在膨大期怎样积累，趋稳阶段出现在何时？",
+      "needed": "同一地块、作物和种植季的多日期块茎干物质实测，保留单位和观测日期。",
+      "method": "平台按业务日期生成时间坐标，拟合逻辑斯蒂曲线，用较晚实测验证。",
+      "outcome": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+      "limits": [
+        "限有块茎膨大连续记录的作物和单一种植季。",
+        "尽量记录到积累减慢的阶段，跨季节重新拟合。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按同一采样口径覆盖生长早期、快速增长和趋缓阶段。训练后输入原对象和新日期进行曲线估计。",
+      "references": []
+    },
+    "layout": {},
+    "sha256": "6b2f5b588c7d3d382b1a71c7a89e4ed2fdc8867eaa6dcee70b0bc924a8d92e8a"
+  },
+  {
+    "id": "canopy-lai-proxy",
+    "revision": 1,
+    "title": "从冠层覆盖度估测叶面积指数",
+    "summary": "只有冠层覆盖度记录的日期，可以在多大范围内估测叶面积指数？",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的叶面积指数预测值，以及留出评价。",
+    "limitations": [
+      "以同日实测叶面积指数验证，记录冠层较密阶段估测误差。",
+      "优先在训练覆盖过的冠层范围内使用。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "从冠层覆盖度估测叶面积指数",
+      "question": "只有冠层覆盖度记录的日期，可以在多大范围内估测叶面积指数？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        },
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 15.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "高斯过程回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "gaussian_process_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "canopy_cover",
+            "lai"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "canopy_cover"
+            ],
+            "targets": [
+              "lai"
+            ],
+            "seed": 17
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "lai"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "生长指标",
+      "question": "只有冠层覆盖度记录的日期，可以在多大范围内估测叶面积指数？",
+      "needed": "冠层覆盖度，以及用于评价的叶面积指数实测。",
+      "method": "采用高斯过程回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的叶面积指数预测值，以及留出评价。",
+      "limits": [
+        "以同日实测叶面积指数验证，记录冠层较密阶段估测误差。",
+        "优先在训练覆盖过的冠层范围内使用。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": []
+    },
+    "layout": {},
+    "sha256": "a4f6f51b471c724d2cb85f979d5d9f22d44b113d654a53f174ae8e9b72859c5b"
+  },
+  {
+    "id": "phenotype-biomass-prediction",
+    "revision": 1,
+    "title": "冠层与叶面积估测地上生物量",
+    "summary": "用冠层覆盖度和叶面积指数，可以估测当天的地上干物质总量吗？",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的地上生物量预测值，以及留出评价。",
+    "limitations": [
+      "以同日地上生物量实测核对误差，按仪器、作物与采样口径比较。",
+      "预测日需提供同口径冠层和叶面积观测。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "冠层与叶面积估测地上生物量",
+      "question": "用冠层覆盖度和叶面积指数，可以估测当天的地上干物质总量吗？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        },
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": 15.0,
+          "categories": []
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "definition_version": "1.0.0",
+          "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "agb_kg_ha",
+          "variable_code": "agb_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "agb_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "随机森林回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "random_forest_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "canopy_cover",
+            "lai",
+            "agb_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "canopy_cover",
+              "lai"
+            ],
+            "targets": [
+              "agb_kg_ha"
+            ],
+            "seed": 17
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "agb_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "生长指标",
+      "question": "用冠层覆盖度和叶面积指数，可以估测当天的地上干物质总量吗？",
+      "needed": "冠层覆盖度、叶面积指数，以及用于评价的地上生物量实测。",
+      "method": "采用随机森林回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的地上生物量预测值，以及留出评价。",
+      "limits": [
+        "以同日地上生物量实测核对误差，按仪器、作物与采样口径比较。",
+        "预测日需提供同口径冠层和叶面积观测。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": []
+    },
+    "layout": {},
+    "sha256": "411b40e3d6278d7059bd0b119be4600300732eec0be2460c03394acafc8b5c3f"
+  },
+  {
+    "id": "shoot-to-tuber-dry-matter",
+    "revision": 1,
+    "title": "地上长势估测块茎干物质",
+    "summary": "叶面积指数和地上生物量能在多大程度上估测同期块茎干物质？",
+    "sources": [],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+    "limitations": [
+      "按器官分别记录地上和块茎干物质，避免统计口径重叠。",
+      "限有块茎实测的作物，分生育阶段核对误差。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "地上长势估测块茎干物质",
+      "question": "叶面积指数和地上生物量能在多大程度上估测同期块茎干物质？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": 15.0,
+          "categories": []
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "definition_version": "1.0.0",
+          "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "definition_version": "1.0.0",
+          "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "agb_kg_ha",
+          "variable_code": "agb_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "agb_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "variable_code": "tuber_dm_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "tuber_dm_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "lai",
+            "agb_kg_ha",
+            "tuber_dm_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "lai",
+              "agb_kg_ha"
+            ],
+            "targets": [
+              "tuber_dm_kg_ha"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "tuber_dm_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "块茎生长",
+      "question": "叶面积指数和地上生物量能在多大程度上估测同期块茎干物质？",
+      "needed": "叶面积指数、地上生物量，以及用于评价的块茎干物质实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+      "limits": [
+        "按器官分别记录地上和块茎干物质，避免统计口径重叠。",
+        "限有块茎实测的作物，分生育阶段核对误差。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": []
+    },
+    "layout": {},
+    "sha256": "25b5756c29af7365937ab80abbb3e5e6c60bd1170cb543be1086125dca7d585a"
+  },
+  {
+    "id": "temperature-extremes-canopy",
+    "revision": 1,
+    "title": "日最低最高气温与冠层覆盖度",
+    "summary": "给定日最低、日最高气温与辐射条件时，能在多大范围内估测冠层覆盖度？",
+    "sources": [
+      "Open-Meteo 天气"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+    "limitations": [
+      "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+      "低温、高温或低辐射日在留出资料中分别核对。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "日最低最高气温与冠层覆盖度",
+      "question": "给定日最低、日最高气温与辐射条件时，能在多大范围内估测冠层覆盖度？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "temperature_minimum_daily",
+          "name": "日最低气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日最低气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "temperature_maximum_daily",
+          "name": "日最高气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日最高气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "solar_radiation_daily",
+          "name": "日太阳辐射",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kj_m2",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "temperature_minimum_daily",
+          "variable_code": "temperature_minimum_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_minimum_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "08f97fc8a6a86f7a916649b548fbacd542849aa40080a18ed61c5b81fe2bdd21",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "temperature_maximum_daily",
+          "variable_code": "temperature_maximum_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_maximum_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "f5de7995fa906fa85b57046c0359765baa0dde30e41f18cf4c164e1198f6dcd8",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "solar_radiation_daily",
+          "variable_code": "solar_radiation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_solar_radiation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "temperature_minimum_daily",
+            "temperature_maximum_daily",
+            "solar_radiation_daily",
+            "canopy_cover"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "temperature_minimum_daily",
+              "temperature_maximum_daily",
+              "solar_radiation_daily"
+            ],
+            "targets": [
+              "canopy_cover"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "canopy_cover"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "天气与生长",
+      "question": "给定日最低、日最高气温与辐射条件时，能在多大范围内估测冠层覆盖度？",
+      "needed": "日最低气温、日最高气温、日太阳辐射，以及用于评价的冠层覆盖度实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+      "limits": [
+        "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+        "低温、高温或低辐射日在留出资料中分别核对。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "Open-Meteo 天气"
+      ]
+    },
+    "layout": {},
+    "sha256": "90053ecea1ed58c170611b565f3b5cb1edd87177112fd9fa70e4150e3b9494ec"
+  },
+  {
+    "id": "radiation-temperature-lai",
+    "revision": 1,
+    "title": "气温与辐射下的叶面积指数基线",
+    "summary": "只用日均温与日太阳辐射，可以做到怎样的叶面积指数估测精度？",
+    "sources": [
+      "Open-Meteo 天气"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的叶面积指数预测值，以及留出评价。",
+    "limitations": [
+      "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+      "可作为加入土壤资料的对照。比较时使用相同训练和留出样本。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "气温与辐射下的叶面积指数基线",
+      "question": "只用日均温与日太阳辐射，可以做到怎样的叶面积指数估测精度？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "temperature_mean_daily",
+          "name": "日平均气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "solar_radiation_daily",
+          "name": "日太阳辐射",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kj_m2",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "lai",
+          "name": "叶面积指数",
+          "definition_version": "1.0.0",
+          "description": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "m2_m2",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 15.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "temperature_mean_daily",
+          "variable_code": "temperature_mean_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_mean_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "solar_radiation_daily",
+          "variable_code": "solar_radiation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_solar_radiation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "lai",
+          "variable_code": "lai",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "单位地表面积对应的单面绿色叶面积，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "lai",
+            "definition_version": "1.0.0",
+            "contract_sha256": "33d3e338766b32fd68873f2a15d0aa46a88bf3de55bfcd654b1c330f5b9afd55",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "temperature_mean_daily",
+            "solar_radiation_daily",
+            "lai"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "temperature_mean_daily",
+              "solar_radiation_daily"
+            ],
+            "targets": [
+              "lai"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "lai"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "天气与生长",
+      "question": "只用日均温与日太阳辐射，可以做到怎样的叶面积指数估测精度？",
+      "needed": "日平均气温、日太阳辐射，以及用于评价的叶面积指数实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的叶面积指数预测值，以及留出评价。",
+      "limits": [
+        "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+        "可作为加入土壤资料的对照。比较时使用相同训练和留出样本。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "Open-Meteo 天气"
+      ]
+    },
+    "layout": {},
+    "sha256": "cc51693c5449eb02fe31d04f16087a35d0070827448027ed37688cb4c5ef70e6"
+  },
+  {
+    "id": "rainfall-soil-retention-biomass",
+    "revision": 1,
+    "title": "降水与土壤持水特性下的地上生物量",
+    "summary": "降水和表层土壤持水参考能否帮助估测同日的实测地上生物量？",
+    "sources": [
+      "Open-Meteo 天气",
+      "SoilGrids 单位与网格参考适配"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的地上生物量预测值，以及留出评价。",
+    "limitations": [
+      "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+      "33 kPa 含水量为规定压力下的参考值。实际水分需按对应采样尺度另行观测。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "降水与土壤持水特性下的地上生物量",
+      "question": "降水和表层土壤持水参考能否帮助估测同日的实测地上生物量？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "precipitation_daily",
+          "name": "日降水量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日降水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "mm",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "soil_wv0033",
+          "name": "土壤33kPa持水量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤33kPa持水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "solar_radiation_daily",
+          "name": "日太阳辐射",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kj_m2",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "agb_kg_ha",
+          "name": "地上生物量",
+          "definition_version": "1.0.0",
+          "description": "地上部分干物质生物量，仅使用有效地面实测校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "precipitation_daily",
+          "variable_code": "precipitation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_precipitation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "0a2b99dc7b33a8bcc77346f22b32bbb22a523c335c5ef849dd5cdcb7cfe288d6",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "soil_wv0033",
+          "variable_code": "soil_wv0033",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_wv0033",
+            "definition_version": "2.0.0",
+            "contract_sha256": "643c1452d2c2f36573ccab820db15d36ed414844230bd9b4599cb871eface8a6",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "solar_radiation_daily",
+          "variable_code": "solar_radiation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_solar_radiation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "agb_kg_ha",
+          "variable_code": "agb_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "地上部分干物质生物量，仅使用有效地面实测校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "agb_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "3dbc02d63215a298c35fbfd4ea2abe35a43ba7cb4e85102804261c98cc4e2570",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "XGBoost 回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "xgboost_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "precipitation_daily",
+            "soil_wv0033",
+            "solar_radiation_daily",
+            "agb_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "precipitation_daily",
+              "soil_wv0033",
+              "solar_radiation_daily"
+            ],
+            "targets": [
+              "agb_kg_ha"
+            ],
+            "seed": 17
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "agb_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "土壤与生长",
+      "question": "降水和表层土壤持水参考能否帮助估测同日的实测地上生物量？",
+      "needed": "日降水量、土壤33kPa持水量、日太阳辐射，以及用于评价的地上生物量实测。",
+      "method": "采用XGBoost 回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的地上生物量预测值，以及留出评价。",
+      "limits": [
+        "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+        "33 kPa 含水量为规定压力下的参考值。实际水分需按对应采样尺度另行观测。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "Open-Meteo 天气",
+        "SoilGrids 单位与网格参考适配"
+      ]
+    },
+    "layout": {},
+    "sha256": "74bb7448bbfa003e41fef156af6788b7379af67b68430552d8565a230ea8ab28"
+  },
+  {
+    "id": "wind-vapour-pressure-cover",
+    "revision": 1,
+    "title": "风速与水汽压条件下的冠层覆盖度",
+    "summary": "相同作物下，2 米风速、水汽压与气温组合能否帮助估测当天的冠层覆盖度？",
+    "sources": [
+      "Open-Meteo 天气"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+    "limitations": [
+      "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+      "沿用日尺度风速和由日露点换算的水汽压定义。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "风速与水汽压条件下的冠层覆盖度",
+      "question": "相同作物下，2 米风速、水汽压与气温组合能否帮助估测当天的冠层覆盖度？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "wind_speed_2m_daily",
+          "name": "2米日风速",
+          "definition_version": "1.0.0",
+          "description": "研究变量：2米日风速。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "m_s",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "vapour_pressure_daily",
+          "name": "日露点换算水汽压",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日露点换算水汽压。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kpa",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "temperature_mean_daily",
+          "name": "日平均气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "wind_speed_2m_daily",
+          "variable_code": "wind_speed_2m_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_wind_speed_2m_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "d405b127f56021119b80248d33f20206b1d2875f25555750c3351b60816bd50f",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "vapour_pressure_daily",
+          "variable_code": "vapour_pressure_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_vapour_pressure_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "c3047bcc9a4ba6eb5f0a48e048f358d19fd48fbd50d59a76e6f90b166d983733",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "temperature_mean_daily",
+          "variable_code": "temperature_mean_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_mean_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "wind_speed_2m_daily",
+            "vapour_pressure_daily",
+            "temperature_mean_daily",
+            "canopy_cover"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "wind_speed_2m_daily",
+              "vapour_pressure_daily",
+              "temperature_mean_daily"
+            ],
+            "targets": [
+              "canopy_cover"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "canopy_cover"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "天气与生长",
+      "question": "相同作物下，2 米风速、水汽压与气温组合能否帮助估测当天的冠层覆盖度？",
+      "needed": "2米日风速、日露点换算水汽压、日平均气温，以及用于评价的冠层覆盖度实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+      "limits": [
+        "利用同日气象估计值；预测时需已有同口径因素。结果可用于评估关联。",
+        "沿用日尺度风速和由日露点换算的水汽压定义。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "Open-Meteo 天气"
+      ]
+    },
+    "layout": {},
+    "sha256": "dc91da441a62b35fb1a6888665cd8ad5c8ffa8995a1ef598ead03347af8f7c53"
+  },
+  {
+    "id": "soil-chemistry-tuber",
+    "revision": 1,
+    "title": "土壤 pH、阳离子交换量与块茎干物质",
+    "summary": "在有气象记录的地块中，pH 与阳离子交换量等因素对同期块茎干物质估测有多大帮助？",
+    "sources": [
+      "SoilGrids 单位与网格参考适配",
+      "Open-Meteo 天气"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+    "limitations": [
+      "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+      "适用于有块茎干物质实测的作物。土壤改良试验需要独立处理和对照。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "土壤 pH、阳离子交换量与块茎干物质",
+      "question": "在有气象记录的地块中，pH 与阳离子交换量等因素对同期块茎干物质估测有多大帮助？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "soil_phh2o",
+          "name": "土壤pH（水提）",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤pH（水提）。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "dimensionless",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "soil_cec",
+          "name": "土壤阳离子交换量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤阳离子交换量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "cmol_kg",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "temperature_mean_daily",
+          "name": "日平均气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "precipitation_daily",
+          "name": "日降水量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日降水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "mm",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "name": "块茎干物质",
+          "definition_version": "1.0.0",
+          "description": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+          "value_type": "number",
+          "unit": "kg_ha",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "soil_phh2o",
+          "variable_code": "soil_phh2o",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_phh2o",
+            "definition_version": "2.0.0",
+            "contract_sha256": "347775eae64206ca19c1bc178dbadad6774e0060fd5081a527482dd6d5b9d8ba",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "soil_cec",
+          "variable_code": "soil_cec",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_cec",
+            "definition_version": "2.0.0",
+            "contract_sha256": "fdd2e15e374a6ffbcaf3bf8c55df523126b37dd34b41c5d97908331dad8e0c43",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "temperature_mean_daily",
+          "variable_code": "temperature_mean_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_mean_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "precipitation_daily",
+          "variable_code": "precipitation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_precipitation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "0a2b99dc7b33a8bcc77346f22b32bbb22a523c335c5ef849dd5cdcb7cfe288d6",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "tuber_dm_kg_ha",
+          "variable_code": "tuber_dm_kg_ha",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "马铃薯块茎干物质，仅使用有效破坏性采样校准。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "tuber_dm_kg_ha",
+            "definition_version": "1.0.0",
+            "contract_sha256": "cd8ef158ced608bab5e04c475a095c5468e34eff35b205d00a9a2dd550aceee8",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "soil_phh2o",
+            "soil_cec",
+            "temperature_mean_daily",
+            "precipitation_daily",
+            "tuber_dm_kg_ha"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "soil_phh2o",
+              "soil_cec",
+              "temperature_mean_daily",
+              "precipitation_daily"
+            ],
+            "targets": [
+              "tuber_dm_kg_ha"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "tuber_dm_kg_ha"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "块茎生长",
+      "question": "在有气象记录的地块中，pH 与阳离子交换量等因素对同期块茎干物质估测有多大帮助？",
+      "needed": "土壤pH（水提）、土壤阳离子交换量、日平均气温、日降水量，以及用于评价的块茎干物质实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的块茎干物质预测值，以及留出评价。",
+      "limits": [
+        "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+        "适用于有块茎干物质实测的作物。土壤改良试验需要独立处理和对照。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "SoilGrids 单位与网格参考适配",
+        "Open-Meteo 天气"
+      ]
+    },
+    "layout": {},
+    "sha256": "109039b0d8e680f98670d4777de752c868ed4708826d76e7e17331dfdd14e9ea"
+  },
+  {
+    "id": "soil-texture-canopy",
+    "revision": 1,
+    "title": "土壤粗颗粒与容重下的冠层覆盖度",
+    "summary": "加入粗颗粒体积分数与容重参考后，能否更好地估测不同地块的冠层覆盖度？",
+    "sources": [
+      "SoilGrids 单位与网格参考适配",
+      "Open-Meteo 天气"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+    "limitations": [
+      "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+      "比较气象基线和加土壤后的方法时采用同一配对资料。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "土壤粗颗粒与容重下的冠层覆盖度",
+      "question": "加入粗颗粒体积分数与容重参考后，能否更好地估测不同地块的冠层覆盖度？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "soil_cfvo",
+          "name": "土壤粗碎片体积分数",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤粗碎片体积分数。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "percent",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "soil_bdod",
+          "name": "土壤容重",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤容重。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kg_dm3",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "precipitation_daily",
+          "name": "日降水量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日降水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "mm",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "solar_radiation_daily",
+          "name": "日太阳辐射",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kj_m2",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "soil_cfvo",
+          "variable_code": "soil_cfvo",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_cfvo",
+            "definition_version": "2.0.0",
+            "contract_sha256": "d8420a1c5a0e61ee061965d8219637e85cdbd4cbd49c96397e41fa6ee2407287",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "soil_bdod",
+          "variable_code": "soil_bdod",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_bdod",
+            "definition_version": "2.0.0",
+            "contract_sha256": "ee103c80b511e89279ef426f4697f759847d1e2717dfe68ed9ac18e5f20e6aa1",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "precipitation_daily",
+          "variable_code": "precipitation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_precipitation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "0a2b99dc7b33a8bcc77346f22b32bbb22a523c335c5ef849dd5cdcb7cfe288d6",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "solar_radiation_daily",
+          "variable_code": "solar_radiation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_solar_radiation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "已知因素与目标实测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "多变量线性回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "regression",
+            "component": {
+              "code": "multivariate_linear_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "soil_cfvo",
+            "soil_bdod",
+            "precipitation_daily",
+            "solar_radiation_daily",
+            "canopy_cover"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "soil_cfvo",
+              "soil_bdod",
+              "precipitation_daily",
+              "solar_radiation_daily"
+            ],
+            "targets": [
+              "canopy_cover"
+            ]
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "canopy_cover"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {}
+    },
+    "researcher": {
+      "category": "土壤与生长",
+      "question": "加入粗颗粒体积分数与容重参考后，能否更好地估测不同地块的冠层覆盖度？",
+      "needed": "土壤粗碎片体积分数、土壤容重、日降水量、日太阳辐射，以及用于评价的冠层覆盖度实测。",
+      "method": "采用多变量线性回归学习同日因素与目标的关系，保留较晚实测检验预测。",
+      "outcome": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+      "limits": [
+        "土壤资料为网格参考。需有多个土壤条件不同的地块，不能用同地块多日记录代替独立地块。",
+        "比较气象基线和加土壤后的方法时采用同一配对资料。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "SoilGrids 单位与网格参考适配",
+        "Open-Meteo 天气"
+      ]
+    },
+    "layout": {},
+    "sha256": "7a669573c0d4a11fdd226ee680d343f394c7f680c02cc369c63f6fcf58cb1640"
+  },
+  {
+    "id": "satellite-canopy-cover",
+    "revision": 1,
+    "title": "卫星植被指数估测冠层覆盖度",
+    "summary": "同日的卫星植被指数、土壤和天气，可以怎样帮助估测地面冠层覆盖度？",
+    "sources": [
+      "Open-Meteo 天气",
+      "SoilGrids 单位与网格参考适配",
+      "Sentinel-2 L2A单景反射率参考"
+    ],
+    "operation": "train",
+    "data_kind": "user_supplied",
+    "output_description": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+    "limitations": [
+      "仅在可取得合格影像的日期估测，云遮挡造成的空档需保留。",
+      "核对卫星网格覆盖与地面测量所代表的地块范围。",
+      "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+    ],
+    "definition": {
+      "schema_version": "1.5",
+      "name": "卫星植被指数估测冠层覆盖度",
+      "question": "同日的卫星植被指数、土壤和天气，可以怎样帮助估测地面冠层覆盖度？",
+      "objective": "prediction",
+      "purpose": "train",
+      "variables": [
+        {
+          "code": "temperature_mean_daily",
+          "name": "日平均气温",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日平均气温。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "celsius",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "solar_radiation_daily",
+          "name": "日太阳辐射",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日太阳辐射。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "kj_m2",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "precipitation_daily",
+          "name": "日降水量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：日降水量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "mm",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "soil_clay",
+          "name": "土壤黏粒含量",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤黏粒含量。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "percent",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "soil_soc",
+          "name": "土壤有机碳",
+          "definition_version": "1.0.0",
+          "description": "研究变量：土壤有机碳。变量定义独立于提供方；跨来源比较须核对日界、空间支撑及测量方法。",
+          "value_type": "number",
+          "unit": "g_kg",
+          "role": "covariate",
+          "minimum": null,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "sentinel2_red_reflectance",
+          "name": "哨兵2红光反射率（B04）",
+          "definition_version": "1.0.0",
+          "description": "Sentinel-2 L2A地表反射率；10m UTM请求网格参考，按实际清晰单景日期记录，非地块均值、非人工实测。",
+          "value_type": "number",
+          "unit": "dimensionless",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "sentinel2_nir_reflectance",
+          "name": "哨兵2近红外反射率（B08）",
+          "definition_version": "1.0.0",
+          "description": "Sentinel-2 L2A地表反射率；10m UTM请求网格参考，按实际清晰单景日期记录，非地块均值、非人工实测。",
+          "value_type": "number",
+          "unit": "dimensionless",
+          "role": "covariate",
+          "minimum": 0.0,
+          "maximum": null,
+          "categories": []
+        },
+        {
+          "code": "sentinel_ndvi",
+          "definition_version": "1.0.0",
+          "name": "NDVI",
+          "description": "由本方案准确卫星反射率计算的派生NDVI，不是独立实测输入。",
+          "unit": "dimensionless",
+          "value_type": "number",
+          "role": "covariate",
+          "minimum": -1,
+          "maximum": 1
+        },
+        {
+          "code": "canopy_cover",
+          "name": "冠层覆盖度",
+          "definition_version": "1.0.0",
+          "description": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+          "value_type": "number",
+          "unit": "fraction",
+          "role": "target",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "categories": []
+        }
+      ],
+      "collection_requirements": [
+        {
+          "code": "temperature_mean_daily",
+          "variable_code": "temperature_mean_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_temperature_mean_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "27b6e8044804d85c4a5ef2ba3dbeb47e567a9e28bc027414e7ef033ac9bed7a1",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "solar_radiation_daily",
+          "variable_code": "solar_radiation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_solar_radiation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "eecfcf54a5e8cbd69df8f2706676f1f5d3d555127deca4d1f77fe27254527c2b",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "precipitation_daily",
+          "variable_code": "precipitation_daily",
+          "method": {
+            "protocol_code": "openmeteo_daily_records",
+            "protocol_version": "1.0.0",
+            "method_code": "openmeteo_daily_standard_record",
+            "instructions": "由平台Open-Meteo数据链提供，保留Asia/Shanghai业务日、实际到达时刻及逐变量质量与来源证据；不生成人工采集任务。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "openmeteo_weather_precipitation_daily",
+            "definition_version": "1.0.0",
+            "contract_sha256": "0a2b99dc7b33a8bcc77346f22b32bbb22a523c335c5ef849dd5cdcb7cfe288d6",
+            "value_nature": "estimated",
+            "source_system": "openmeteo_weather",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "soil_clay",
+          "variable_code": "soil_clay",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_clay",
+            "definition_version": "2.0.0",
+            "contract_sha256": "2db9da519ea62de917f012fa918b636b82468f552e2a2aac0fcedc0988b8450a",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "soil_soc",
+          "variable_code": "soil_soc",
+          "method": {
+            "protocol_code": "soilgrids_reference_records",
+            "protocol_version": "1.0.0",
+            "method_code": "soilgrids_mapped_reference_v1",
+            "instructions": "由平台SoilGrids数据链规范化原始映射单位与准确土层，作为静态网格参考；不作为人工地块实测或每日独立观测。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "soilgrids_reference_soil_soc",
+            "definition_version": "2.0.0",
+            "contract_sha256": "adb81f85c24a78f4863d3817c2469c4410c9ed66952dcd7293ca6bbc86e56535",
+            "value_nature": "estimated",
+            "source_system": "soilgrids_reference_normalization",
+            "selectors": {
+              "depth": "0-5cm",
+              "statistic": "mean"
+            }
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "sentinel2_red_reflectance",
+          "variable_code": "sentinel2_red_reflectance",
+          "method": {
+            "protocol_code": "sentinelhub_single_scene_records",
+            "protocol_version": "1.0.0",
+            "method_code": "sentinel2_clear_utm_reference_v1",
+            "instructions": "按环境中的CDSE账户取实际单景；当日首个合格场景采用10m UTM请求网格参考，保留SCL原生20m支撑和实际采集时刻；无清晰场景不填补。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "sentinelhub_sentinel2_red_reflectance",
+            "definition_version": "1.0.0",
+            "contract_sha256": "8efdf9e54ea5904ec3b33db21cd84b8d20ac927b2dfa59358b16d527cb7c85fa",
+            "value_nature": "estimated",
+            "source_system": "sentinelhub_s2_l2a_reference",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "sentinel2_nir_reflectance",
+          "variable_code": "sentinel2_nir_reflectance",
+          "method": {
+            "protocol_code": "sentinelhub_single_scene_records",
+            "protocol_version": "1.0.0",
+            "method_code": "sentinel2_clear_utm_reference_v1",
+            "instructions": "按环境中的CDSE账户取实际单景；当日首个合格场景采用10m UTM请求网格参考，保留SCL原生20m支撑和实际采集时刻；无清晰场景不填补。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "third_party",
+          "catalog_binding": {
+            "kind": "variable_source",
+            "code": "sentinelhub_sentinel2_nir_reflectance",
+            "definition_version": "1.0.0",
+            "contract_sha256": "1589ffd103202c9c176f71b64579a1c002bc558dd602b07bf593c0218c8b956b",
+            "value_nature": "estimated",
+            "source_system": "sentinelhub_s2_l2a_reference",
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        },
+        {
+          "code": "canopy_cover",
+          "variable_code": "canopy_cover",
+          "method": {
+            "protocol_code": "system_manual_record",
+            "protocol_version": "1.0.0",
+            "method_code": "standard_manual_entry",
+            "instructions": "采样点绿色冠层覆盖地面的比例，作为现场诊断证据。",
+            "evidence_required": true
+          },
+          "unit_kind": "field_season",
+          "requires_sampling_points": false,
+          "required_for": [
+            "train"
+          ],
+          "source": "manual",
+          "catalog_binding": {
+            "kind": "sampling_indicator",
+            "code": "canopy_cover",
+            "definition_version": "1.0.0",
+            "contract_sha256": "9f4897bce90f6fa697d4f390101b7698d4eb8d92a7337a0965d6c5bfa330796a",
+            "value_nature": "observed",
+            "source_system": null,
+            "selectors": {}
+          },
+          "start_offset_days": 0,
+          "end_offset_days": null,
+          "interval_days": null,
+          "minimum_observations_per_unit": 1,
+          "minimum_independent_units": 1
+        }
+      ],
+      "composition": {
+        "schema_version": "1.0",
+        "object_scope": "field_crop_season",
+        "inputs": [
+          {
+            "code": "observations",
+            "name": "气象与实测冠层覆盖度",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "regression_config",
+            "name": "随机森林回归配置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "multivariate_regression_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          },
+          {
+            "code": "soil",
+            "name": "表层土壤参考",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "satellite",
+            "name": "哨兵卫星实际观测",
+            "role": "context",
+            "data_type": {
+              "semantic": "research_observation_table",
+              "version": 1,
+              "shape": "table",
+              "unit": "column_definitions",
+              "alignment": "business_date"
+            }
+          },
+          {
+            "code": "ndvi_config",
+            "name": "卫星指数计算设置",
+            "role": "parameter",
+            "data_type": {
+              "semantic": "sentinel_ndvi_features_request",
+              "version": 1,
+              "shape": "bundle",
+              "unit": "native_contract",
+              "alignment": "context"
+            }
+          }
+        ],
+        "nodes": [
+          {
+            "code": "satellite_features",
+            "component": {
+              "code": "sentinel_ndvi_features",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": null,
+                  "port": "observations"
+                }
+              },
+              {
+                "port": "soil",
+                "source": {
+                  "node": null,
+                  "port": "soil"
+                }
+              },
+              {
+                "port": "satellite",
+                "source": {
+                  "node": null,
+                  "port": "satellite"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "ndvi_config"
+                }
+              }
+            ],
+            "selections": {}
+          },
+          {
+            "code": "regression",
+            "component": {
+              "code": "random_forest_training",
+              "revision": 1
+            },
+            "bindings": [
+              {
+                "port": "observations",
+                "source": {
+                  "node": "satellite_features",
+                  "port": "table"
+                }
+              },
+              {
+                "port": "request",
+                "source": {
+                  "node": null,
+                  "port": "regression_config"
+                }
+              }
+            ],
+            "selections": {}
+          }
+        ],
+        "outputs": [
+          {
+            "code": "trained_model",
+            "source": {
+              "node": "regression",
+              "port": "trained_model"
+            }
+          },
+          {
+            "code": "predictions",
+            "source": {
+              "node": "regression",
+              "port": "predictions"
+            }
+          }
+        ]
+      },
+      "input_recipes": {
+        "observations": {
+          "kind": "observations",
+          "variable_codes": [
+            "temperature_mean_daily",
+            "solar_radiation_daily",
+            "precipitation_daily",
+            "canopy_cover"
+          ]
+        },
+        "regression_config": {
+          "kind": "configuration",
+          "value": {
+            "features": [
+              "temperature_mean_daily",
+              "solar_radiation_daily",
+              "precipitation_daily",
+              "soil_clay",
+              "soil_soc",
+              "sentinel_ndvi"
+            ],
+            "targets": [
+              "canopy_cover"
+            ],
+            "seed": 17
+          },
+          "runtime_fields": {
+            "training_end": "training_holdout_cutoff_date"
+          }
+        },
+        "soil": {
+          "kind": "observations",
+          "variable_codes": [
+            "soil_clay",
+            "soil_soc"
+          ]
+        },
+        "satellite": {
+          "kind": "observations",
+          "variable_codes": [
+            "sentinel2_red_reflectance",
+            "sentinel2_nir_reflectance"
+          ]
+        },
+        "ndvi_config": {
+          "kind": "configuration",
+          "value": {
+            "red_code": "sentinel2_red_reflectance",
+            "nir_code": "sentinel2_nir_reflectance",
+            "output_code": "sentinel_ndvi"
+          }
+        }
+      },
+      "evaluation": {
+        "target_codes": [
+          "canopy_cover"
+        ],
+        "purpose": "exploratory",
+        "split_unit": "time",
+        "success_criteria": "按地块、作物、种植季和日期配对留出实测，逐目标报告误差、配对条数及覆盖率。",
+        "update_policy": "manual_candidate",
+        "numeric_gate": null
+      },
+      "layout": {
+        "node_labels": {
+          "satellite_features": "计算NDVI并按采样日配对",
+          "regression": "学习卫星、土壤和气象与冠层覆盖度的关系"
+        }
+      }
+    },
+    "researcher": {
+      "category": "遥感与生长",
+      "question": "同日的卫星植被指数、土壤和天气，可以怎样帮助估测地面冠层覆盖度？",
+      "needed": "合格卫星红光和近红外反射率、土壤黏粒和有机碳参考、日气象，以及冠层覆盖度实测。",
+      "method": "平台计算 NDVI 并按过境业务日配对，再训练随机森林并留出较晚实测验证。",
+      "outcome": "可保存的关系模型、按地块和日期输出的冠层覆盖度预测值，以及留出评价。",
+      "limits": [
+        "仅在可取得合格影像的日期估测，云遮挡造成的空档需保留。",
+        "核对卫星网格覆盖与地面测量所代表的地块范围。",
+        "验证使用未参与训练的较晚实测记录。跨地块、跨季节推广需独立验证。"
+      ],
+      "data_description": "实测指标与当前地块的因素或日期按原采样口径配对。",
+      "data_usage": "按地块、作物、种植季和业务日期配对，训练需目标实测。预测时提供已列出的因素。",
+      "references": [
+        "Open-Meteo 天气",
+        "SoilGrids 单位与网格参考适配",
+        "Sentinel-2 L2A单景反射率参考"
+      ]
+    },
+    "layout": {},
+    "sha256": "d65c9096835582d66398d0dd9c0712c316a2beb7670673b12d76ef2ec9a9d220"
+  }
+]

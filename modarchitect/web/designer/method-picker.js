@@ -1,7 +1,7 @@
 import { element } from "./visuals.js?v=continuous1";
 import { recordKey, nodeRecord } from "./editor.js?v=continuous1";
 import { parameters } from "./schema-fields.js?v=guided2";
-import { selectableMethodNodes, prepareMethodDraft, synchronizeLabels } from "./methods.js?v=calculation1";
+import { selectableMethodNodes, prepareMethodDraft, synchronizeLabels, trainingPreparationNames } from "./methods.js?v=method-role1";
 import { issueMessage } from "./panels.js?v=continuous1";
 import { parameterPreview } from "./inspection-view.js?v=calculation1";
 
@@ -90,12 +90,15 @@ export function mountMethodPicker({ getDefinition, getRecords, loadMethods, onEd
     const plan = getDefinition();
     if (!plan) return;
     target.replaceChildren();
-    const nodes = selectableMethodNodes(plan, getRecords());
-    for (const node of nodes) target.add(new Option(nodeRecord(node, getRecords()).definition.name, node.code));
+    const records = getRecords(), nodes = selectableMethodNodes(plan, records);
+    for (const node of nodes) target.add(new Option(nodeRecord(node, records).definition.name, node.code));
     if (!nodes.length) target.add(new Option("新计算步骤", ""));
     target.value = nodes.at(-1)?.code || "";
     target.closest("label").hidden = nodes.length < 2;
     target.disabled = nodes.length < 2;
+    const preparation = trainingPreparationNames(plan, records).join("、");
+    byId("method-picker-preparation").hidden = !preparation;
+    byId("method-picker-preparation").textContent = preparation ? "本方案的资料处理：" + preparation : "";
     fingerprint = JSON.stringify(plan);
     showCards();
     if (dialog.showModal) dialog.showModal(); else dialog.setAttribute("open", "");

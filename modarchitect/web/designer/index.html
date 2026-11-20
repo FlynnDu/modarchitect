@@ -10,8 +10,8 @@
   <link rel="stylesheet" href="./modeling.css?v=continuous1">
   <link rel="stylesheet" href="./system-inputs.css?v=continuous1">
   <link rel="stylesheet" href="./wizard.css?v=calculation1">
-  <link rel="stylesheet" href="./study-library.css?v=continuous1">
-  <script type="module" src="./startup.js?v=calculation1"></script>
+  <link rel="stylesheet" href="./study-library.css?v=study-icons1">
+  <script type="module" src="./startup.js?v=method-role1"></script>
 </head>
 <body>
   <a class="skip-link" href="#workspace">进入模型设计器</a>
@@ -131,9 +131,9 @@
           </section>
           <section class="wizard-page" data-wizard-section="calculation" hidden>
             <div class="section-heading"><div><h2>计算与评价</h2><p>确认计算方式、数据资源和评价配置。</p></div><span class="subtle-label">5 / 5</span></div>
-            <div class="method-banner"><div><div class="method-current-label">当前计算方式</div><strong id="wizard-method">尚未选择计算方式</strong><p id="wizard-method-note">从已选资料和目标生成配置。</p><span class="status-chip" id="wizard-method-state">待选择</span></div><button id="choose-method" type="button" class="button button-primary" aria-haspopup="dialog">选择／配置计算方式</button></div>
+            <div class="method-banner"><div><div class="method-current-label" id="wizard-method-label">当前计算方式</div><strong id="wizard-method">尚未选择计算方式</strong><p id="wizard-method-preparation" hidden></p><p id="wizard-method-note">从已选资料和目标生成配置。</p><span class="status-chip" id="wizard-method-state">待选择</span></div><button id="choose-method" type="button" class="button button-primary" aria-haspopup="dialog">选择／配置计算方式</button></div>
             <dialog id="method-dialog" class="indicator-dialog method-dialog" aria-labelledby="method-dialog-title">
-              <div class="section-heading"><div><h2 id="method-dialog-title">选择计算方式</h2><p>平台沿用当前方案选择的资料与研究目标。</p></div><button id="close-method-picker" class="text-button" type="button">关闭</button></div>
+              <div class="section-heading"><div><h2 id="method-dialog-title">选择计算方式</h2><p id="method-picker-preparation" hidden></p></div><button id="close-method-picker" class="text-button" type="button">关闭</button></div>
               <label hidden>要配置的步骤 <select id="method-target"></select></label>
               <div id="method-list"></div>
               <section id="method-detail" class="method-detail" aria-label="所选方法配置" hidden></section>

@@ -9,11 +9,11 @@ import { mountResearch } from "./research.js?v=calculation1";
 import { applicationPath } from "./http-path.js?v=proxy1";
 import { mountModeling } from "./modeling-view.js?v=continuous1";
 import { mountSystemInputs } from "./system-inputs.js?v=continuous1";
-import { mountWizard } from "./wizard.js?v=calculation1";
-import { mountMethodPicker } from "./method-picker.js?v=calculation1";
+import { mountWizard } from "./wizard.js?v=method-role1";
+import { mountMethodPicker } from "./method-picker.js?v=method-role1";
 import { mountInspection } from "./inspection-view.js?v=calculation1";
-import { useMethodDefaults } from "./methods.js?v=calculation1";
-import { mountStudyLibrary, showTemplateSummary, showStudyFlow, researchTitle, researchQuestion } from "./study-library.js?v=proxy1";
+import { useMethodDefaults } from "./methods.js?v=method-role1";
+import { mountStudyLibrary, showTemplateSummary, showStudyFlow, researchTitle, researchQuestion } from "./study-library.js?v=study-icons1";
 
 const byId = (id) => document.getElementById(id);
 const DRAFT_KEY = "modarchitect.designer.draft.v1";

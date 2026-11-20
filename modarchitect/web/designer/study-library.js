@@ -97,7 +97,19 @@ export async function mountStudyLibrary({ openTemplate }) {
         const card = element("article", "", "study-template-card"); card.dataset.studyTemplate = value.id;
         const info = value.researcher;
         card.dataset.category = info?.category || "已有研究";
-        card.append(element("span", info?.category || "已有研究", "study-template-kind"), element("h3", value.title), element("p", info?.question || "查看该研究的数据、方法与成果"), element("p", info?.outcome || "查看研究结果", "study-template-result"));
+        const heading = element("div", "", "study-template-heading"), titles = element("div");
+        const image = element("img", "", "study-template-icon");
+        const fallback = "crop-growth-prediction.svg";
+        const filename = /^[a-z0-9-]+\.svg$/.test(value.icon_name) ? value.icon_name : fallback;
+        image.alt = "";
+        image.width = 24; image.height = 24;
+        if (filename !== fallback) image.addEventListener("error", () => {
+          image.src = new URL("./study-icons/" + fallback, import.meta.url).href;
+        }, { once: true });
+        image.src = new URL("./study-icons/" + filename, import.meta.url).href;
+        titles.append(element("span", card.dataset.category, "study-template-kind"), element("h3", value.title));
+        heading.append(image, titles);
+        card.append(heading, element("p", info?.question || "查看该研究的数据、方法与成果"), element("p", info?.outcome || "查看研究结果", "study-template-result"));
         let method = null;
         if (value.method_options) {
           const label = element("label", "研究方法" ); method = document.createElement("select"); method.setAttribute("aria-label", value.title + "的方法");

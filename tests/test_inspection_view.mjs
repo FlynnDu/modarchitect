@@ -145,6 +145,7 @@ test("真实方法目录由同一套卡片渲染，自动沿用指标及默认�
     });
     await view.open();
     assert.equal(document.querySelectorAll("#method-list button").length, 5);
+    assert.equal(document.getElementById("method-picker-preparation").hidden, true);
     assert.match(document.getElementById("method-list").textContent, /作物生长机理模拟.*WOFOST.*待接入.*APSIM/);
     assert.doesNotMatch(document.getElementById("method-list").textContent, /标准观测描述统计/);
     document.querySelector('[data-method="random_forest_training@1"]').click();
@@ -166,11 +167,26 @@ test("卫星 NDVI 配对是上游资料步骤，普通选择直接配置训练�
   const dom = environment(); let plan = structuredClone(fixtures[2].definition);
   try {
     const alignment = plan.composition.nodes.find((node) => node.component.code === "sentinel_ndvi_features");
+    const records = new Map(Object.entries(catalog));
+    const getRecords = () => records;
+    const wizard = mountWizard({
+      getDefinition: () => plan, getRecords,
+      getMethod: (ref) => directory.items.find((method) => method.component.code === ref.code && method.component.revision === ref.revision),
+      validate() {},
+    });
+    wizard.render();
+    assert.equal(document.getElementById("wizard-method-label").textContent, "当前训练模型");
+    assert.equal(document.getElementById("wizard-method").textContent, "多变量线性回归");
+    assert.match(document.getElementById("wizard-method-preparation").textContent, /资料处理：卫星NDVI计算与土壤气象配对/);
     const picker = mountMethodPicker({
-      getDefinition: () => plan, getRecords: () => new Map(Object.entries(catalog)), loadMethods: async () => directory,
+      getDefinition: () => plan, getRecords, loadMethods: async () => directory,
       onEdit(next) { plan = next; }, validate: async () => ({ valid: true }), notify() {},
     });
     await picker.open();
+    const preparation = document.getElementById("method-picker-preparation");
+    assert.equal(preparation.hidden, false);
+    assert.match(preparation.textContent, /卫星NDVI计算与土壤气象配对/);
+    assert.match(document.querySelector('[data-method="multivariate_linear_training@1"]').textContent, /当前方法/);
     const steps = document.getElementById("method-target");
     assert.equal(steps.options.length, 1);
     assert.equal(steps.closest("label").hidden, true);
@@ -180,5 +196,8 @@ test("卫星 NDVI 配对是上游资料步骤，普通选择直接配置训练�
     assert.deepEqual(plan.composition.nodes.find((node) => node.code === alignment.code), alignment);
     const trained = plan.composition.nodes.find((node) => node.component.code === "random_forest_training");
     assert.ok(trained.bindings.some((binding) => binding.source.node === alignment.code));
+    wizard.render();
+    assert.equal(document.getElementById("wizard-method").textContent, "随机森林回归");
+    assert.match(document.getElementById("wizard-method-preparation").textContent, /卫星NDVI计算与土壤气象配对/);
   } finally { dom.window.close(); }
 });

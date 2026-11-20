@@ -167,7 +167,7 @@ def test_check_save_query_and_graph_references_share_one_validated_definition(bu
     """正式保存重验，错误不落库，成功回执可重放，查询可复原全部节点和连线。"""
     client, scope = business_client
     templates = client.get(API + "/study-templates")
-    assert templates.status_code == 200 and len(templates.json()["items"]) == 8
+    assert templates.status_code == 200 and len(templates.json()["items"]) == 20
     assert client.get(API + "/study-templates/crop-growth-prediction").status_code == 200
     plan = all_indicator_design(client)
     if future_model:

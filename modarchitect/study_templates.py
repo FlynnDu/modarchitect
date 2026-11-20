@@ -21,6 +21,8 @@ from .validation import compile_plan, _requests
 from .system_inputs import input_readiness, validate_input_bindings
 from .study_inputs import native_input_requirements
 
+CURRENT_CATALOGS = ("study-templates-v1.json", "study-templates-growth-v1.json")
+
 
 def _template_rows(filename: str) -> list[dict]:
     """当前与归档定义都必须保留准确摘要。"""
@@ -33,22 +35,27 @@ def _template_rows(filename: str) -> list[dict]:
     return rows
 
 
+def _current_template_rows() -> list[dict]:
+    """新旧主题共用目录资格和准确摘要回读。"""
+    return [row for filename in CURRENT_CATALOGS for row in _template_rows(filename)]
+
+
 def templates() -> list[dict]:
     """新目录只采用具备自有数据训练、验证和模型复用闭环的研究。"""
     allowed = _new_template_keys()
-    return [row for row in _template_rows("study-templates-v1.json") if (row["id"], row["sha256"]) in allowed]
+    return [row for row in _current_template_rows() if (row["id"], row["sha256"]) in allowed]
 
 
 @lru_cache(maxsize=1)
 def _new_template_keys() -> frozenset[tuple[str, str]]:
     """安装包中的合同固定不变，资格编译一次且不缓存本次取数状态。"""
-    return frozenset((row["id"], row["sha256"]) for row in _template_rows("study-templates-v1.json")
+    return frozenset((row["id"], row["sha256"]) for row in _current_template_rows()
                      if row.get("listed", True) and not training_template_issues(row))
 
 
 def template(template_id: str, checksum: str | None = None) -> dict:
     """稳定身份和准确摘要共同解析历史版本，不静默替换保存过的研究。"""
-    for row in _template_rows("study-templates-v1.json"):
+    for row in _current_template_rows():
         if row["id"] == template_id and (checksum is None or row["sha256"] == checksum):
             return row
     for filename in ("study-templates-archive-v3.json", "study-templates-archive-v2.json", "study-templates-archive-v1.json"):
@@ -163,6 +170,9 @@ def training_template_issues(row: dict) -> tuple[str, ...]:
 def template_view(row: dict, *, include_definition: bool = False) -> dict:
     """目录只提供方案与来源说明，受限原始数据始终由服务器持有。"""
     result = {key: deepcopy(value) for key, value in row.items() if key not in {"definition", "observations", "prediction_observations", "bundles", "bundle_sha256", "expected_outputs", "input_file"}}
+    icon_name = row["id"] + ".svg"
+    if files("modarchitect").joinpath("web", "designer", "study-icons", icon_name).is_file():
+        result["icon_name"] = icon_name
     if row.get("researcher"):
         info = row["researcher"]
         result.update(summary=info["question"], output_description=info["outcome"], limitations=deepcopy(info["limits"]), sources=deepcopy(info.get("references", [])))

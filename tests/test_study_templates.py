@@ -26,7 +26,7 @@ from test_research_runtime import runtime_clients  # noqa: F401
 def test_templates_compile_and_public_metadata_excludes_real_case_inputs(monkeypatch):
     """合格训练方案可采用；撤下的案例按准确摘要保留且不公开原始数据。"""
     rows = templates()
-    assert len(rows) == 8
+    assert len(rows) == 20
     assert len(_template_rows("study-templates-v1.json")) == 25
     variants = [template(code) for code in ("canopy-temperature-xgboost", "canopy-temperature-gp")]
     for variant in variants:

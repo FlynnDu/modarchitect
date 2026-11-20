@@ -4,7 +4,9 @@
 .study-topic-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 20px; }
 .study-topic-filters [aria-pressed="true"] { background: #e4f0e8; border-color: #7ca38b; color: #235d36; }
 .study-template-card { display: flex; flex-direction: column; padding: 22px; border: 1px solid #dce7e0; border-radius: 10px; background: #fff; }
-.study-template-card h3 { font-size: 16px; margin: 12px 0 8px; line-height: 1.5; }
+.study-template-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.study-template-icon { width: 24px; height: 24px; flex: 0 0 auto; padding: 8px; box-sizing: content-box; background: #eaf4ed; border-radius: 10px; }
+.study-template-card h3 { font-size: 16px; margin: 4px 0 0; line-height: 1.5; }
 .study-template-card p { color: #57685e; font-size: 13px; line-height: 1.75; margin: 0 0 12px; }
 .study-template-kind { color: #35634a; font-size: 12px; }
 .study-template-card .study-template-result { border-top: 1px solid #edf1ee; padding-top: 12px; color: #243d2d; }

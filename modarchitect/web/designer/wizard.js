@@ -5,6 +5,7 @@ import { issueMessage } from "./panels.js?v=continuous1";
 import { researchTitle, researchQuestion } from "./study-library.js?v=continuous1";
 import { inputProvision } from "./input-provision.js?v=continuous1";
 import { calendarAxes } from "./calendar-axis.js?v=continuous1";
+import { selectableMethodNodes, trainingPreparationNames } from "./methods.js?v=method-role1";
 
 const sections = ["basic", "inputs", "targets", "sources", "calculation"];
 const sectionNames = ["基础信息", "研究资料与候选因素", "目标指标", "数据来源", "计算与评价"];
@@ -233,11 +234,18 @@ export function mountWizard({ getDefinition, getRecords, getMethod, getInputCata
     byId("open-indicator-library").hidden = fixed;
     byId("open-system-example").hidden = !sampleRecord();
     byId("open-output-library").hidden = fixed || plan.purpose !== "train";
-    const records = plan.composition.nodes.map((n) => getRecords().get(n.component.code + "@" + n.component.revision));
-    const methods = plan.composition.nodes.map((node) => getMethod?.(node.component));
+    const nodes = plan.composition.nodes, registered = getRecords();
+    const records = nodes.map((n) => registered.get(n.component.code + "@" + n.component.revision));
+    const methods = nodes.map((node) => getMethod?.(node.component));
     const stepNames = records.map((record, index) => methods[index]?.name || record?.definition.name || "准确组件");
-    const methodNames = stepNames.filter((_, index) => !records[index]?.definition.configuration.research_model?.automatic_date_axis).join("、");
+    const training = plan.purpose === "train", models = new Set(selectableMethodNodes(plan, registered));
+    const methodNames = stepNames.filter((_, index) => training ? models.has(nodes[index])
+      : !records[index]?.definition.configuration.research_model?.automatic_date_axis).join("、");
+    byId("wizard-method-label").textContent = training ? "当前训练模型" : "当前计算方式";
     byId("wizard-method").textContent = methodNames || "尚未选择计算方法";
+    const preparation = trainingPreparationNames(plan, registered).join("、");
+    byId("wizard-method-preparation").hidden = !preparation;
+    byId("wizard-method-preparation").textContent = preparation ? "资料处理：" + preparation : "";
     const reusable = records.some((record) => (record?.research_contract.capabilities || record?.definition.configuration.research_model?.execution)?.state_output);
     byId("wizard-method-note").textContent = reusable
       ? "可以先保存方案，收集到观测资料后再开始训练。" : "在下方查看这项研究如何从资料得到结果。";

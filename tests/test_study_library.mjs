@@ -14,8 +14,9 @@ const retained = new Set([
   "crop-growth-prediction", "soil-weather-lai", "soil-weather-biomass", "soil-weather-canopy", "soil-weather-satellite-lai",
   "biomass-growth-curve", "canopy-weather-tuber-dry-matter", "satellite-biomass-prediction",
 ]);
-const rows = historicalRows.filter((row) => retained.has(row.id));
-const view = (row) => ({ ...row, execution_mode: row.bundle_sha256 ? "frozen_case" : "observations", definition: { ...structuredClone(row.definition), layout: { study_template: { id: row.id, sha256: row.sha256 } } } });
+const newRows = JSON.parse(await readFile(new URL("../modarchitect/contracts/study-templates-growth-v1.json", import.meta.url), "utf8"));
+const rows = [...historicalRows.filter((row) => retained.has(row.id)), ...newRows];
+const view = (row) => ({ ...row, icon_name: row.id + ".svg", execution_mode: row.bundle_sha256 ? "frozen_case" : "observations", definition: { ...structuredClone(row.definition), layout: { study_template: { id: row.id, sha256: row.sha256 } } } });
 
 test("关系展示读取已保存模型的真实系数和单位，区分合成数据与因果结论", () => {
   const dom = new JSDOM('<div id="host"></div>'); globalThis.document = dom.window.document;
@@ -65,7 +66,17 @@ test("方案目录失败不保留加载文案，可在当前页面重试恢复",
     assert.ok(retry && !retry.hidden && !retry.disabled);
     assert.doesNotMatch(document.getElementById("study-library-status").textContent, /正在读取/);
     failed = false; retry.click(); await new Promise(setImmediate);
-    assert.equal(document.querySelectorAll("[data-study-template]").length, 8);
+    const cards = [...document.querySelectorAll("[data-study-template]")];
+    assert.equal(cards.length, 20);
+    for (const card of cards) {
+      const icon = card.querySelector(".study-template-icon");
+      assert.equal(icon.alt, "");
+      assert.ok(icon.src.endsWith("/study-icons/" + card.dataset.studyTemplate + ".svg"));
+    }
+    [...document.querySelectorAll(".study-topic-filters button")].find((button) => button.textContent === "土壤与生长").click();
+    const visible = cards.filter((card) => !card.hidden);
+    assert.ok(visible.some((card) => card.dataset.studyTemplate === "soil-texture-canopy"));
+    assert.ok(visible.every((card) => card.dataset.category === "土壤与生长"));
     assert.equal(retry.hidden, true);
   } finally { globalThis.fetch = previous; dom.window.close(); }
 });

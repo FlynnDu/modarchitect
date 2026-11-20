@@ -3,7 +3,7 @@ const byId = (id) => document.getElementById(id);
 byId("reload-designer").addEventListener("click", () => location.reload());
 
 try {
-  await import("./studio.js?v=calculation1");
+  await import("./studio.js?v=method-role1");
 } catch {
   byId("designer-startup-error").hidden = false;
   byId("stage-loading").textContent = "设计器加载失败，请点击重新加载页面。";

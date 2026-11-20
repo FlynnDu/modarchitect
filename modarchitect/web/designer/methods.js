@@ -21,6 +21,24 @@ export function selectableMethodNodes(plan, records) {
   });
 }
 
+export function trainingPreparationNames(plan, records) {
+  if (plan.purpose !== "train") return [];
+  const nodes = plan.composition.nodes, byCode = new Map(nodes.map((node) => [node.code, node]));
+  const models = new Set(selectableMethodNodes(plan, records).map((node) => node.code));
+  const pending = [...models], visits = new Set(models);
+  while (pending.length) {
+    const node = byCode.get(pending.pop());
+    for (const { source } of node.bindings) {
+      if (!byCode.has(source.node) || visits.has(source.node)) continue;
+      visits.add(source.node);
+      pending.push(source.node);
+    }
+  }
+  const names = nodes.filter((node) => visits.has(node.code) && !models.has(node.code))
+    .map((node) => nodeRecord(node, records)?.definition.name).filter(Boolean);
+  return [...new Set(names)];
+}
+
 export function methodRestriction(record) {
   if (!record.available_for_new_design || !record.definition.composable) return "此版本不能用于新设计。";
   return null;
